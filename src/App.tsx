@@ -1,7 +1,7 @@
 import './App.css';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Hub } from './pages/hub/Hub';
-import { Search } from './pages/search/Search';
+import { FullFeaturedCrudGrid } from './pages/search/Search';
 import { CounterAgents } from './pages/counteragents/Counteragents';
 import { Users } from './pages/users/Users';
 import { Currency } from './pages/currency/Currency';
@@ -18,7 +18,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/search",
-    element: <Search />,
+    element: <FullFeaturedCrudGrid />,
   },
   {
     path: "/counteragents",
