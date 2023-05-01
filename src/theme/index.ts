@@ -5,10 +5,10 @@ import { createShadows } from './create-shadows';
 import { createTypography } from './create-typography';
 
 export function createTheme() {
-  const palette = createPalette();
-  const components = createComponents({ palette });
-  const shadows = createShadows();
-  const typography = createTypography();
+  const palette: any = createPalette();
+  const components: any = createComponents({ palette });
+  const shadows: any = createShadows();
+  const typography: any = createTypography();
 
   return createMuiTheme({
     breakpoints: {

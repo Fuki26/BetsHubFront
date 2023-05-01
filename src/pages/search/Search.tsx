@@ -93,7 +93,7 @@ function EditToolbar(props: EditToolbarProps) {
   );
 }
 
-export function FullFeaturedCrudGrid() {
+export default function FullFeaturedCrudGrid() {
   const [rows, setRows] = React.useState(initialRows);
   const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
 
@@ -207,7 +207,7 @@ export function FullFeaturedCrudGrid() {
   return (
     <Box
       sx={{
-        height: 500,
+        height: 700,
         width: '100%',
         '& .actions': {
           color: 'text.secondary',
@@ -215,6 +215,7 @@ export function FullFeaturedCrudGrid() {
         '& .textPrimary': {
           color: 'text.primary',
         },
+        padding: '5%',
       }}
     >
       <DataGridPro

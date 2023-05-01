@@ -1,8 +1,6 @@
-export function Currency() {
-    return (
-      <div>
-        Currency
-      </div>
-    );
-  }
+export default function Currency() {
+  return (
+    <></>
+  );
+}
   

@@ -1,34 +1,14 @@
 import { useEffect, useState } from 'react';
-import { DataGridPro, GridColDef, } from '@mui/x-data-grid-pro';
+import { DataGridPro, GridColDef, GridToolbar, } from '@mui/x-data-grid-pro';
+import { Box, Paper, Typography} from '@mui/material';
 import { Bet } from '../../models/Bet';
-import { Box } from '@mui/material';
 
-export const Hub = () => {
+
+export default function Hub() {
   const [bets, setBets] = useState<any>(null);
   useEffect(() => {
     (async function() {
       try {
-        // const headers = {
-        //   "Accept": "*/*",
-        //   "Accept-Encoding": "gzip, deflate, br",
-        //   "Connection": "keep-alive",
-        // };
-  
-        // let config = {
-        //   method: 'get',
-        //   maxBodyLength: Infinity,
-        //   url: 'https://213.91.236.205:5000/GetAllBets',
-        //   headers,
-        // };
-        
-        // axios.request(config)
-        //   .then((response) => {
-        //     console.log(JSON.stringify(response.data));
-        //   })
-        //   .catch((error) => {
-        //     console.log(error);
-        //   });
-  
         let allBets: Array<Bet> = [];
   
         setBets(allBets);
@@ -379,9 +359,9 @@ export const Hub = () => {
   ];
 
   return (
-    <div>
-      <h3>Stats</h3>
-      <Box sx={{ height: 400, width: '100%', marginBottom: '100px' }}>
+    <Paper sx={{ padding: '5%', }}>
+      <Typography variant="h4">Stats</Typography>
+      <Box sx={{ height: 600, width: '100%', marginBottom: '100px' }}>
         <DataGridPro
           rows={statsRows}
           columns={statsColumns}
@@ -398,12 +378,12 @@ export const Hub = () => {
             }
           }}
           pageSizeOptions={[5]}
-          checkboxSelection
           disableRowSelectionOnClick
+          slots={{ toolbar: GridToolbar}}
         />
       </Box>
-      <h3>Pending</h3>
-      <Box sx={{ height: 400, width: '100%', marginBottom: '100px' }}>
+      <Typography variant="h4">Pending</Typography>
+      <Box sx={{ height: 600, width: '100%', marginBottom: '100px' }}>
         <DataGridPro
           columns={betsColumns}
           editMode="row"
@@ -421,12 +401,12 @@ export const Hub = () => {
             }
           }}
           pageSizeOptions={[5]}
-          checkboxSelection
           disableRowSelectionOnClick
+          slots={{ toolbar: GridToolbar}}
         />
       </Box>
-      <h3>Completed</h3>
-      <Box sx={{ height: 400, width: '100%', marginBottom: '100px' }}>
+      <Typography variant="h4">Completed</Typography>
+      <Box sx={{ height: 600, width: '100%', marginBottom: '100px' }}>
         <DataGridPro
           columns={betsColumns}
           rows={betsData}
@@ -443,10 +423,10 @@ export const Hub = () => {
             }
           }}
           pageSizeOptions={[5]}
-          checkboxSelection
           disableRowSelectionOnClick
+          slots={{ toolbar: GridToolbar}}
         />
       </Box>
-    </div>
+    </Paper>
   );
 }

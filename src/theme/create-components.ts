@@ -10,7 +10,7 @@ import {
 // Used only to create transitions
 const muiTheme = createTheme();
 
-export function createComponents(config) {
+export function createComponents(config: { palette: any; }) {
   const { palette } = config;
 
   return {
@@ -296,6 +296,6 @@ export function createComponents(config) {
       defaultProps: {
         variant: 'filled'
       }
-    }
+    },
   };
 }

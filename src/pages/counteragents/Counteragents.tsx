@@ -1,8 +1,7 @@
-export function CounterAgents() {
-    return (
-      <div>
-        CounterAgents
-      </div>
-    );
-  }
+export default function CounterAgents() {
+  return (
+    <>
+    </>
+  );
+}
   
