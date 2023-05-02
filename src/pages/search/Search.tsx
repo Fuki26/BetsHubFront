@@ -86,7 +86,7 @@ function EditToolbar(props: EditToolbarProps) {
 
   return (
     <GridToolbarContainer>
-      <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
+      <Button color="primary" variant="contained" startIcon={<AddIcon />} onClick={handleClick}>
         Add record
       </Button>
     </GridToolbarContainer>
@@ -143,8 +143,18 @@ export default function FullFeaturedCrudGrid() {
   };
 
   const columns: GridColDef[] = [
-    { field: 'name', headerName: 'Name', width: 180, editable: true },
-    { field: 'age', headerName: 'Age', type: 'number', editable: true },
+    { 
+      field: 'name', 
+      headerName: 'Name', 
+      width: 180, 
+      editable: true,
+    },
+    { 
+      field: 'age', 
+      headerName: 'Age', 
+      type: 'number', 
+      editable: true,
+    },
     {
       field: 'dateCreated',
       headerName: 'Date Created',
