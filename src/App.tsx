@@ -36,7 +36,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/search",
-    element: <FullFeaturedCrudGrid />,
+    element: <Hub />,
   },
   {
     path: "/counteragents",

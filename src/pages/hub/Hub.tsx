@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { DataGridPro, GridColDef, GridToolbar, } from '@mui/x-data-grid-pro';
-import { Box, Paper, Typography} from '@mui/material';
+import { GridColDef, GridRowsProp, GridToolbar, } from '@mui/x-data-grid-pro';
+import { Paper, Typography} from '@mui/material';
 import { Bet } from '../../models/Bet';
+import { FullFeaturedCrudGrid } from '../search';
+import axios from 'axios';
 
 
 export default function Hub() {
@@ -9,6 +11,7 @@ export default function Hub() {
   useEffect(() => {
     (async function() {
       try {
+        const bets = await axios.get("http://213.91.236.205:5000/GetAllBets");
         let allBets: Array<Bet> = [];
   
         setBets(allBets);
@@ -100,130 +103,151 @@ export default function Hub() {
       field: 'dateCreated', 
       headerName: 'Period', 
       editable: true,
-      width: 100 
+      width: 100,
+      type: "date",
     },
     { 
       field: 'couteragent', 
       headerName: 'Couteragent', 
       editable: true,
-      width: 100 
+      width: 100,
+      type: "string",
     },
     { 
       field: 'sport', 
       headerName: 'Sport',
       editable: true, 
-      width: 100 
+      width: 100,
+      type: "number",
     },
-    { 
-      field: 'market', 
-      headerName: 'Market',
-      editable: true, 
-      width: 100 
-    },
-    { 
-      field: 'stakeValue', 
-      headerName: 'Stake',
-      editable: true, 
-      width: 100 
-    },
-    { 
-      field: 'prelive', 
-      headerName: 'PRE/LIVE', 
-      editable: true,
-      width: 100 
-    },
-    { 
-      field: 'psLimit', 
-      headerName: 'Ps Limit',
-      editable: true, 
-      width: 100 
-    },
-    { 
-      field: 'tournament', 
-      headerName: 'Tournament', 
-      editable: true,
-      width: 100 
-    },
-    { 
-      field: 'selection', 
-      headerName: 'Selection', 
-      editable: true,
-      width: 100 
-    },
-    { 
-      field: 'bgn', 
-      headerName: 'BGN',
-      editable: true, 
-      width: 100 
-    },
-    { 
-      field: 'usd', 
-      headerName: 'USD', 
-      editable: true,
-      width: 100 
-    },
-    { 
-      field: 'eur', 
-      headerName: 'EUR', 
-      width: 100 
-    },
-    { 
-      field: 'bgp', 
-      headerName: 'BGP', 
-      editable: true,
-      width: 100 
-    },
-    { 
-      field: 'amount', 
-      headerName: 'Amount',
-      editable: true, 
-      width: 100 
-    },
-    { 
-      field: 'odd', 
-      headerName: 'ODD', 
-      editable: true,
-      width: 100 
-    },
-    { 
-      field: 'dateFinished', 
-      headerName: 'Date finished', 
-      editable: true,
-      width: 100 
-    },
-    { 
-      field: 'expenseApplied', 
-      headerName: 'Expense applied',
-      editable: true, 
-      width: 100 
-    },
-    { 
-      field: 'wl', 
-      headerName: 'W/L (Brut PLN)', 
-      editable: true,
-      width: 100 
-    },
-    { 
-      field: 'netPln', 
-      headerName: 'NET PLN',
-      editable: true, 
-      width: 100 
-    },
-    { 
-      field: 'volumr', 
-      headerName: 'Volumr', 
-      editable: true,
-      width: 100 
-    },
-    { 
-      field: 'pl', 
-      headerName: 'PL', 
-      editable: true,
-      width: 100 
-    },
+    // { 
+    //   field: 'market', 
+    //   headerName: 'Market',
+    //   editable: true, 
+    //   width: 100,
+    //   type: "string",
+    // },
+    // { 
+    //   field: 'stakeValue', 
+    //   headerName: 'Stake',
+    //   editable: true, 
+    //   width: 100,
+    //   type: "number",
+    // },
+    // { 
+    //   field: 'prelive', 
+    //   headerName: 'PRE/LIVE', 
+    //   editable: true,
+    //   width: 100,
+    //   type: "string",
+    // },
+    // { 
+    //   field: 'psLimit', 
+    //   headerName: 'Ps Limit',
+    //   editable: true, 
+    //   width: 100,
+    //   type: "number",
+    // },
+    // { 
+    //   field: 'tournament', 
+    //   headerName: 'Tournament', 
+    //   editable: true,
+    //   width: 100,
+    //   type: "string",
+    // },
+    // { 
+    //   field: 'selection', 
+    //   headerName: 'Selection', 
+    //   editable: true,
+    //   width: 100,
+    //   type: "string",
+    // },
+    // { 
+    //   field: 'bgn', 
+    //   headerName: 'BGN',
+    //   editable: true, 
+    //   width: 100,
+    //   type: "number",
+    // },
+    // { 
+    //   field: 'usd', 
+    //   headerName: 'USD', 
+    //   editable: true,
+    //   width: 100,
+    //   type: "number",
+    // },
+    // { 
+    //   field: 'eur', 
+    //   headerName: 'EUR', 
+    //   editable: false,
+    //   width: 100,
+    //   type: "number",
+    // },
+    // { 
+    //   field: 'bgp', 
+    //   headerName: 'BGP', 
+    //   editable: true,
+    //   width: 100,
+    //   type: "number",
+    // },
+    // { 
+    //   field: 'amount', 
+    //   headerName: 'Amount',
+    //   editable: true, 
+    //   width: 100,
+    //   type: "number",
+    // },
+    // { 
+    //   field: 'odd', 
+    //   headerName: 'ODD', 
+    //   editable: true,
+    //   width: 100,
+    //   type: "number",
+    // },
+    // { 
+    //   field: 'dateFinished', 
+    //   headerName: 'Date finished', 
+    //   editable: true,
+    //   width: 100,
+    //   type: "date",
+    // },
+    // { 
+    //   field: 'expenseApplied', 
+    //   headerName: 'Expense applied',
+    //   editable: true, 
+    //   width: 100,
+    //   type: "number",
+    // },
+    // { 
+    //   field: 'wl', 
+    //   headerName: 'W/L (Brut PLN)', 
+    //   editable: true,
+    //   width: 100,
+    //   type: "number",
+    // },
+    // { 
+    //   field: 'netPln', 
+    //   headerName: 'NET PLN',
+    //   editable: true, 
+    //   width: 100,
+    //   type: "number",
+    // },
+    // { 
+    //   field: 'volumr', 
+    //   headerName: 'Volumr', 
+    //   editable: true,
+    //   width: 100,
+    //   type: "number",
+    // },
+    // { 
+    //   field: 'pl', 
+    //   headerName: 'PL', 
+    //   editable: true,
+    //   width: 100,
+    //   type: "number",
+    // },
   ];
-
-  const betsData: Array<Bet> = [
+  const betsData: GridRowsProp = [
     {
       id: 1,
       dateCreated: new Date("2024-01-21T11:11:11.111111Z"),
@@ -360,73 +384,12 @@ export default function Hub() {
 
   return (
     <Paper sx={{ padding: '5%', }}>
-      <Typography variant="h4">Stats</Typography>
-      <Box sx={{ height: 600, width: '100%', marginBottom: '100px' }}>
-        <DataGridPro
-          rows={statsRows}
-          columns={statsColumns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
-            },
-            columns: {
-              columnVisibilityModel: {
-                id: false,
-              },
-            }
-          }}
-          pageSizeOptions={[5]}
-          disableRowSelectionOnClick
-          slots={{ toolbar: GridToolbar}}
-        />
-      </Box>
-      <Typography variant="h4">Pending</Typography>
-      <Box sx={{ height: 600, width: '100%', marginBottom: '100px' }}>
-        <DataGridPro
-          columns={betsColumns}
-          editMode="row"
-          rows={betsData}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
-            },
-            columns: {
-              columnVisibilityModel: {
-                id: false,
-              },
-            }
-          }}
-          pageSizeOptions={[5]}
-          disableRowSelectionOnClick
-          slots={{ toolbar: GridToolbar}}
-        />
-      </Box>
       <Typography variant="h4">Completed</Typography>
-      <Box sx={{ height: 600, width: '100%', marginBottom: '100px' }}>
-        <DataGridPro
-          columns={betsColumns}
-          rows={betsData}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
-            },
-            columns: {
-              columnVisibilityModel: {
-                id: false,
-              },
-            }
-          }}
-          pageSizeOptions={[5]}
-          disableRowSelectionOnClick
-          slots={{ toolbar: GridToolbar}}
-        />
-      </Box>
+      <FullFeaturedCrudGrid  columns={betsColumns} initialRows={betsData}/>
+      <Typography variant="h4">Pending</Typography>
+      <FullFeaturedCrudGrid  columns={betsColumns} initialRows={betsData}/>
+      <Typography variant="h4">Expenses</Typography>
+      <FullFeaturedCrudGrid  columns={betsColumns} initialRows={betsData}/>
     </Paper>
   );
 }
