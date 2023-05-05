@@ -1,12 +1,11 @@
 import { useCallback, useState, useEffect, } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { styled, } from '@mui/material/styles';
-import { SideNav } from './components/side-navigation/side-nav';
 import { Hub } from './pages/hub/index';
-import { FullFeaturedCrudGrid } from './pages/search/index';
 import { CounterAgents } from './pages/counteragents/index';
 import { Users } from './pages/users/index';
 import { Currency } from './pages/currency/index';
+import PersistentDrawerLeft from './pages/ApplicationComponent/ApplicationComponent';
 
 const SIDE_NAV_WIDTH = 280;
 const LayoutRoot = styled('div')(({ theme }) => ({
@@ -73,17 +72,14 @@ function App() {
 
   return (
     <>
-      <SideNav
-        onClose={() => setOpenNav(false)}
-        open={openNav}
-      />
+      <PersistentDrawerLeft/>
       <LayoutRoot>
         <LayoutContainer>
-        <div>
-          <header>
-            <RouterProvider router={router}/>
-          </header>
-        </div>
+          <div>
+            <header>
+              <RouterProvider router={router}/>
+            </header>
+          </div>
         </LayoutContainer>
       </LayoutRoot>
     </>
