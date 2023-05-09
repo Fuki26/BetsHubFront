@@ -23,6 +23,13 @@ import {
 import {
   randomId,
 } from '@mui/x-data-grid-generator';
+import { Dialog, DialogActions, DialogTitle } from '@mui/material';
+import { GeneralBet } from '../../models';
+
+function takeUniqueId() {
+  const randomNumber = Math.random() * 1000000;
+  return randomNumber;
+}
 
 interface EditToolbarProps {
   setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -59,10 +66,22 @@ export default function FullFeaturedCrudGrid(props: {
   const { initialRows, columns, } = props;
   const [rows, setRows] = React.useState<GridRowsProp | null>(null);
   const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
+  // const [ deleteRowId, setDeleteRowId ] = React.useState<string | number | null>(null);
 
   React.useEffect(() => {
     setRows(initialRows);
   }, []);
+
+  // const [deleteDialogIsOpened, setOpenDeleteDialog] = React.useState(false);
+
+  // const handleClickOpenOnDeleteDialog = (id: GridRowId) => () => {
+  //   setDeleteRowId(id);
+  //   setOpenDeleteDialog(true);
+  // };
+
+  // const handleCloseOnDeleteDialog = () => {
+  //   setOpenDeleteDialog(false);
+  // };
 
   const handleRowEditStart = (
     params: GridRowParams,
@@ -81,39 +100,166 @@ export default function FullFeaturedCrudGrid(props: {
     });
   };
 
+  // const handleDeleteClick = () => {
+  //   if(!deleteRowId) {
+  //     return;
+  //   }
+
+  //   setOpenDeleteDialog(false);
+
+  //   setRows((previousRows) => previousRows!.filter((row) => row.id !== deleteRowId));
+  //   setRowModesModel((previousRowModesModel) => {
+  //     return { ...previousRowModesModel, [deleteRowId]: { mode: GridRowModes.View } };
+  //   });
+  // };
+
+  // const handleClickAddChildren = (id: GridRowId) => () => {
+  // };
+
+  //#region Add/Edit mode
+
   const handleSaveClick = (id: GridRowId) => () => {
+    setRows((previousRows) => {
+      return previousRows!.map((row) => {
+        if(row.id === id) {
+          return {
+            ...row,
+            canceled: false,
+          };
+        } else {
+          return row;
+        }
+      });
+    });
+
     setRowModesModel((previousRowModesModel) => {
       return { ...previousRowModesModel, [id]: { mode: GridRowModes.View } }
     });
   };
 
-  const handleDeleteClick = (id: GridRowId) => () => {
-    setRows((previousRows) => previousRows!.filter((row) => row.id !== id))
-  };
-
   const handleCancelClick = (id: GridRowId) => () => {
+    setRows((previousRows) => {
+      return previousRows!.map((row) => {
+        if(row.id === id) {
+          return {
+            ...row,
+            canceled: true,
+          };
+        } else {
+          return row;
+        }
+      });
+    });
+
     setRowModesModel((previousRowModesModel) => {
-      return {
-        ...previousRowModesModel,
-        [id]: { mode: GridRowModes.View, ignoreModifications: true },
-      }
-    })
+      return { ...previousRowModesModel, [id]: { mode: GridRowModes.View } }
+    });
 
     const editedRow = rows!.find((row) => row.id === id);
-    if (editedRow!.isNew) {
+    if (!editedRow!.savedInDatabase) {
       setRows((previousRows) => previousRows!.filter((row) => row.id !== id));
     }
   };
 
+  //#endregion  Add/Edit mode
+
   const processRowUpdate = (newRow: GridRowModel) => {
-    const updatedRow = { ...newRow, isNew: false };
-    setRows((previousRows) => previousRows!.map((row: any) => (row.id === newRow.id ? updatedRow : row)));
-    return updatedRow;
+    if(newRow.canceled) {
+      return newRow;
+    }
+
+    if(!newRow.isSavedInDatabase) {
+      const id1 = Math.round(takeUniqueId());
+      const id2 = Math.round(takeUniqueId());
+      const id3 = Math.round(takeUniqueId());
+      setRows((oldRows) => {
+        return oldRows 
+          ? [
+              ...oldRows!,
+              ...[
+                { ...newRow, ...{ id: id1, isSavedInDatabase: false, canceled: false, }, },
+                { ...newRow, ...{ id: id2, isSavedInDatabase: false, canceled: false, }, },
+                { ...newRow, ...{ id: id3, isSavedInDatabase: false, canceled: false, }, }
+              ],
+            ]
+          : [
+              { ...newRow, ...{ id: id1, isSavedInDatabase: false, canceled: false, }, },
+              { ...newRow, ...{ id: id2, isSavedInDatabase: false, canceled: false, }, },
+              { ...newRow, ...{ id: id3, isSavedInDatabase: false, canceled: false, }, }
+            ];
+      });
+      setRowModesModel((oldModel) => ({
+        ...oldModel,
+        ...{
+          [id1]: { mode: GridRowModes.Edit, },
+          [id2]: { mode: GridRowModes.Edit, },
+          [id3]: { mode: GridRowModes.Edit, },
+        },
+      }));
+    } else {
+      setRowModesModel((previousRowModesModel) => {
+        return { ...previousRowModesModel, [newRow.id]: { mode: GridRowModes.View } }
+      });
+    }
+
+    return newRow;
   };
 
   const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
+
+  let columnsWithActions = columns.concat({
+    field: 'actions',
+    type: 'actions',
+    headerName: 'Actions',
+    width: 100,
+    cellClassName: 'actions',
+    getActions: ({ id }) => {
+      const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+      const row = rows?.find((row) => row.id === id);
+
+      if ((isInEditMode && row!.savedInDatabase)
+        || (isInEditMode && !row!.savedInDatabase && row!.isChild)) {
+        return [
+          <GridActionsCellItem
+            icon={<SaveIcon />}
+            label="Save"
+            onClick={handleSaveClick(id)}
+          />,
+          <GridActionsCellItem
+            icon={<CancelIcon />}
+            label="Cancel"
+            className="textPrimary"
+            onClick={handleCancelClick(id)}
+            color="inherit"
+          />,
+        ];
+      }
+
+      return [
+        <GridActionsCellItem
+          icon={<EditIcon />}
+          label="Edit"
+          className="textPrimary"
+          onClick={handleEditClick(id)}
+          color="inherit"
+        />,
+        // <GridActionsCellItem
+        //   icon={<DeleteIcon />}
+        //   label="Delete"
+        //   onClick={handleClickOpenOnDeleteDialog(id)}
+        //   color="inherit"
+        // />,
+        // <GridActionsCellItem
+        //   icon={<AddIcon />}
+        //   label="Delete"
+        //   onClick={handleClickAddChildren(id)}
+        //   color="inherit"
+        // />,
+      ];
+    },
+  });
 
   return (
     <Box
@@ -129,68 +275,40 @@ export default function FullFeaturedCrudGrid(props: {
       }}
     >
       {
-        rows && columns
+        rows && columnsWithActions
           ? (
-            <DataGridPro
-              rows={rows}
-              columns={columns.concat(
-                {
-                  field: 'actions',
-                  type: 'actions',
-                  headerName: 'Actions',
-                  width: 100,
-                  cellClassName: 'actions',
-                  getActions: ({ id }) => {
-                    const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-            
-                    if (isInEditMode) {
-                      return [
-                        <GridActionsCellItem
-                          icon={<SaveIcon />}
-                          label="Save"
-                          onClick={handleSaveClick(id)}
-                        />,
-                        <GridActionsCellItem
-                          icon={<CancelIcon />}
-                          label="Cancel"
-                          className="textPrimary"
-                          onClick={handleCancelClick(id)}
-                          color="inherit"
-                        />,
-                      ];
-                    }
-            
-                    return [
-                      <GridActionsCellItem
-                        icon={<EditIcon />}
-                        label="Edit"
-                        className="textPrimary"
-                        onClick={handleEditClick(id)}
-                        color="inherit"
-                      />,
-                      <GridActionsCellItem
-                        icon={<DeleteIcon />}
-                        label="Delete"
-                        onClick={handleDeleteClick(id)}
-                        color="inherit"
-                      />,
-                    ];
-                  },
-                }
-              )}
-              editMode="row"
-              rowModesModel={rowModesModel}
-              onRowModesModelChange={handleRowModesModelChange}
-              onRowEditStart={handleRowEditStart}
-              onRowEditStop={handleRowEditStop}
-              processRowUpdate={processRowUpdate}
-              slots={{
-                toolbar: EditToolbar,
-              }}
-              slotProps={{
-                toolbar: { setRows, setRowModesModel },
-              }}
-            />
+            <>
+              <DataGridPro
+                rows={rows}
+                columns={columnsWithActions}
+                editMode="row"
+                rowModesModel={rowModesModel}
+                onRowModesModelChange={handleRowModesModelChange}
+                onRowEditStart={handleRowEditStart}
+                onRowEditStop={handleRowEditStop}
+                processRowUpdate={processRowUpdate}
+                slots={{
+                  toolbar: EditToolbar,
+                }}
+                slotProps={{
+                  toolbar: { setRows, setRowModesModel },
+                }}
+              />
+              {/* <Dialog
+                open={deleteDialogIsOpened}
+                onClose={handleCloseOnDeleteDialog}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle id="alert-dialog-title">
+                  {"Are you sure you want to delete the row?"}
+                </DialogTitle>
+                <DialogActions>
+                  <Button onClick={handleDeleteClick} autoFocus>Ok</Button>
+                  <Button onClick={handleCloseOnDeleteDialog}>No</Button>
+                </DialogActions>
+              </Dialog> */}
+            </>
           )
         : null
       }
