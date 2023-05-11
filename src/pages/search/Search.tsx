@@ -5,6 +5,8 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import RemoveIcon from '@mui/icons-material/Remove';
 import CancelIcon from '@mui/icons-material/Close';
 import {
   GridRowsProp,
@@ -25,6 +27,7 @@ import {
 } from '@mui/x-data-grid-generator';
 import { Dialog, DialogActions, DialogTitle } from '@mui/material';
 import { GeneralBet } from '../../models';
+import { runInContext } from 'vm';
 
 function takeUniqueId() {
   const randomNumber = Math.random() * 1000000;
@@ -42,11 +45,33 @@ function EditToolbar(props: EditToolbarProps) {
   const { setRows, setRowModesModel } = props;
 
   const handleClick = () => {
-    const id = randomId();
-    setRows((oldRows) => [...oldRows, { id, name: '', age: '', isNew: true }]);
+    const id = Math.round(takeUniqueId());
+    setRows((oldRows) => [...oldRows, 
+      { 
+        id, 
+        dateCreated: new Date(),  
+        counteragentId: 0, 
+        sport: 0, 
+        marketId: 0,
+        stakeValue: 0,
+        liveStatus: 0,
+        psLimit: 0,
+        tournamentId: 0,
+        selectionId: 0,
+        amount: 0,
+        odd: 0,
+        dateFinished: new Date(),
+        totalAmount: 0,
+
+        savedInDatabase: false,
+        isCanceled: false,
+        parentId: null,
+        clickedForChildren: false,
+      }
+    ]);
     setRowModesModel((oldModel) => ({
       ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: 'name' },
+      [id]: { mode: GridRowModes.Edit, },
     }));
   };
 
@@ -59,12 +84,18 @@ function EditToolbar(props: EditToolbarProps) {
   );
 }
 
-export default function FullFeaturedCrudGrid(props: {
-  initialRows: GridRowsProp,
+export default function FullFeaturedCrudGrid<T extends { 
+    id: number; 
+    savedInDatabase: boolean;
+    isCanceled: boolean;
+    parentId: number | null;
+    clickedForChildren: boolean;
+  }>(props: {
+  initialRows: Array<T>,
   columns: Array<GridColDef>
 }) {
   const { initialRows, columns, } = props;
-  const [rows, setRows] = React.useState<GridRowsProp | null>(null);
+  const [rows, setRows] = React.useState<Array<T> | null>(null);
   const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
   // const [ deleteRowId, setDeleteRowId ] = React.useState<string | number | null>(null);
 
@@ -113,8 +144,53 @@ export default function FullFeaturedCrudGrid(props: {
   //   });
   // };
 
-  // const handleClickAddChildren = (id: GridRowId) => () => {
-  // };
+  const handleClickAddChildren = (id: GridRowId) => () => {
+    setRows((previousRows) => {
+      return previousRows!.map((row) => {
+        if(row.id === id) {
+          return {
+            ...row,
+            clickedForChildren: true,
+          };
+        } else {
+          return row;
+        }
+      });
+    });
+
+    setRowModesModel((previousRowModesModel) => {
+      return { ...previousRowModesModel, [id]: { mode: GridRowModes.View } }
+    });
+  };
+
+  const handleClickRemoveChildren = (id: GridRowId) => () => {
+    setRows((previousRows) => {
+      return previousRows!.filter((row) => {
+        if(row.parentId && row.parentId === id) {
+          return false;
+        } else {
+          return true;
+        }
+      });
+    });
+
+    setRows((previousRows) => {
+      return previousRows!.map((row) => {
+        if(row.id === id) {
+          return {
+            ...row,
+            isCanceled: true,
+          };
+        } else {
+          return row;
+        }
+      });
+    });
+
+    setRowModesModel((previousRowModesModel) => {
+      return { ...previousRowModesModel, [id]: { mode: GridRowModes.Edit } }
+    });
+  };
 
   //#region Add/Edit mode
 
@@ -132,8 +208,19 @@ export default function FullFeaturedCrudGrid(props: {
       });
     });
 
+    const childrenIds: Array<number> | undefined 
+      = rows?.filter((row) => row.parentId === id).map((row) => row.id);
+
     setRowModesModel((previousRowModesModel) => {
-      return { ...previousRowModesModel, [id]: { mode: GridRowModes.View } }
+      let childrenData: any = {};
+      childrenData[id] = { mode: GridRowModes.View };
+      if(childrenIds) {
+        for(var i = 0; i <= childrenIds?.length - 1; i++) {
+          childrenData[childrenIds[i]] = { mode: GridRowModes.View };
+        }
+      }
+      
+      return { ...previousRowModesModel, ...childrenData};
     });
   };
 
@@ -155,9 +242,15 @@ export default function FullFeaturedCrudGrid(props: {
       return { ...previousRowModesModel, [id]: { mode: GridRowModes.View } }
     });
 
-    const editedRow = rows!.find((row) => row.id === id);
-    if (!editedRow!.savedInDatabase) {
-      setRows((previousRows) => previousRows!.filter((row) => row.id !== id));
+    const editedRow = rows?.find((row) => row.id === id);
+    if (!editedRow?.savedInDatabase) {
+      setRows((previousRows) => previousRows!.filter((row) => {
+        if(row.parentId) {
+          return row.id !== id && row.parentId !== id;
+        } else {
+          return row.id !== id;
+        } 
+      }));
     }
   };
 
@@ -168,26 +261,37 @@ export default function FullFeaturedCrudGrid(props: {
       return newRow;
     }
 
-    if(!newRow.isSavedInDatabase) {
+    if(newRow.clickedForChildren) {
       const id1 = Math.round(takeUniqueId());
       const id2 = Math.round(takeUniqueId());
       const id3 = Math.round(takeUniqueId());
+
       setRows((oldRows) => {
-        return oldRows 
-          ? [
-              ...oldRows!,
-              ...[
-                { ...newRow, ...{ id: id1, isSavedInDatabase: false, canceled: false, }, },
-                { ...newRow, ...{ id: id2, isSavedInDatabase: false, canceled: false, }, },
-                { ...newRow, ...{ id: id3, isSavedInDatabase: false, canceled: false, }, }
-              ],
-            ]
-          : [
-              { ...newRow, ...{ id: id1, isSavedInDatabase: false, canceled: false, }, },
-              { ...newRow, ...{ id: id2, isSavedInDatabase: false, canceled: false, }, },
-              { ...newRow, ...{ id: id3, isSavedInDatabase: false, canceled: false, }, }
-            ];
+        const newRows = [
+          { ...newRow, ...{ id: id1, isCanceled: false, parentId: newRow.id, savedInDatabase: false, 
+            clickedForChildren: false, } as T },
+          { ...newRow, ...{ id: id2, isCanceled: false, parentId: newRow.id, savedInDatabase: false, 
+            clickedForChildren: false, } as T },
+          { ...newRow, ...{ id: id3, isCanceled: false, parentId: newRow.id, savedInDatabase: false, 
+            clickedForChildren: false, } as T },  
+        ];
+
+        return oldRows
+          ? [...oldRows.map((row) => {
+              if(row.id === newRow.id) {
+                return {
+                  ...row,
+                  isCanceled: false,
+                  parentId: null,
+                  clickedForChildren: false,
+                }
+              } else {
+                return row;
+              }
+            }), ...newRows]
+          : [...newRows];
       });
+
       setRowModesModel((oldModel) => ({
         ...oldModel,
         ...{
@@ -215,49 +319,83 @@ export default function FullFeaturedCrudGrid(props: {
     headerName: 'Actions',
     width: 100,
     cellClassName: 'actions',
-    getActions: ({ id }) => {
-      const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-      const row = rows?.find((row) => row.id === id);
+    getActions: (params) => {
+      const isInEditMode = rowModesModel[params.id]?.mode === GridRowModes.Edit;
+      const row = rows?.find((row) => row.id === params.id);
+      if(row?.parentId) {
+        return [];
+      }
 
-      if ((isInEditMode && row!.savedInDatabase)
-        || (isInEditMode && !row!.savedInDatabase && row!.isChild)) {
+      const hasRenderedChildren = rows?.some((r) => {
+        return r.parentId === row?.id;
+      });
+
+      console.log(`id = ${row?.id}, isInEditMode: ${isInEditMode}, hasRenderedChildren = ${hasRenderedChildren}, savedInDatabase = ${row?.savedInDatabase}, isCanceled = ${row?.isCanceled}, parentId = ${row?.parentId}, clickedForChildren = ${row?.clickedForChildren}`);
+
+      if (!row?.savedInDatabase) {
+        const addOrRemoveChildrenIcon = hasRenderedChildren
+          ? (
+              <GridActionsCellItem
+                icon={<RemoveIcon />}
+                label="Outline"
+                onClick={handleClickRemoveChildren(params.id)}
+              />
+            )
+          : (
+              <GridActionsCellItem
+                icon={<AddCircleOutlineIcon />}
+                label="Outline"
+                onClick={handleClickAddChildren(params.id)}
+              />
+            );
+
         return [
           <GridActionsCellItem
             icon={<SaveIcon />}
             label="Save"
-            onClick={handleSaveClick(id)}
+            onClick={handleSaveClick(params.id)}
           />,
           <GridActionsCellItem
             icon={<CancelIcon />}
             label="Cancel"
             className="textPrimary"
-            onClick={handleCancelClick(id)}
+            onClick={handleCancelClick(params.id)}
             color="inherit"
           />,
+          addOrRemoveChildrenIcon
         ];
+      } else {
+        return isInEditMode
+         ? [
+              <GridActionsCellItem
+                icon={<SaveIcon />}
+                label="Save"
+                onClick={handleSaveClick(params.id)}
+              />,
+              <GridActionsCellItem
+                icon={<CancelIcon />}
+                label="Cancel"
+                className="textPrimary"
+                onClick={handleCancelClick(params.id)}
+                color="inherit"
+              />,
+            ]
+          : [
+              <GridActionsCellItem
+                icon={<EditIcon />}
+                label="Edit"
+                className="textPrimary"
+                onClick={handleEditClick(params.id)}
+                color="inherit"
+              />,
+              // <GridActionsCellItem
+              //   icon={<DeleteIcon />}
+              //   label="Delete"
+              //   onClick={handleClickOpenOnDeleteDialog(id)}
+              //   color="inherit"
+              // />,
+            ]
       }
-
-      return [
-        <GridActionsCellItem
-          icon={<EditIcon />}
-          label="Edit"
-          className="textPrimary"
-          onClick={handleEditClick(id)}
-          color="inherit"
-        />,
-        // <GridActionsCellItem
-        //   icon={<DeleteIcon />}
-        //   label="Delete"
-        //   onClick={handleClickOpenOnDeleteDialog(id)}
-        //   color="inherit"
-        // />,
-        // <GridActionsCellItem
-        //   icon={<AddIcon />}
-        //   label="Delete"
-        //   onClick={handleClickAddChildren(id)}
-        //   color="inherit"
-        // />,
-      ];
     },
   });
 

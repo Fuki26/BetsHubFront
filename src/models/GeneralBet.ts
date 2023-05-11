@@ -3,7 +3,6 @@ import { ChildBet, CounterAgent, Currency, Market, Tournament } from "../databas
 export type GeneralBet = {
     id: number;
     dateCreated: Date;
-    counteragentId: number | null;
     counteragent: CounterAgent | null;
     sport: number;
     liveStatus: number;
@@ -27,6 +26,7 @@ export type GeneralBet = {
     childBets: Array<ChildBet>;
 
     savedInDatabase: boolean;
-    canceled: boolean;
-    isChild: boolean;
+    isCanceled: boolean;
+    parentId: number | null;
+    clickedForChildren: boolean;
 }
