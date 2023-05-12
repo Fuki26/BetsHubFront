@@ -7,6 +7,7 @@ import { Expense, } from './Expense';
 import { Market, } from './Market';
 import { Role, } from './Role';
 import { Selection, } from './Selection';
+import { Sport, } from './Sport';
 import { Tournament, } from './Tournament';
 import { User, } from './User';
 
@@ -20,6 +21,7 @@ export type {
     Market, 
     Role,
     Selection,
+    Sport,
     Tournament,
     User,
 };

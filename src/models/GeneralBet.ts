@@ -3,27 +3,28 @@ import { ChildBet, CounterAgent, Currency, Market, Tournament } from "../databas
 export type GeneralBet = {
     id: number;
     dateCreated: Date;
-    counteragent: CounterAgent | null;
-    sport: number;
-    liveStatus: number;
+    counteragent: string;
+    sport: string;
+    market: string;
+    stake: number;
+    liveStatus: string;
     psLimit: number;
-    marketId: number | null;
-    market: Market | null;
-    stakeValue: number;
-    tournamentId: number | null;
-    tournament: Tournament | null;
-    selectionId: number | null;
-    selection: Selection | null;
-    currencyId: number;
-    currency: Currency;
+    tournament: string;
+    selection: string;
+    bgn: number;
+    usd: number;
+    eur: number;
+    bgp: number;
     amount: number;
     odd: number;
     dateFinished: Date;
-    dateStaked: Date;
-    profits: number;
+    dateStakedAndUserCreated: Date;
+    expenseApplied: number;
+    brutPLN: number;
+    netPLN: number;
+    volume: number;
     notes: string;
-    totalAmount: number;
-    childBets: Array<ChildBet>;
+
 
     savedInDatabase: boolean;
     isCanceled: boolean;
