@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { DataGridPro, GridColDef, } from '@mui/x-data-grid-pro';
+import { DataGridPro, GridColDef, GridRenderCellParams, } from '@mui/x-data-grid-pro';
 import { Paper, Typography} from '@mui/material';
 import { Bet, } from '../../database-models';
 import { GeneralBet, StatisticItem } from '../../models';
@@ -344,6 +344,46 @@ export default function Hub() {
   ];
   const betsData: Array<GeneralBet> | null = bets ? bets : null;
 
+  const expensesColumns: Array<GridColDef> = [
+    {
+      field: 'counteragent',
+      headerName: 'Counteragent',
+      editable: true,
+      sortable: true,
+    },
+    {
+      field: 'counteragentCategory',
+      headerName: 'Category of counteragent',
+      editable: false,
+      sortable: true,
+    },
+    {
+      field: 'amount',
+      headerName: 'Amount',
+      editable: true,
+      sortable: true,
+    },
+    {
+      field: 'description',
+      headerName: 'Description',
+      editable: true,
+      sortable: true,
+    },
+    {
+      field: 'periodOfPayment',
+      headerName: 'Period of payment',
+      editable: false,
+      sortable: true,
+      renderCell: (params: GridRenderCellParams<R, V, F>) => React.ReactNode;
+    },
+    {
+      field: 'user',
+      headerName: 'User(only for GA)',
+      editable: false,
+      sortable: true,
+    },
+  ];
+
   return (
     <Paper sx={{ padding: '5%', }}>
       <Typography variant="h4">Stats</Typography>
@@ -356,13 +396,18 @@ export default function Hub() {
           ? (
               <>
                 <Typography variant="h4">PENDING</Typography>
-                <GeneralTable<GeneralBet>  columns={betsColumns} initialRows={betsData}/>
+                <GeneralTable<GeneralBet>  columns={betsColumns} initialRows={betsData.slice(0, 2)}/>
                 <Typography variant="h4">COMPLETED</Typography>
                 <GeneralTable<GeneralBet>  columns={betsColumns} initialRows={betsData}/>
               </>
             )
           : null
       }
+      <Typography variant="h4">EXPENSES</Typography>
+      <DataGridPro
+        columns={statiticsColumns}
+        rows={statiticsRows}   
+      />
     </Paper>
   );
 }
