@@ -1,18 +1,18 @@
 import { Currency, Market, Sport, Tournament, Selection, } from ".";
 import { ChildBet } from "./ChildBet";
-import { CounterAgent } from "./CounterAgent"
+import { Counteragent } from "./Counteragent"
 
 export type Bet = {
     id: number;
     dateCreated: string;
-    counteragent: CounterAgent | null;
-    sport: Sport | null;
+    counteragent?: Counteragent;
+    sport?: Sport;
     liveStatus: number;
     psLimit: number;
-    market: Market | null;
-    stakeValue: number | null;
-    tournament: Tournament | null;
-    selection: Selection | null;
+    market?: Market;
+    stakeValue?: number;
+    tournament?: Tournament;
+    selection?: Selection;
     currencyId: number;
     currency: Currency;
     amount: number;

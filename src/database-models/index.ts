@@ -1,7 +1,7 @@
 import { Bet, } from './Bet';
 import { ChildBet, } from './ChildBet';
-import { CounterAgent, } from './CounterAgent';
-import { CounterAgentCategory, } from './CounterAgentCategory';
+import { Counteragent, } from './Counteragent';
+import { CounteragentCategory, } from './CounteragentCategory';
 import { Currency, } from './Currency';
 import { Expense, } from './Expense';
 import { Market, } from './Market';
@@ -14,8 +14,8 @@ import { User, } from './User';
 export type {
     Bet,
     ChildBet,
-    CounterAgent,
-    CounterAgentCategory,
+    Counteragent,
+    CounteragentCategory,
     Currency,
     Expense,
     Market, 

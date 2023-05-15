@@ -374,7 +374,6 @@ export default function Hub() {
       headerName: 'Period of payment',
       editable: false,
       sortable: true,
-      renderCell: (params: GridRenderCellParams<R, V, F>) => React.ReactNode;
     },
     {
       field: 'user',
@@ -403,11 +402,6 @@ export default function Hub() {
             )
           : null
       }
-      <Typography variant="h4">EXPENSES</Typography>
-      <DataGridPro
-        columns={statiticsColumns}
-        rows={statiticsRows}   
-      />
     </Paper>
   );
 }

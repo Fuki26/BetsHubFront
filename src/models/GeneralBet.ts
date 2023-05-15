@@ -1,4 +1,4 @@
-import { ChildBet, CounterAgent, Currency, Market, Tournament } from "../database-models";
+import { ChildBet, Counteragent, Currency, Market, Tournament } from "../database-models";
 
 export type GeneralBet = {
     id: number;

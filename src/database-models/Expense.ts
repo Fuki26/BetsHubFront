@@ -1,9 +1,9 @@
-import { CounterAgent } from ".";
+import { Counteragent } from ".";
 
 export type Expense = {
     id: number;
-    counteragentId: number | null;
-    counteragent: CounterAgent | null;
+    counteragentId?: number;
+    counteragent?: Counteragent;
     description: string;
     dateFrom: Date;
     dateTo: Date;

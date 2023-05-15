@@ -1,20 +1,20 @@
 import { Role } from ".";
 
 export type User = {
-    userName: string;
-    normalizedUserName: string;
-    normalizedEmail: string;
+    userName?: string;
+    normalizedUserName?: string;
+    normalizedEmail?: string;
     emailConfirmed: boolean;
-    passwordHash: string;
-    securityStamp: string;
-    concurrencyStamp: string;
-    phoneNumber: string;
+    passwordHash?: string;
+    securityStamp?: string;
+    concurrencyStamp?: string;
+    phoneNumber?: string;
     phoneNumberConfirmed: boolean;
     twoFactorEnabled: boolean;
-    lockoutEnd: Date;
+    lockoutEnd?: string;
     lockoutEnabled: boolean;
     accessFailedCount: number;
-    id: string;
+    id?: string;
     password: string;
     address: string;
     device: string;
@@ -52,9 +52,9 @@ export type User = {
         totalMinutes: number;
         totalSeconds: number;
     };
-    dateChanged: Date;
-    passwordChange: Date;
-    email: string;
+    dateChanged: string;
+    passwordChange: string;
+    email?: string;
     roleId: number;
     role: Role;
 }

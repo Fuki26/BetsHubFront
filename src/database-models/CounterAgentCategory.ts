@@ -1,4 +1,4 @@
-export type CounterAgentCategory = {
+export type CounteragentCategory = {
     id: number;
     name: string;
 }

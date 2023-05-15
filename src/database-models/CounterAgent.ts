@@ -1,11 +1,11 @@
 import { User } from ".";
-import { CounterAgentCategory } from "./CounterAgentCategory";
+import { CounteragentCategory } from "./CounteragentCategory";
 
-export type CounterAgent = {
+export type Counteragent = {
     id: number;
     name: string;
     counteragentCategoryId: number;
-    counteragentCategory: CounterAgentCategory;     
+    counteragentCategory: CounteragentCategory;     
     usedMinRate: number;
     usedMaxRate: number;
     maxRate: number;

@@ -1,7 +1,7 @@
-import CounterAgents from './Counteragents';
+import Counteragents from './Counteragents';
 import * as counterAgentsAPI from './counteragentsAPI';
 
 export {
-    CounterAgents,
+    Counteragents,
     counterAgentsAPI,
 };

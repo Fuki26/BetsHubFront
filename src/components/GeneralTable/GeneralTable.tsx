@@ -24,7 +24,6 @@ import {
   GridRowSelectionModel,
 } from '@mui/x-data-grid-pro';
 import { Dialog, DialogActions, DialogTitle } from '@mui/material';
-import { GeneralBet } from '../../models';
 
 function takeUniqueId() {
   const randomNumber = Math.random() * 1000000;
