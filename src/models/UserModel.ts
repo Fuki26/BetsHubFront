@@ -8,6 +8,6 @@ export type UserModel = {
     address: string;
     device: string;
 
-    actionTypeApplied: ActionType;
+    actionTypeApplied?: ActionType;
     isSavedInDatabase: boolean;
 }

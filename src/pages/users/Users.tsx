@@ -33,6 +33,9 @@ function EditToolbar(props: EditToolbarProps) {
         role: 0,
         address: '',
         device: '',
+
+        actionTypeApplied: undefined,
+        isSavedInDatabase: false,
       }
     ]);
     setRowModesModel((oldModel) => ({
@@ -44,7 +47,7 @@ function EditToolbar(props: EditToolbarProps) {
   return (
     <GridToolbarContainer>
       <Button color="primary" variant="contained" startIcon={<AddIcon />} onClick={handleClick}>
-        Add record
+        Add user
       </Button>
     </GridToolbarContainer>
   );
@@ -87,8 +90,8 @@ export default function Users() {
           return {
             ...row, 
             actionTypeApplied: row.isSavedInDatabase 
-              ? ActionType.SAVED
-              : ActionType.EDITED,
+              ? ActionType.EDITED
+              : ActionType.SAVED,
           };
         } else {
           return row;
@@ -144,9 +147,7 @@ export default function Users() {
     const currentRow = rows?.find((row) => row.id === newRow.id);
     toast(currentRow?.actionTypeApplied === ActionType.CANCELED 
         ? 'Canceled' 
-        : currentRow?.actionTypeApplied === ActionType.SAVED
-          ? 'Saved'
-          : 'Edited', 
+        : `Saved user with id ${currentRow!.id}`, 
       {
         position: 'top-center',
       });
@@ -155,6 +156,11 @@ export default function Users() {
         if(row.id === newRow.id) {
           return {
             ...row, 
+            userName: newRow.userName,
+            password: newRow.password,
+            role: newRow.role,
+
+            actionTypeApplied: undefined,
             isSavedInDatabase: true,
           };
         } else {

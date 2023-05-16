@@ -11,6 +11,6 @@ export type CounteragentModel = {
     dateChanged: Date;
     user: string;
 
-    actionTypeApplied: ActionType;
+    actionTypeApplied?: ActionType;
     isSavedInDatabase: boolean;
 }

@@ -79,7 +79,7 @@ export default function PersistentDrawerLeft() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            {window.location.pathname}
+            {window.location.pathname.substring(1)}
           </Typography>
         </Toolbar>
       </AppBar>

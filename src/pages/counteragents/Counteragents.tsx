@@ -1,6 +1,8 @@
 import { useEffect, } from 'react';
 import * as React from 'react';
-import { DataGridPro, GridActionsCellItem, GridColDef, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp, GridToolbarContainer } from "@mui/x-data-grid-pro";
+import { DataGridPro, GridActionsCellItem, GridColDef,
+  GridRowId, GridRowModel, GridRowModes, GridRowModesModel, 
+  GridRowsProp, GridToolbarContainer } from "@mui/x-data-grid-pro";
 import axios from "axios";
 import { Button, Paper } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -36,6 +38,9 @@ function EditToolbar(props: EditToolbarProps) {
         dateCreated: new Date(),
         dataChanged: new Date(),
         user: '',
+
+        actionTypeApplied: undefined,
+        isSavedInDatabase: false,
       }
     ]);
     setRowModesModel((oldModel) => ({
@@ -47,7 +52,7 @@ function EditToolbar(props: EditToolbarProps) {
   return (
     <GridToolbarContainer>
       <Button color="primary" variant="contained" startIcon={<AddIcon />} onClick={handleClick}>
-        Add record
+        Add counteragent
       </Button>
     </GridToolbarContainer>
   );
@@ -97,8 +102,8 @@ export default function Counteragents() {
           return {
             ...row, 
             actionTypeApplied: row.isSavedInDatabase 
-              ? ActionType.SAVED
-              : ActionType.EDITED,
+              ? ActionType.EDITED
+              : ActionType.SAVED,
           };
         } else {
           return row;
@@ -154,9 +159,7 @@ export default function Counteragents() {
     const currentRow = rows?.find((row) => row.id === newRow.id);
     toast(currentRow?.actionTypeApplied === ActionType.CANCELED 
         ? 'Canceled' 
-        : currentRow?.actionTypeApplied === ActionType.SAVED
-          ? 'Saved'
-          : 'Edited', 
+        : `Saved counteragent with id ${currentRow!.id}`,
       {
         position: 'top-center',
       });
@@ -165,6 +168,10 @@ export default function Counteragents() {
         if(row.id === newRow.id) {
           return {
             ...row, 
+            name: newRow.name,
+            maxRate: newRow.maxRate,
+
+            actionTypeApplied: undefined,
             isSavedInDatabase: true,
           };
         } else {
