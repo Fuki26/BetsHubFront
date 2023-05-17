@@ -1,4 +1,4 @@
-export type StatisticItem = {
+export type StatisticItemModel = {
     id: number,
     periodType: 'CalendarBased' | '3mTillToday' | '6mTillToday',
     period: string;

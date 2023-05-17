@@ -1,14 +1,14 @@
-import { Counteragent } from "./Counteragent"
+import { ActionType, } from "./enums";
 
-export type Bet = {
+export type BetModel = {
     id: number;
-    dateCreated: string;
-    betStatus: number; //0,1
+    dateCreated: Date;
+    betStatus: string;
     stake?  : number;
     counteragentId?: number;
-    counteragent?: Counteragent;
+    counteragent?: string;
     sport?:	string;
-    liveStatus:	number; //0,1,2,3
+    liveStatus:	string;
     psLimit?: number;
     market?: string;
     tournament?: string;
@@ -17,12 +17,15 @@ export type Bet = {
     amountEUR?: number;
     amountUSD?: number;
     amountGBP?: number;
+    totalAmount?: number;
     odd?: number;
-    dateFinished?: string;
-    dateStaked?: string;
+    dateFinished?: Date;
+    dateStaked?: Date;
     profits?: number;
     notes?: string;
-    totalAmount?: number;
-
+    
     //user??
+
+    actionTypeApplied?: ActionType;
+    isSavedInDatabase: boolean;
 }

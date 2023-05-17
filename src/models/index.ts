@@ -1,11 +1,11 @@
-import { GeneralBet, } from './GeneralBet';
+import { BetModel, } from './BetModel';
 import { CounteragentModel, } from './CounteragentModel';
-import { StatisticItem, } from './StatisticItem';
+import { StatisticItemModel, } from './StatisticItemModel';
 import { UserModel, } from './UserModel';
 
 export type {
-    GeneralBet,
+    BetModel,
     CounteragentModel,
-    StatisticItem,
+    StatisticItemModel,
     UserModel,
 };

@@ -77,8 +77,6 @@ export default function Counteragents() {
             dateCreated: new Date(counteragent.dateCreated),
             dateChanged: new Date(counteragent.dateChanged),
             maxRate: counteragent.maxRate,
-            usedMaxRate: counteragent.usedMaxRate,
-            usedMinRate: counteragent.usedMinRate,
             user: counteragent.user 
               ? counteragent.user.userName
               : '',
@@ -204,20 +202,6 @@ export default function Counteragents() {
       field: 'counteragentCategory',
       headerName: 'Category of counteragent',
       type: 'string',
-      editable: false,
-      width: 150,
-    },
-    {
-      field: 'usedMinRate',
-      headerName: 'used Min rate',
-      type: 'number',
-      editable: false,
-      width: 150,
-    },
-    {
-      field: 'usedMaxRate',
-      headerName: 'used Max rate',
-      type: 'number',
       editable: false,
       width: 150,
     },

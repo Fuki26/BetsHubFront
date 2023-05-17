@@ -1,5 +1,4 @@
 import { Bet, } from './Bet';
-import { ChildBet, } from './ChildBet';
 import { Counteragent, } from './Counteragent';
 import { CounteragentCategory, } from './CounteragentCategory';
 import { Currency, } from './Currency';
@@ -13,7 +12,6 @@ import { User, } from './User';
 
 export type {
     Bet,
-    ChildBet,
     Counteragent,
     CounteragentCategory,
     Currency,

@@ -1,4 +1,4 @@
 export type CounteragentCategory = {
     id: number;
-    name: string;
+    name?: string;
 }

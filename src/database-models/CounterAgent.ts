@@ -6,8 +6,6 @@ export type Counteragent = {
     name: string;
     counteragentCategoryId: number;
     counteragentCategory: CounteragentCategory;     
-    usedMinRate: number;
-    usedMaxRate: number;
     maxRate: number;
     dateCreated: Date;
     dateChanged: Date;
