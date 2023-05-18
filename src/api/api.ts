@@ -57,9 +57,9 @@ const getCounteragents = async (): Promise<Array<Counteragent> | undefined> => {
     }
 }
 
-const getSports = async () => {
+const getSports = async (): Promise<Array<string> | undefined> => {
     try {
-
+        
     } catch(e) {
         console.log(JSON.stringify(e));
     }
@@ -88,3 +88,14 @@ const getCounteragentSelections = async () => {
         console.log(JSON.stringify(e));
     }
 }
+
+export {
+    getPendingBets,
+    getCompletedBets,
+    upsertBet,
+    getCounteragents,
+    getSports,
+    getTournaments,
+    getMarkets,
+    getCounteragentSelections,
+};

@@ -4,10 +4,9 @@ import { toast } from 'react-toastify';
 import { DataGridPro, GridActionsCellItem, GridColDef,
   GridRenderEditCellParams,
   GridRowId, GridRowModel, GridRowModes, GridRowModesModel, 
-  GridRowsProp, GridToolbarContainer } from "@mui/x-data-grid-pro";
+  GridRowsProp, GridToolbarContainer, } from "@mui/x-data-grid-pro";
 import axios from "axios";
-import { Button, Dialog, DialogActions, DialogTitle, Paper } from '@mui/material';
-import { Autocomplete } from '@mui/joy';
+import { Button, Dialog, DialogActions, DialogTitle, Paper, Autocomplete, TextField, Stack, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
@@ -16,6 +15,8 @@ import CancelIcon from '@mui/icons-material/Close';
 import { Bet, Counteragent, Market, Sport, Tournament } from '../../database-models';
 import { BetModel } from '../../models';
 import { ActionType, BetStatus, PreliveLiveStatus } from '../../models/enums';
+import FreeSoloCreateOption from '../Dropdown/FreeSoloCreateOptionDialog';
+import { getCounteragents, getMarkets, getSports, getTournaments } from '../../api';
 
 interface EditToolbarProps {
   setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -80,11 +81,11 @@ export default function Bets(props: { completed: boolean; }) {
   const [ deleteRowId, setDeleteRowId ] = React.useState<string | number | null>(null);
   const [ deleteDialogIsOpened, setOpenDeleteDialog] = React.useState(false);
 
-  const [possibleCounteragents, setCounteragents] = React.useState<Array<Counteragent> | null>(null);
-  const [possibleSports, setSports] = React.useState<Array<Sport> | null>(null);
-  const [possibleTournaments, setTournaments] = React.useState<Array<Tournament> | null>(null);
-  const [possibleMarkets, setMarkets] = React.useState<Array<Market> | null>(null);
-  const [possibleSelections, setSelections] = React.useState<Array<Selection> | null>(null);
+  const [possibleCounteragents, setCounteragents] = React.useState<Array<string> | null>(null);
+  const [possibleSports, setSports] = React.useState<Array<string> | null>(null);
+  const [possibleTournaments, setTournaments] = React.useState<Array<string> | null>(null);
+  const [possibleMarkets, setMarkets] = React.useState<Array<string> | null>(null);
+  const [possibleSelections, setSelections] = React.useState<Array<string> | null>(null);
 
 
   useEffect(() => {
@@ -129,6 +130,19 @@ export default function Bets(props: { completed: boolean; }) {
         });
         
         setRows(allBets);
+
+        const getAllCounteragentsResult = await getCounteragents();
+        const getAllSportsResult = await getSports();
+        const getAllMarketsResult = await getMarkets();
+        const getAllTournamentsResult = await getTournaments();
+        // const getAllSelectionsResult = await getSelection();
+
+        const counterAgentsNames: Array<string> | undefined = getAllCounteragentsResult?.map((counteragent) => {
+          return counteragent.name;
+        });
+
+        setCounteragents(counterAgentsNames ? counterAgentsNames : []);
+        setSports(getAllSportsResult.data ? getAllSportsResult.data as Array<string> : [])
       } catch (e) {
         console.error(e);
       }
@@ -282,9 +296,6 @@ export default function Bets(props: { completed: boolean; }) {
       type: 'date',
       editable: true,
       width: 150,
-      renderEditCell: (params: GridRenderEditCellParams) => (
-        <Autocomplete options={['Option 1', 'Option 2']} />
-      ),
     },
     {
       field: 'betStatus',
@@ -303,16 +314,52 @@ export default function Bets(props: { completed: boolean; }) {
     {
       field: 'counteragent',
       headerName: 'Counteragent',
-      type: 'string',
+      type: 'singleSelect',
       editable: true,
-      width: 150,
+      width: 300,
+      renderEditCell: (params: GridRenderEditCellParams) => {
+        return (
+          <>
+            <FreeSoloCreateOption 
+              items={[
+                { label: 'Counteragent 1', inputValue: '', },
+                { label: 'Counteragent 2', inputValue: '',},
+                { label: 'Counteragent 3', inputValue: '',},
+                { label: 'Counteragent 4', inputValue: '',},
+                { label: 'Counteragent 5', inputValue: '',},
+                { label: 'Counteragent 6', inputValue: '',},
+                { label: 'Counteragent 7', inputValue: '',},
+              ]} 
+              itemName='counteragent'
+            />
+          </>
+        )
+      },
     },
     {
       field: 'sport',
       headerName: 'Sport',
-      type: 'string',
+      type: 'singleSelect',
       editable: true,
-      width: 150,
+      width: 300,
+      renderEditCell: (params: GridRenderEditCellParams) => {
+        return (
+          <>
+            <FreeSoloCreateOption 
+              items={[
+                { label: 'Sport 1', inputValue: '', },
+                { label: 'Sport 2', inputValue: '',},
+                { label: 'Sport 3', inputValue: '',},
+                { label: 'Sport 4', inputValue: '',},
+                { label: 'Sport 5', inputValue: '',},
+                { label: 'Sport 6', inputValue: '',},
+                { label: 'Sport 7', inputValue: '',},
+              ]} 
+              itemName='sport'
+            />
+          </>
+        )
+      },
     },
     {
       field: 'liveStatus',
@@ -331,23 +378,77 @@ export default function Bets(props: { completed: boolean; }) {
     {
       field: 'market',
       headerName: 'Market',
-      type: 'string',
+      type: 'singleSelect',
       editable: true,
-      width: 150,
+      width: 300,
+      renderEditCell: (params: GridRenderEditCellParams) => {
+        return (
+          <>
+            <FreeSoloCreateOption 
+              items={[
+                { label: 'Market 1', inputValue: '', },
+                { label: 'Market 2', inputValue: '',},
+                { label: 'Market 3', inputValue: '',},
+                { label: 'Market 4', inputValue: '',},
+                { label: 'Market 5', inputValue: '',},
+                { label: 'Market 6', inputValue: '',},
+                { label: 'Market 7', inputValue: '',},
+              ]} 
+              itemName='market'
+            />
+          </>
+        )
+      },
     },
     {
       field: 'tournament',
       headerName: 'Tournament',
-      type: 'string',
+      type: 'singleSelect',
       editable: true,
-      width: 150,
+      width: 300,
+      renderEditCell: (params: GridRenderEditCellParams) => {
+        return (
+          <>
+            <FreeSoloCreateOption 
+              items={[
+                { label: 'Tournament 1', inputValue: '', },
+                { label: 'Tournament 2', inputValue: '',},
+                { label: 'Tournament 3', inputValue: '',},
+                { label: 'Tournament 4', inputValue: '',},
+                { label: 'Tournament 5', inputValue: '',},
+                { label: 'Tournament 6', inputValue: '',},
+                { label: 'Tournament 7', inputValue: '',},
+              ]} 
+              itemName='tournament'
+            />
+          </>
+        )
+      },
     },
     {
       field: 'selection',
       headerName: 'Selection',
-      type: 'string',
+      type: 'singleSelect',
       editable: true,
-      width: 150,
+      width: 300,
+      renderEditCell: (params: GridRenderEditCellParams) => {
+        return (
+          <>
+            <FreeSoloCreateOption 
+              items={[
+                { label: 'Selection 1', inputValue: '', },
+                { label: 'Selection 2', inputValue: '',},
+                { label: 'Selection 3', inputValue: '',},
+                { label: 'Selection 4', inputValue: '',},
+                { label: 'Selection 5', inputValue: '',},
+                { label: 'Selection 6', inputValue: '',},
+                { label: 'Selection 7', inputValue: '',},
+              ]} 
+              itemName='selection'
+            />
+          </>
+        )
+      },
     },
     {
       field: 'amountBGN',
