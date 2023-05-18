@@ -7,6 +7,7 @@ import { DataGridPro, GridActionsCellItem, GridColDef,
   GridRowsProp, GridToolbarContainer } from "@mui/x-data-grid-pro";
 import axios from "axios";
 import { Button, Dialog, DialogActions, DialogTitle, Paper } from '@mui/material';
+import { Autocomplete } from '@mui/joy';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
@@ -282,7 +283,7 @@ export default function Bets(props: { completed: boolean; }) {
       editable: true,
       width: 150,
       renderEditCell: (params: GridRenderEditCellParams) => (
-        <h1>Edit component</h1>
+        <Autocomplete options={['Option 1', 'Option 2']} />
       ),
     },
     {
