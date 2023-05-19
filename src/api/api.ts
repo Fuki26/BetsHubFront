@@ -55,27 +55,30 @@ const getCounteragents = async (): Promise<Array<Counteragent> | undefined> => {
     } catch(e) {
         console.log(JSON.stringify(e));
     }
-}
+};
 
 const getSports = async (): Promise<Array<string> | undefined> => {
     try {
-        
+        const getCountaagentsResult = await axios.get(`${domain}/GetAllSports`);
+        return getCountaagentsResult.data;
     } catch(e) {
         console.log(JSON.stringify(e));
     }
-}
+};
 
 const getTournaments = async () => {
     try {
-
+        const getCountaagentsResult = await axios.get(`${domain}/GetAllTournaments`);
+        return getCountaagentsResult.data;
     } catch(e) {
         console.log(JSON.stringify(e));
     }
-}
+};
 
 const getMarkets = async () => {
     try {
-
+        const getCountaagentsResult = await axios.get(`${domain}/GetAllMarkets`);
+        return getCountaagentsResult.data;
     } catch(e) {
         console.log(JSON.stringify(e));
     }

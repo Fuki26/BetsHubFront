@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { DataGridPro, GridActionsCellItem, GridColDef,
   GridRenderEditCellParams,
   GridRowId, GridRowModel, GridRowModes, GridRowModesModel, 
+  GridRowParams, 
   GridRowsProp, GridToolbarContainer, } from "@mui/x-data-grid-pro";
 import axios from "axios";
 import { Button, Dialog, DialogActions, DialogTitle, Paper, Autocomplete, TextField, Stack, } from '@mui/material';
@@ -74,75 +75,129 @@ function EditToolbar(props: EditToolbarProps) {
   );
 }
 
-export default function Bets(props: { completed: boolean; }) {
-  const { completed, } = props;
-  const [rows, setRows] = React.useState<Array<BetModel> | null>(null);
-  const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
+export default function Bets(props: { completed: boolean; selectedBetFn: (selectedBet: BetModel) => void; }) {
+  const { completed, selectedBetFn, } = props;
+  const [ rows, setRows] = React.useState<Array<BetModel> | null>(null);
+  const [ rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
   const [ deleteRowId, setDeleteRowId ] = React.useState<string | number | null>(null);
   const [ deleteDialogIsOpened, setOpenDeleteDialog] = React.useState(false);
 
-  const [possibleCounteragents, setCounteragents] = React.useState<Array<string> | null>(null);
-  const [possibleSports, setSports] = React.useState<Array<string> | null>(null);
-  const [possibleTournaments, setTournaments] = React.useState<Array<string> | null>(null);
-  const [possibleMarkets, setMarkets] = React.useState<Array<string> | null>(null);
-  const [possibleSelections, setSelections] = React.useState<Array<string> | null>(null);
+  const [ possibleCounteragents, setCounteragents ] = React.useState<Array<string> | null>(null);
+  const [ possibleSports, setSports ] = React.useState<Array<string> | null>(null);
+  const [ possibleTournaments, setTournaments ] = React.useState<Array<string> | null>(null);
+  const [ possibleMarkets, setMarkets ] = React.useState<Array<string> | null>(null);
+  const [ possibleSelections, setSelections ] = React.useState<Array<string> | null>(null);
 
 
   useEffect(() => {
     (async () => {
       try {
-        const getAllBetsResult = await axios.get(`http://213.91.236.205:5000/GetAllBets?StartIndex=0&Count=2&BetStatus=${!completed ? 0 :  1}`);
-        const allBets: Array<BetModel> 
-          = getAllBetsResult.data.map((bet: Bet) => {
-          return {
-            id: bet.id,
-            dateCreated: new Date(bet.dateCreated),
-            betStatus: BetStatus[bet.betStatus],
-            stake: bet.stake,
-            counteragentId: bet.counteragentId,
-            counteragent: bet.counteragent
-              ? bet.counteragent.name
-              : '',
-            sport:	bet.sport,
-            liveStatus:	PreliveLiveStatus[bet.liveStatus], 
-            psLimit: bet.psLimit,
-            market: bet.market,
-            tournament: bet.tournament,
-            selection: bet.selection,
-            amountBGN: bet.amountBGN,
-            amountEUR: bet.amountEUR,
-            amountUSD: bet.amountUSD,
-            amountGBP: bet.amountGBP,
-            totalAmount: bet.totalAmount,
-            odd: bet.odd,
-            dateFinished: bet.dateFinished
-              ? new Date(bet.dateFinished)
-              : null,
-            dateStaked: bet.dateStaked
-              ? new Date(bet.dateStaked)
-              : null,
-            profits: bet.profits,
-            notes: bet.notes,
+        // const getAllBetsResult = await axios.get(`http://213.91.236.205:5000/GetAllBets?StartIndex=0&Count=2&BetStatus=${!completed ? 0 :  1}`);
+        // const allBets: Array<BetModel> 
+        //   = getAllBetsResult.data.map((bet: Bet) => {
+        //   return {
+        //     id: bet.id,
+        //     dateCreated: new Date(bet.dateCreated),
+        //     betStatus: BetStatus[bet.betStatus],
+        //     stake: bet.stake,
+        //     counteragentId: bet.counteragentId,
+        //     counteragent: bet.counteragent
+        //       ? bet.counteragent.name
+        //       : '',
+        //     sport:	bet.sport,
+        //     liveStatus:	PreliveLiveStatus[bet.liveStatus], 
+        //     psLimit: bet.psLimit,
+        //     market: bet.market,
+        //     tournament: bet.tournament,
+        //     selection: bet.selection,
+        //     amountBGN: bet.amountBGN,
+        //     amountEUR: bet.amountEUR,
+        //     amountUSD: bet.amountUSD,
+        //     amountGBP: bet.amountGBP,
+        //     totalAmount: bet.totalAmount,
+        //     odd: bet.odd,
+        //     dateFinished: bet.dateFinished
+        //       ? new Date(bet.dateFinished)
+        //       : null,
+        //     dateStaked: bet.dateStaked
+        //       ? new Date(bet.dateStaked)
+        //       : null,
+        //     profits: bet.profits,
+        //     notes: bet.notes,
         
-            actionTypeApplied: undefined,
+        //     actionTypeApplied: undefined,
+        //     isSavedInDatabase: true,
+        //   } as BetModel;
+        // });
+
+        const allBets: Array<BetModel> = [
+          {
+            id: 1,
+            dateCreated: new Date(),
+            betStatus: 'PENDING',
+            stake: 0,
+            counteragentId: 1,
+            counteragent: 'Counteragent 1',
+            sport:	'sport 1',
+            liveStatus:	'PreLive',
+            psLimit: 0,
+            market: 'market 1',
+            tournament: 'tournament 1',
+            selection: 'selection 1',
+            amountBGN: 1,
+            amountEUR: 0,
+            amountUSD: 0,
+            amountGBP: 0,
+            totalAmount: 1,
+            odd: 2,
+            dateFinished: new Date(),
+            dateStaked: new Date(),
+            profits: 1,
+            notes: '',
             isSavedInDatabase: true,
-          } as BetModel;
-        });
+            actionTypeApplied: undefined,
+          },
+        ];
         
         setRows(allBets);
 
-        const getAllCounteragentsResult = await getCounteragents();
-        const getAllSportsResult = await getSports();
-        const getAllMarketsResult = await getMarkets();
-        const getAllTournamentsResult = await getTournaments();
+        // const getAllCounteragentsResult = await getCounteragents();
+        // const getAllSportsResult = await getSports();
+        // const getAllMarketsResult = await getMarkets();
+        // const getAllTournamentsResult = await getTournaments();
         // const getAllSelectionsResult = await getSelection();
+
+        const getAllCounteragentsResult = [ 
+          { name: 'Counteragent 1', }, 
+          { name: 'Counteragent 2', }, 
+          { name: 'Counteragent 3', }
+        ];
+        const getAllSportsResult = [ 'sport 1', 'sport 2', 'sport 3', ];
+        const getAllMarketsResult = [ 'market 1', 'market 2', 'market 3', ];
+        const getAllTournamentsResult = [ 'tournament 1', 'tournament 2', 'tournament 3', ];
+        const getAllSelectionsResult = [ 'selection 1', 'selection 2', 'selection 3', ];
 
         const counterAgentsNames: Array<string> | undefined = getAllCounteragentsResult?.map((counteragent) => {
           return counteragent.name;
         });
 
         setCounteragents(counterAgentsNames ? counterAgentsNames : []);
-        setSports(getAllSportsResult.data ? getAllSportsResult.data as Array<string> : [])
+
+        if(getAllSportsResult) {
+          setSports(getAllSportsResult);
+        }
+
+        if(getAllMarketsResult) {
+          setMarkets(getAllMarketsResult);
+        }
+
+        if(getAllTournamentsResult) {
+          setTournaments(getAllTournamentsResult);
+        }
+
+        if(getAllSelectionsResult) {
+          setSelections(getAllSelectionsResult);
+        }
       } catch (e) {
         console.error(e);
       }
@@ -321,15 +376,16 @@ export default function Bets(props: { completed: boolean; }) {
         return (
           <>
             <FreeSoloCreateOption 
-              items={[
-                { label: 'Counteragent 1', inputValue: '', },
-                { label: 'Counteragent 2', inputValue: '',},
-                { label: 'Counteragent 3', inputValue: '',},
-                { label: 'Counteragent 4', inputValue: '',},
-                { label: 'Counteragent 5', inputValue: '',},
-                { label: 'Counteragent 6', inputValue: '',},
-                { label: 'Counteragent 7', inputValue: '',},
-              ]} 
+              items={
+                possibleCounteragents && possibleCounteragents.length > 0
+                  ? possibleCounteragents.map((counteragent: string) => {
+                      return {
+                        label: counteragent,
+                        inputValue: '', 
+                      };
+                    })
+                  : []
+              } 
               itemName='counteragent'
             />
           </>
@@ -346,15 +402,16 @@ export default function Bets(props: { completed: boolean; }) {
         return (
           <>
             <FreeSoloCreateOption 
-              items={[
-                { label: 'Sport 1', inputValue: '', },
-                { label: 'Sport 2', inputValue: '',},
-                { label: 'Sport 3', inputValue: '',},
-                { label: 'Sport 4', inputValue: '',},
-                { label: 'Sport 5', inputValue: '',},
-                { label: 'Sport 6', inputValue: '',},
-                { label: 'Sport 7', inputValue: '',},
-              ]} 
+              items={
+                possibleSports && possibleSports.length > 0
+                  ? possibleSports.map((sport: string) => {
+                      return {
+                        label: sport,
+                        inputValue: '', 
+                      };
+                    })
+                  : []
+              }
               itemName='sport'
             />
           </>
@@ -385,15 +442,16 @@ export default function Bets(props: { completed: boolean; }) {
         return (
           <>
             <FreeSoloCreateOption 
-              items={[
-                { label: 'Market 1', inputValue: '', },
-                { label: 'Market 2', inputValue: '',},
-                { label: 'Market 3', inputValue: '',},
-                { label: 'Market 4', inputValue: '',},
-                { label: 'Market 5', inputValue: '',},
-                { label: 'Market 6', inputValue: '',},
-                { label: 'Market 7', inputValue: '',},
-              ]} 
+              items={
+                possibleMarkets && possibleMarkets.length > 0
+                  ? possibleMarkets.map((market: string) => {
+                      return {
+                        label: market,
+                        inputValue: '', 
+                      };
+                    })
+                  : []
+              } 
               itemName='market'
             />
           </>
@@ -410,15 +468,16 @@ export default function Bets(props: { completed: boolean; }) {
         return (
           <>
             <FreeSoloCreateOption 
-              items={[
-                { label: 'Tournament 1', inputValue: '', },
-                { label: 'Tournament 2', inputValue: '',},
-                { label: 'Tournament 3', inputValue: '',},
-                { label: 'Tournament 4', inputValue: '',},
-                { label: 'Tournament 5', inputValue: '',},
-                { label: 'Tournament 6', inputValue: '',},
-                { label: 'Tournament 7', inputValue: '',},
-              ]} 
+              items={
+                possibleTournaments && possibleTournaments.length > 0
+                  ? possibleTournaments.map((tournament: string) => {
+                      return {
+                        label: tournament,
+                        inputValue: '', 
+                      };
+                    })
+                  : []
+              }
               itemName='tournament'
             />
           </>
@@ -578,6 +637,14 @@ export default function Bets(props: { completed: boolean; }) {
                   processRowUpdate={processRowUpdate}
                   slotProps={{
                     toolbar: { setRows, setRowModesModel },
+                  }}
+                  onRowClick={(params: GridRowParams) => {
+                    const row = rows.find((row) => row.id === params.id);
+                    if(row) {
+                      selectedBetFn(row);
+                    } else {
+                      console.log('The row is not in the rows list.');
+                    }
                   }}
                 />
                 <Dialog
