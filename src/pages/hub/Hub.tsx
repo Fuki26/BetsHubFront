@@ -7,8 +7,9 @@ import { BetModel } from '../../models';
 
 
 export default function Hub() {
-  const selectedDateFn = (value: unknown) => {
-    alert(JSON.stringify(value));
+  const selectedDateFn = (value: Date | null) => {
+    const date = (value! as any).$d as Date;
+    alert(`year: ${date.getFullYear()} month: ${date.getMonth()} date: ${date.getDate()}`);
   };
 
   const selectedBetFn = (selectedBet: BetModel) => {

@@ -222,6 +222,7 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
   const handleSaveClick = (id: GridRowId) => () => {
     setRows((previousRowsModel) => {
       return previousRowsModel!.map((row) => {
+        alert(`Saved row = ${JSON.stringify(row)}`);
         if(row.id === id) {
           return {
             ...row, 
@@ -279,14 +280,56 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
     if(!deleteRowId) {
       return;
     }
-
+    alert(`Delete row with id = ${deleteRowId}`);
     setOpenDeleteDialog(false);
 
     setRows((previousRows) => previousRows!.filter((row) => row.id !== deleteRowId));
     setRowModesModel((previousRowModesModel) => {
       return { ...previousRowModesModel, [deleteRowId]: { mode: GridRowModes.View } };
     });
-};
+  };
+
+  const handleCopyBetClick = (id: GridRowId) => () => {
+    const clickedRow = rows?.find((row) => row.id === id);
+    const randomId: number = Math.round(Math.random() * 1000000);
+
+    setRows((oldRows) => {
+      return [
+        ...oldRows!,
+        { 
+          id: randomId,
+          dateCreated: clickedRow?.dateCreated,
+          betStatus: clickedRow?.betStatus,
+          stake: clickedRow?.stake,
+          counteragentId: clickedRow?.counteragentId,
+          counteragent: clickedRow?.counteragent,
+          sport:	clickedRow?.sport,
+          liveStatus:	clickedRow?.liveStatus,
+          psLimit: clickedRow?.psLimit,
+          market: clickedRow?.market,
+          tournament: clickedRow?.tournament,
+          selection: clickedRow?.selection,
+          amountBGN: undefined,
+          amountEUR: undefined,
+          amountUSD: undefined,
+          amountGBP: undefined,
+          totalAmount: undefined,
+          odd: undefined,
+          dateFinished: clickedRow?.dateFinished,
+          dateStaked: clickedRow?.dateStaked,
+          profits: clickedRow?.profits,
+          notes: clickedRow?.notes,
+      
+          actionTypeApplied: undefined,
+          isSavedInDatabase: false,
+        } as BetModel
+      ]
+    });
+    setRowModesModel((oldModel) => ({
+      ...oldModel,
+      [randomId]: { mode: GridRowModes.Edit, },
+    }));
+  };
 
   //#endregion Actions handlers
 
@@ -614,6 +657,12 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
                 icon={<DeleteIcon />}
                 label="Delete"
                 onClick={handleClickOpenOnDeleteDialog(params.id)}
+                color="inherit"
+              />,
+              <GridActionsCellItem
+                icon={<AddIcon />}
+                label="Copy bet"
+                onClick={handleCopyBetClick(params.id)}
                 color="inherit"
               />,
             ]
