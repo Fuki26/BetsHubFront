@@ -129,6 +129,11 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
         //     isSavedInDatabase: true,
         //   } as BetModel;
         // });
+        // const getAllCounteragentsResult = await getCounteragents();
+        // const getAllSportsResult = await getSports();
+        // const getAllMarketsResult = await getMarkets();
+        // const getAllTournamentsResult = await getTournaments();
+        // const getAllSelectionsResult = await getSelection();
 
         const allBets: Array<BetModel> = [
           {
@@ -158,15 +163,6 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
             actionTypeApplied: undefined,
           },
         ];
-        
-        setRows(allBets);
-
-        // const getAllCounteragentsResult = await getCounteragents();
-        // const getAllSportsResult = await getSports();
-        // const getAllMarketsResult = await getMarkets();
-        // const getAllTournamentsResult = await getTournaments();
-        // const getAllSelectionsResult = await getSelection();
-
         const getAllCounteragentsResult = [ 
           { name: 'Counteragent 1', }, 
           { name: 'Counteragent 2', }, 
@@ -181,6 +177,7 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
           return counteragent.name;
         });
 
+        setRows(allBets);
         setCounteragents(counterAgentsNames ? counterAgentsNames : []);
 
         if(getAllSportsResult) {
