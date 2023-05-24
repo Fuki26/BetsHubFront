@@ -6,7 +6,7 @@ const domain = 'http://213.91.236.205:5000';
 
 const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
     try {
-        const getBetsResult = await axios.get(`${domain}/GetAllBets?StartIndex=0&Count=2&BetStatus=0`);
+        const getBetsResult = await axios.get(`${domain}/GetAllBets?StartIndex=0&Count=1&BetStatus=0`);
         return getBetsResult.data;
     } catch(e) {
         console.log(JSON.stringify(e));
@@ -84,9 +84,25 @@ const getMarkets = async () => {
     }
 }
 
-const getCounteragentSelections = async () => {
+const getSelections = async () => {
     try {
+        const getCountaagentsResult = await axios.get(`${domain}/GetAllSelections`);
+        return getCountaagentsResult.data;
+    } catch(e) {
+        console.log(JSON.stringify(e));
+    }
+}
 
+const deleteBet = async (props: { id: number; }) => {
+    try {
+        const { id, } = props;
+        const deleteBetResult = await axios.delete(`${domain}/DeleteBet`, {
+            data: {
+                id,
+            },
+        });
+
+        return deleteBetResult.data;
     } catch(e) {
         console.log(JSON.stringify(e));
     }
@@ -100,5 +116,6 @@ export {
     getSports,
     getTournaments,
     getMarkets,
-    getCounteragentSelections,
+    getSelections,
+    deleteBet,
 };

@@ -1,14 +1,15 @@
-import { getCompletedBets, getCounteragentSelections, getCounteragents, getMarkets, 
-    getPendingBets, getSports, getTournaments, upsertBet, } from './api';
+import { getCompletedBets, getSelections, getCounteragents, getMarkets, 
+    getPendingBets, getSports, getTournaments, upsertBet, deleteBet, } from './api';
 
 
 export {
-    getCompletedBets,
-    getCounteragentSelections,
-    getCounteragents,
-    getMarkets,
     getPendingBets,
+    getCompletedBets,
+    upsertBet,
+    getCounteragents,
     getSports,
     getTournaments,
-    upsertBet,
+    getMarkets,
+    getSelections,
+    deleteBet,
 };

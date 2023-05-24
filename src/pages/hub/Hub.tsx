@@ -23,8 +23,8 @@ export default function Hub() {
       </LocalizationProvider>
       <Typography variant="h4">PENDING</Typography>
       <Bets completed={false} selectedBetFn={selectedBetFn} />
-      <Typography variant="h4">COMPLETED</Typography>
-      <Bets completed={true} selectedBetFn={selectedBetFn} />
+      {/* <Typography variant="h4">COMPLETED</Typography>
+      <Bets completed={true} selectedBetFn={selectedBetFn} /> */}
     </Paper>
   );
 }

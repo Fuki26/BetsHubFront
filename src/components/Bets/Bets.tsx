@@ -1,23 +1,34 @@
 import { useEffect, } from 'react';
 import * as React from 'react';
 import { toast } from 'react-toastify';
-import { DataGridPro, GridActionsCellItem, GridColDef,
-  GridRenderEditCellParams,
-  GridRowId, GridRowModel, GridRowModes, GridRowModesModel, 
-  GridRowParams, 
-  GridRowsProp, GridToolbarContainer, } from "@mui/x-data-grid-pro";
-import axios from "axios";
+import { DataGridPro, GridActionsCellItem, GridCellParams, GridColDef,
+  GridRenderCellParams,
+  GridRenderEditCellParams, GridRowId, GridRowModel, GridRowModes, 
+  GridRowModesModel, GridRowParams, GridRowsProp, GridToolbarContainer, GridTreeNode, GridValidRowModel, GridValueSetterParams, } from "@mui/x-data-grid-pro";
 import { Button, Dialog, DialogActions, DialogTitle, Paper, Autocomplete, TextField, Stack, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
-import { Bet, Counteragent, Market, Sport, Tournament } from '../../database-models';
+import { Bet, } from '../../database-models';
 import { BetModel } from '../../models';
 import { ActionType, BetStatus, PreliveLiveStatus } from '../../models/enums';
 import FreeSoloCreateOption from '../Dropdown/FreeSoloCreateOptionDialog';
-import { getCounteragents, getMarkets, getSports, getTournaments } from '../../api';
+import { getPendingBets, getCounteragents, getSports, getTournaments,
+  getMarkets, getSelections, deleteBet, } from '../../api';
+
+export enum ItemTypes {
+  COUNTERAGENT = 'COUNTERAGENT',
+  SPORT = 'SPORT',
+  MARKET = 'MARKET',
+  TOURNAMENT = 'TOURNAMENT',
+  SELECTION = 'SELECTION',
+};
+
+interface ISelectionsResult {
+    [key: string]: Array<string>;
+}
 
 interface EditToolbarProps {
   setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -76,109 +87,72 @@ function EditToolbar(props: EditToolbarProps) {
 }
 
 export default function Bets(props: { completed: boolean; selectedBetFn: (selectedBet: BetModel) => void; }) {
-  const { completed, selectedBetFn, } = props;
   const [ rows, setRows] = React.useState<Array<BetModel> | null>(null);
   const [ rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
-  const [ deleteRowId, setDeleteRowId ] = React.useState<string | number | null>(null);
+  const [ deleteRowId, setDeleteRowId ] = React.useState<number | null>(null);
   const [ deleteDialogIsOpened, setOpenDeleteDialog] = React.useState(false);
 
-  const [ possibleCounteragents, setCounteragents ] = React.useState<Array<string> | null>(null);
+  const [ possibleCounteragents, setCounteragents ] = React.useState<Array<{ id: number; name: string; }> | null>(null);
   const [ possibleSports, setSports ] = React.useState<Array<string> | null>(null);
   const [ possibleTournaments, setTournaments ] = React.useState<Array<string> | null>(null);
   const [ possibleMarkets, setMarkets ] = React.useState<Array<string> | null>(null);
-  const [ possibleSelections, setSelections ] = React.useState<Array<string> | null>(null);
-
+  const [ possibleSelections, setSelections ] = React.useState<ISelectionsResult | null>(null);
 
   useEffect(() => {
     (async () => {
       try {
-        // const getAllBetsResult = await axios.get(`http://213.91.236.205:5000/GetAllBets?StartIndex=0&Count=2&BetStatus=${!completed ? 0 :  1}`);
-        // const allBets: Array<BetModel> 
-        //   = getAllBetsResult.data.map((bet: Bet) => {
-        //   return {
-        //     id: bet.id,
-        //     dateCreated: new Date(bet.dateCreated),
-        //     betStatus: BetStatus[bet.betStatus],
-        //     stake: bet.stake,
-        //     counteragentId: bet.counteragentId,
-        //     counteragent: bet.counteragent
-        //       ? bet.counteragent.name
-        //       : '',
-        //     sport:	bet.sport,
-        //     liveStatus:	PreliveLiveStatus[bet.liveStatus], 
-        //     psLimit: bet.psLimit,
-        //     market: bet.market,
-        //     tournament: bet.tournament,
-        //     selection: bet.selection,
-        //     amountBGN: bet.amountBGN,
-        //     amountEUR: bet.amountEUR,
-        //     amountUSD: bet.amountUSD,
-        //     amountGBP: bet.amountGBP,
-        //     totalAmount: bet.totalAmount,
-        //     odd: bet.odd,
-        //     dateFinished: bet.dateFinished
-        //       ? new Date(bet.dateFinished)
-        //       : null,
-        //     dateStaked: bet.dateStaked
-        //       ? new Date(bet.dateStaked)
-        //       : null,
-        //     profits: bet.profits,
-        //     notes: bet.notes,
+        const getAllBetsResult = await getPendingBets();
+        const allBets: Array<BetModel> = getAllBetsResult!.map((bet: Bet) => {
+          return {
+            id: bet.id,
+            dateCreated: new Date(bet.dateCreated),
+            betStatus: BetStatus[bet.betStatus],
+            stake: bet.stake,
+            counteragentId: bet.counteragentId,
+            counteragent: bet.counteragent
+              ? bet.counteragent.name
+              : '',
+            sport:	bet.sport,
+            liveStatus:	PreliveLiveStatus[bet.liveStatus], 
+            psLimit: bet.psLimit,
+            market: bet.market,
+            tournament: bet.tournament,
+            selection: bet.selection,
+            amountBGN: bet.amountBGN,
+            amountEUR: bet.amountEUR,
+            amountUSD: bet.amountUSD,
+            amountGBP: bet.amountGBP,
+            totalAmount: bet.totalAmount,
+            odd: bet.odd,
+            dateFinished: bet.dateFinished
+              ? new Date(bet.dateFinished)
+              : null,
+            dateStaked: bet.dateStaked
+              ? new Date(bet.dateStaked)
+              : null,
+            profits: bet.profits,
+            notes: bet.notes,
         
-        //     actionTypeApplied: undefined,
-        //     isSavedInDatabase: true,
-        //   } as BetModel;
-        // });
-        // const getAllCounteragentsResult = await getCounteragents();
-        // const getAllSportsResult = await getSports();
-        // const getAllMarketsResult = await getMarkets();
-        // const getAllTournamentsResult = await getTournaments();
-        // const getAllSelectionsResult = await getSelection();
-
-        const allBets: Array<BetModel> = [
-          {
-            id: 1,
-            dateCreated: new Date(),
-            betStatus: 'PENDING',
-            stake: 0,
-            counteragentId: 1,
-            counteragent: 'Counteragent 1',
-            sport:	'sport 1',
-            liveStatus:	'PreLive',
-            psLimit: 0,
-            market: 'market 1',
-            tournament: 'tournament 1',
-            selection: 'selection 1',
-            amountBGN: 1,
-            amountEUR: 0,
-            amountUSD: 0,
-            amountGBP: 0,
-            totalAmount: 1,
-            odd: 2,
-            dateFinished: new Date(),
-            dateStaked: new Date(),
-            profits: 1,
-            notes: '',
-            isSavedInDatabase: true,
             actionTypeApplied: undefined,
-          },
-        ];
-        const getAllCounteragentsResult = [ 
-          { name: 'Counteragent 1', }, 
-          { name: 'Counteragent 2', }, 
-          { name: 'Counteragent 3', }
-        ];
-        const getAllSportsResult = [ 'sport 1', 'sport 2', 'sport 3', ];
-        const getAllMarketsResult = [ 'market 1', 'market 2', 'market 3', ];
-        const getAllTournamentsResult = [ 'tournament 1', 'tournament 2', 'tournament 3', ];
-        const getAllSelectionsResult = [ 'selection 1', 'selection 2', 'selection 3', ];
+            isSavedInDatabase: true,
+          } as BetModel;
+        });
+        const getAllCounteragentsResult = await getCounteragents();
+        const getAllSportsResult = await getSports();
+        const getAllMarketsResult = await getMarkets();
+        const getAllTournamentsResult = await getTournaments();
+        const getAllSelectionsResult = await getSelections();
 
-        const counterAgentsNames: Array<string> | undefined = getAllCounteragentsResult?.map((counteragent) => {
-          return counteragent.name;
+        const counterAgents: Array<{ id: number; name: string; }> | undefined = getAllCounteragentsResult?.map((counteragent) => {
+          return {
+            id: counteragent.id,
+            name: counteragent.name,
+          };
         });
 
         setRows(allBets);
-        setCounteragents(counterAgentsNames ? counterAgentsNames : []);
+
+        setCounteragents(counterAgents ? counterAgents : []);
 
         if(getAllSportsResult) {
           setSports(getAllSportsResult);
@@ -204,11 +178,12 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
   //#region Delete dialog
 
   const handleClickOpenOnDeleteDialog = (id: GridRowId) => () => {
-    setDeleteRowId(id);
+    setDeleteRowId(parseInt(id.toString(), 10));
     setOpenDeleteDialog(true);
   };
   
   const handleCloseOnDeleteDialog = () => {
+    setDeleteRowId(null);
     setOpenDeleteDialog(false);
   };
 
@@ -219,7 +194,6 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
   const handleSaveClick = (id: GridRowId) => () => {
     setRows((previousRowsModel) => {
       return previousRowsModel!.map((row) => {
-        alert(`Saved row = ${JSON.stringify(row)}`);
         if(row.id === id) {
           return {
             ...row, 
@@ -273,17 +247,19 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
     })
   };
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = async () => {
     if(!deleteRowId) {
       return;
     }
-    alert(`Delete row with id = ${deleteRowId}`);
-    setOpenDeleteDialog(false);
 
-    setRows((previousRows) => previousRows!.filter((row) => row.id !== deleteRowId));
-    setRowModesModel((previousRowModesModel) => {
-      return { ...previousRowModesModel, [deleteRowId]: { mode: GridRowModes.View } };
-    });
+    // await deleteBet({ id: deleteRowId, });
+      setDeleteRowId(null);
+      setOpenDeleteDialog(false);
+
+      setRows((previousRows) => previousRows!.filter((row) => row.id !== deleteRowId));
+      setRowModesModel((previousRowModesModel) => {
+        return { ...previousRowModesModel, [deleteRowId]: { mode: GridRowModes.View } };
+      });
   };
 
   const handleCopyBetClick = (id: GridRowId) => () => {
@@ -328,49 +304,77 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
     }));
   };
 
+  const onRowClick = (params: GridRowParams) => {
+    const row = rows!.find((row) => row.id === params.id);
+    if(row) {
+      setRowModesModel((previousRowModesModel) => {
+        return { ...previousRowModesModel, [row.id]: { mode: GridRowModes.Edit } }
+      });
+    } else {
+
+    }
+  }
+
   //#endregion Actions handlers
 
   //#region Rows update handler
 
   const processRowUpdate = (newRow: GridRowModel) => {
     const currentRow = rows?.find((row) => row.id === newRow.id);
+    
     toast(currentRow?.actionTypeApplied === ActionType.CANCELED 
         ? 'Canceled' 
         : `Saved bet with id ${currentRow!.id}`,
       {
         position: 'top-center',
       });
-    setRows((previousRowsModel) => {
-      return previousRowsModel!.map((row) => {
-        if(row.id === newRow.id) {
-          return {
-            ...row, 
-            dateCreated: newRow.dateCreated,
-            betStatus: newRow.betStatus,
-            stake: newRow.stake,
-            counteragent: newRow.counteragent,
-            sport:	newRow.sport,
-            liveStatus:	newRow.liveStatus,
-            psLimit: newRow.psLimit,
-            market: newRow.market,
-            tournament: newRow.tournament,
-            selection: newRow.selection,
-            amountBGN: newRow.amountBGN,
-            amountEUR: newRow.amountEUR,
-            amountUSD: newRow.amountUSD,
-            amountGBP: newRow.amountGBP,
-            totalAmount: newRow.totalAmount,
-            odd: newRow.odd,
-            dateFinished: newRow.dateFinished,
-            dateStaked: newRow.dateStaked,
-            profits: newRow.profits,
-            notes: newRow.notes,
-          };
-        } else {
-          return row;
-        }
-      });
-    });
+    if(currentRow?.actionTypeApplied === ActionType.SAVED
+        || currentRow?.actionTypeApplied === ActionType.EDITED) {
+          setRows((previousRowsModel) => {
+            return previousRowsModel!.map((row) => {
+              if(row.id === newRow.id) {
+                const counteragent = possibleCounteragents?.find((c) => {
+                  return c.id === newRow.counteragentId;
+                });
+
+                const newRowData = {
+                  ...row, 
+                  dateCreated: newRow.dateCreated,
+                  betStatus: newRow.betStatus,
+                  stake: newRow.stake,
+                  counteragentId: newRow.counteragentId,
+                  counteragent: counteragent?.name,
+                  sport:	currentRow.sport,
+                  liveStatus:	newRow.liveStatus,
+                  psLimit: newRow.psLimit,
+                  market: currentRow.market,
+                  tournament: currentRow.tournament,
+                  selection: newRow.selection,
+                  amountBGN: newRow.amountBGN,
+                  amountEUR: newRow.amountEUR,
+                  amountUSD: newRow.amountUSD,
+                  amountGBP: newRow.amountGBP,
+                  totalAmount: newRow.totalAmount,
+                  odd: newRow.odd,
+                  dateFinished: newRow.dateFinished,
+                  dateStaked: newRow.dateStaked,
+                  profits: newRow.profits,
+                  notes: newRow.notes,
+                };
+
+                alert(`
+                  newRow: ${JSON.stringify(newRow)} 
+                  currentRow = ${JSON.stringify(currentRow)}`);
+                return newRowData;
+              } else {
+                return row;
+              }
+            });
+          });
+    } else {
+
+    }
+    
     setRowModesModel((previousRowModesModel) => {
       return { ...previousRowModesModel, [newRow.id]: { mode: GridRowModes.View } }
     });
@@ -380,6 +384,196 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
 
   //#endregion Rows update handler
   
+  //#region Dropdown handlers
+
+  const onClick = (props: { betId: number; }) => {
+    const { betId, } = props;
+
+    setRowModesModel((previousRowModesModel) => {
+      return { ...previousRowModesModel, [betId]: { mode: GridRowModes.Edit } }
+    });
+  }
+
+  const onChangeCb = (props: { betId?: number; itemType: ItemTypes; 
+    id?: string; label: string; }): void => {
+    const { betId, itemType, id, label, } = props;
+    setRows((previousRowsModel) => {
+      return previousRowsModel!.map((row) => {
+        if(row.id === betId) {
+          switch(itemType) {
+            case ItemTypes.COUNTERAGENT: {
+              const counteragent = possibleCounteragents?.find((c: { id: number; name: string; }) => {
+                return parseInt(id!) === c.id;
+              });
+
+              return {
+                ...row, 
+                counteragentId: counteragent?.id,
+                counteragent: counteragent?.name,
+              };
+            };
+            case ItemTypes.SPORT: {
+              return {
+                ...row, 
+                sport: label,
+              };
+            };
+            case ItemTypes.MARKET: {
+              return {
+                ...row, 
+                market: label,
+              };
+            };
+            case ItemTypes.TOURNAMENT: {
+              return {
+                ...row, 
+                tournament: label,
+              };
+            };
+            case ItemTypes.SELECTION: {
+              return {
+                ...row, 
+                selection: label,
+              };
+            };
+          }
+        }
+          
+        return row;
+      });
+    });
+  }
+
+  const onAddNewValueCb = (props: { betId?: number; itemType: ItemTypes; inputValue: string; }): void => {
+    const { betId, itemType, inputValue, } = props;
+  }
+
+  const onCounteragentRender = (params: GridValidRowModel) => {
+    const row = rows?.find((r) => r.id === params.id);
+    if(!row || !row.counteragentId || !row.counteragent) {
+      return;
+    }
+
+    return (
+      <>
+        <FreeSoloCreateOption 
+          betId={params.id}
+          items={
+            possibleCounteragents && possibleCounteragents.length > 0
+              ? possibleCounteragents.map((counteragent: { id: number; name: string; }) => {
+                  return {
+                    id: counteragent.id.toString(),
+                    label: counteragent.name,
+                    inputValue: '', 
+                  };
+                })
+              : []
+          }
+          defaultValue={{ id: row.counteragentId.toString(), label: row.counteragent, inputValue: ''}}
+          itemType={ItemTypes.COUNTERAGENT}
+          onChangeCb={onChangeCb}
+          onAddNewValueCb={onAddNewValueCb}
+          onClick={onClick}
+        />
+      </>
+    );
+  }
+
+  const onSportRender = (params: GridValidRowModel) => {
+    const row = rows?.find((r) => r.id === params.id);
+    if(!row || !row.sport) {
+      return;
+    }
+
+    return (
+      <>
+        <FreeSoloCreateOption 
+          betId={params.id}
+          items={
+            possibleSports && possibleSports.length > 0
+              ? possibleSports.map((sport: string) => {
+                  return {
+                    id: sport,
+                    label: sport,
+                    inputValue: '', 
+                  };
+                })
+              : []
+          }
+          defaultValue={{ id: row.sport, label: row.sport, inputValue: ''}}
+          itemType={ItemTypes.SPORT}
+          onChangeCb={onChangeCb}
+          onAddNewValueCb={onAddNewValueCb}
+          onClick={onClick}
+        />
+      </>
+    );
+  }
+
+  const onMarketRender = (params: GridValidRowModel) => {
+    const row = rows?.find((r) => r.id === params.id);
+    if(!row || !row.market) {
+      return;
+    }
+
+    return (
+      <>
+        <FreeSoloCreateOption 
+          betId={params.id}
+          items={
+            possibleMarkets && possibleMarkets.length > 0
+              ? possibleMarkets.map((market: string) => {
+                  return {
+                    id: market,
+                    label: market,
+                    inputValue: '', 
+                  };
+                })
+              : []
+          }
+          defaultValue={{ id: row.market, label: row.market, inputValue: ''}}
+          itemType={ItemTypes.MARKET}
+          onChangeCb={onChangeCb}
+          onAddNewValueCb={onAddNewValueCb}
+          onClick={onClick}
+        />
+      </>
+    );
+  }
+
+  const onTournamentRender = (params: GridValidRowModel) => {
+    const row = rows?.find((r) => r.id === params.id);
+    if(!row || !row.tournament) {
+      return;
+    }
+
+    return (
+      <>
+        <FreeSoloCreateOption 
+          betId={params.id}
+          items={
+            possibleTournaments && possibleTournaments.length > 0
+              ? possibleTournaments.map((tournament: string) => {
+                  return {
+                    id: tournament,
+                    label: tournament,
+                    inputValue: '', 
+                  };
+                })
+              : []
+          }
+          defaultValue={{ id: row.tournament, label: row.tournament, inputValue: ''}}
+          itemType={ItemTypes.TOURNAMENT}
+          onChangeCb={onChangeCb}
+          onAddNewValueCb={onAddNewValueCb}
+          onClick={onClick}
+        />
+      </>
+    );
+  }
+
+  //#endreigon Dropdown handlers
+
   const columns: Array<GridColDef> = [
     {
       field: 'id',
@@ -412,24 +606,15 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
       type: 'singleSelect',
       editable: true,
       width: 300,
-      renderEditCell: (params: GridRenderEditCellParams) => {
-        return (
-          <>
-            <FreeSoloCreateOption 
-              items={
-                possibleCounteragents && possibleCounteragents.length > 0
-                  ? possibleCounteragents.map((counteragent: string) => {
-                      return {
-                        label: counteragent,
-                        inputValue: '', 
-                      };
-                    })
-                  : []
-              } 
-              itemName='counteragent'
-            />
-          </>
-        )
+      renderCell: onCounteragentRender,
+      renderEditCell: onCounteragentRender,
+      valueSetter: (params: any) => {
+        console.log(`Counteragent valueSetter: ${JSON.stringify(params)}`);
+        return params.row.counteragent;
+      },
+      valueGetter: (params: any) => {
+        // console.log(`Counteragent valueGetter: ${JSON.stringify(params)}`);
+        return params.row.counteragent;
       },
     },
     {
@@ -438,65 +623,31 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
       type: 'singleSelect',
       editable: true,
       width: 300,
-      renderEditCell: (params: GridRenderEditCellParams) => {
-        return (
-          <>
-            <FreeSoloCreateOption 
-              items={
-                possibleSports && possibleSports.length > 0
-                  ? possibleSports.map((sport: string) => {
-                      return {
-                        label: sport,
-                        inputValue: '', 
-                      };
-                    })
-                  : []
-              }
-              itemName='sport'
-            />
-          </>
-        )
-      },
+      renderCell: onSportRender,
+      renderEditCell: onSportRender,
     },
-    {
-      field: 'liveStatus',
-      headerName: 'Live status',
-      type: 'string',
-      editable: true,
-      width: 150,
-    },
-    {
-      field: 'psLimit',
-      headerName: 'Ps limit',
-      type: 'number',
-      editable: true,
-      width: 150,
-    },
+    // {
+    //   field: 'liveStatus',
+    //   headerName: 'Live status',
+    //   type: 'string',
+    //   editable: true,
+    //   width: 150,
+    // },
+    // {
+    //   field: 'psLimit',
+    //   headerName: 'Ps limit',
+    //   type: 'number',
+    //   editable: true,
+    //   width: 150,
+    // },
     {
       field: 'market',
       headerName: 'Market',
       type: 'singleSelect',
       editable: true,
       width: 300,
-      renderEditCell: (params: GridRenderEditCellParams) => {
-        return (
-          <>
-            <FreeSoloCreateOption 
-              items={
-                possibleMarkets && possibleMarkets.length > 0
-                  ? possibleMarkets.map((market: string) => {
-                      return {
-                        label: market,
-                        inputValue: '', 
-                      };
-                    })
-                  : []
-              } 
-              itemName='market'
-            />
-          </>
-        )
-      },
+      renderCell: onMarketRender,
+      renderEditCell: onMarketRender,
     },
     {
       field: 'tournament',
@@ -504,121 +655,116 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
       type: 'singleSelect',
       editable: true,
       width: 300,
-      renderEditCell: (params: GridRenderEditCellParams) => {
-        return (
-          <>
-            <FreeSoloCreateOption 
-              items={
-                possibleTournaments && possibleTournaments.length > 0
-                  ? possibleTournaments.map((tournament: string) => {
-                      return {
-                        label: tournament,
-                        inputValue: '', 
-                      };
-                    })
-                  : []
-              }
-              itemName='tournament'
-            />
-          </>
-        )
-      },
+      renderCell: onTournamentRender,
+      renderEditCell: onTournamentRender,
     },
-    {
-      field: 'selection',
-      headerName: 'Selection',
-      type: 'singleSelect',
-      editable: true,
-      width: 300,
-      renderEditCell: (params: GridRenderEditCellParams) => {
-        return (
-          <>
-            <FreeSoloCreateOption 
-              items={[
-                { label: 'Selection 1', inputValue: '', },
-                { label: 'Selection 2', inputValue: '',},
-                { label: 'Selection 3', inputValue: '',},
-                { label: 'Selection 4', inputValue: '',},
-                { label: 'Selection 5', inputValue: '',},
-                { label: 'Selection 6', inputValue: '',},
-                { label: 'Selection 7', inputValue: '',},
-              ]} 
-              itemName='selection'
-            />
-          </>
-        )
-      },
-    },
-    {
-      field: 'amountBGN',
-      headerName: 'BGN',
-      type: 'number',
-      editable: true,
-      width: 150,
-    },
-    {
-      field: 'amountEUR',
-      headerName: 'EUR',
-      type: 'number',
-      editable: true,
-      width: 150,
-    },
-    {
-      field: 'amountUSD',
-      headerName: 'USD',
-      type: 'number',
-      editable: true,
-      width: 150,
-    },
-    {
-      field: 'amountGBP',
-      headerName: 'GBP',
-      type: 'number',
-      editable: true,
-      width: 150,
-    },
-    {
-      field: 'totalAmount',
-      headerName: 'Amount',
-      type: 'number',
-      editable: true,
-      width: 150,
-    },
-    {
-      field: 'odd',
-      headerName: 'Odd',
-      type: 'number',
-      editable: true,
-      width: 150,
-    },
-    {
-      field: 'dateFinished',
-      headerName: 'Date finished',
-      type: 'date',
-      editable: true,
-      width: 150,
-    },
-    {
-      field: 'dateStaked',
-      headerName: 'Date staked',
-      type: 'date',
-      editable: true,
-      width: 150,
-    },
-    {
-      field: 'profits',
-      headerName: 'Profits',
-      type: 'number',
-      editable: true,
-      width: 150,
-    },
-    {
-      field: 'notes',
-      headerName: 'Notes',
-      type: 'string',
-      editable: true,
-      width: 150,
-    },
+    // {
+    //   field: 'selection',
+    //   headerName: 'Selection',
+    //   type: 'singleSelect',
+    //   editable: true,
+    //   width: 300,
+    //   renderEditCell: (params: GridRenderEditCellParams) => {
+    //     const selections = possibleSelections
+    //       ? possibleSelections[params.row.counteragentId]
+    //           ? possibleSelections[params.row.counteragentId]
+    //           : []
+    //       : [];
+
+    //     return (
+    //       <>
+    //         <FreeSoloCreateOption
+    //           betId={params.row.id}
+    //           defaultValue={null}
+    //           items={
+    //             selections && selections.length > 0
+    //               ? selections.map((selection: string) => {
+    //                   return {
+    //                     id: selection,
+    //                     label: selection,
+    //                     inputValue: '', 
+    //                   };
+    //                 })
+    //               : []
+    //           }
+    //           itemType={ItemTypes.SELECTION}
+    //           onChangeCb={onChangeCb}
+    //           onAddNewValueCb={onAddNewValueCb} 
+    //         />
+    //       </>
+    //     )
+    //   },
+    // },
+    // {
+    //   field: 'amountBGN',
+    //   headerName: 'BGN',
+    //   type: 'number',
+    //   editable: true,
+    //   width: 150,
+    // },
+    // {
+    //   field: 'amountEUR',
+    //   headerName: 'EUR',
+    //   type: 'number',
+    //   editable: true,
+    //   width: 150,
+    // },
+    // {
+    //   field: 'amountUSD',
+    //   headerName: 'USD',
+    //   type: 'number',
+    //   editable: true,
+    //   width: 150,
+    // },
+    // {
+    //   field: 'amountGBP',
+    //   headerName: 'GBP',
+    //   type: 'number',
+    //   editable: true,
+    //   width: 150,
+    // },
+    // {
+    //   field: 'totalAmount',
+    //   headerName: 'Amount',
+    //   type: 'number',
+    //   editable: true,
+    //   width: 150,
+    // },
+    // {
+    //   field: 'odd',
+    //   headerName: 'Odd',
+    //   type: 'number',
+    //   editable: true,
+    //   width: 150,
+    // },
+    // {
+    //   field: 'dateFinished',
+    //   headerName: 'Date finished',
+    //   type: 'date',
+    //   editable: true,
+    //   width: 150,
+    // },
+    // {
+    //   field: 'dateStaked',
+    //   headerName: 'Date staked',
+    //   type: 'date',
+    //   editable: true,
+    //   width: 150,
+    // },
+    // {
+    //   field: 'profits',
+    //   headerName: 'Profits',
+    //   type: 'number',
+    //   editable: true,
+    //   width: 150,
+    // },
+    // {
+    //   field: 'notes',
+    //   headerName: 'Notes',
+    //   type: 'string',
+    //   editable: true,
+    //   width: 150,
+    // },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -684,14 +830,7 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
                   slotProps={{
                     toolbar: { setRows, setRowModesModel },
                   }}
-                  onRowClick={(params: GridRowParams) => {
-                    const row = rows.find((row) => row.id === params.id);
-                    if(row) {
-                      selectedBetFn(row);
-                    } else {
-                      console.log('The row is not in the rows list.');
-                    }
-                  }}
+                  onRowClick={onRowClick}
                 />
                 <Dialog
                   open={deleteDialogIsOpened}
