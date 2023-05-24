@@ -28,7 +28,7 @@ export default function FreeSoloCreateOptionDialog(props: {
 }) {
   const { betId, items, defaultValue, itemType, onChangeCb, onAddNewValueCb, 
     onClick, } = props;
-  const [value, setValue] = React.useState<OptionType | null>(null);
+  const [value, setValue] = React.useState<OptionType | null>(defaultValue);
   const [open, toggleOpen] = React.useState(false);
 
   const handleClose = () => {

@@ -3,12 +3,12 @@ import { ActionType, } from "./enums";
 export type BetModel = {
     id: number;
     dateCreated: Date;
-    betStatus: string;
-    stake?  : number;
+    betStatus: number;
+    stake?: number;
     counteragentId?: number;
     counteragent?: string;
     sport?:	string;
-    liveStatus:	string;
+    liveStatus:	number;
     psLimit?: number;
     market?: string;
     tournament?: string;

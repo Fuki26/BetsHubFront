@@ -16,7 +16,7 @@ import { BetModel } from '../../models';
 import { ActionType, BetStatus, PreliveLiveStatus } from '../../models/enums';
 import FreeSoloCreateOption from '../Dropdown/FreeSoloCreateOptionDialog';
 import { getPendingBets, getCounteragents, getSports, getTournaments,
-  getMarkets, getSelections, deleteBet, } from '../../api';
+  getMarkets, getSelections, deleteBet, upsertBet, } from '../../api';
 
 export enum ItemTypes {
   COUNTERAGENT = 'COUNTERAGENT',
@@ -46,12 +46,12 @@ function EditToolbar(props: EditToolbarProps) {
       { 
         id,
         dateCreated: new Date(),
-        betStatus: BetStatus[0],
+        betStatus: 0,
         stake: undefined,
         counteragentId: undefined,
         counteragent: undefined,
         sport:	undefined,
-        liveStatus:	PreliveLiveStatus[0],
+        liveStatus:	0,
         psLimit: undefined,
         market: undefined,
         tournament: undefined,
@@ -68,7 +68,7 @@ function EditToolbar(props: EditToolbarProps) {
         notes: undefined,
     
         actionTypeApplied: undefined,
-        isSavedInDatabase: true,
+        isSavedInDatabase: false,
       } as BetModel
     ]);
     setRowModesModel((oldModel) => ({
@@ -106,14 +106,14 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
           return {
             id: bet.id,
             dateCreated: new Date(bet.dateCreated),
-            betStatus: BetStatus[bet.betStatus],
+            betStatus: bet.betStatus,
             stake: bet.stake,
             counteragentId: bet.counteragentId,
             counteragent: bet.counteragent
               ? bet.counteragent.name
               : '',
             sport:	bet.sport,
-            liveStatus:	PreliveLiveStatus[bet.liveStatus], 
+            liveStatus:	bet.liveStatus, 
             psLimit: bet.psLimit,
             market: bet.market,
             tournament: bet.tournament,
@@ -122,7 +122,6 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
             amountEUR: bet.amountEUR,
             amountUSD: bet.amountUSD,
             amountGBP: bet.amountGBP,
-            totalAmount: bet.totalAmount,
             odd: bet.odd,
             dateFinished: bet.dateFinished
               ? new Date(bet.dateFinished)
@@ -212,21 +211,30 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
   };
 
   const handleCancelClick = (id: GridRowId) => () => {
-    setRows((previousRowsModel) => {
-      return previousRowsModel!.map((row) => {
-        if(row.id === id) {
-          return {
-            ...row, 
-            actionTypeApplied: ActionType.CANCELED,
-          };
-        } else {
-          return row;
-        }
+    const canceledRow = rows?.find((r) => r.id === id);
+    if(!canceledRow?.isSavedInDatabase) {
+      setRows((previousRowsModel) => {
+        return previousRowsModel!.filter((row) => {
+          return row.id !== id;
+        });
       });
-    });
-    setRowModesModel((previousRowModesModel) => {
-      return { ...previousRowModesModel, [id]: { mode: GridRowModes.View } }
-    })
+    } else {
+      setRows((previousRowsModel) => {
+        return previousRowsModel!.map((row) => {
+          if(row.id === id) {
+            return {
+              ...row, 
+              actionTypeApplied: ActionType.CANCELED,
+            };
+          } else {
+            return row;
+          }
+        });
+      });
+      setRowModesModel((previousRowModesModel) => {
+        return { ...previousRowModesModel, [id]: { mode: GridRowModes.View } }
+      });
+    }
   };
 
   const handleEditClick = (id: GridRowId) => () => {
@@ -319,7 +327,7 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
 
   //#region Rows update handler
 
-  const processRowUpdate = (newRow: GridRowModel) => {
+  const processRowUpdate = async (newRow: GridRowModel) => {
     const currentRow = rows?.find((row) => row.id === newRow.id);
     
     toast(currentRow?.actionTypeApplied === ActionType.CANCELED 
@@ -330,41 +338,37 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
       });
     if(currentRow?.actionTypeApplied === ActionType.SAVED
         || currentRow?.actionTypeApplied === ActionType.EDITED) {
+          const newRowData: BetModel = {
+            ...currentRow,
+            dateCreated: newRow.dateCreated,
+            betStatus: newRow.betStatus,
+            stake: newRow.stake,
+            counteragentId: newRow.counteragentId,
+            counteragent: currentRow.counteragent,
+            sport:	currentRow.sport,
+            liveStatus:	newRow.liveStatus,
+            psLimit: newRow.psLimit,
+            market: currentRow.market,
+            tournament: currentRow.tournament,
+            selection: currentRow.selection,
+            amountBGN: newRow.amountBGN,
+            amountEUR: newRow.amountEUR,
+            amountUSD: newRow.amountUSD,
+            amountGBP: newRow.amountGBP,
+            totalAmount: newRow.totalAmount,
+            odd: newRow.odd,
+            dateFinished: newRow.dateFinished,
+            dateStaked: newRow.dateStaked,
+            profits: newRow.profits,
+            notes: newRow.notes,
+          };
+
+          alert(`newRowData = ${JSON.stringify(newRowData)}`);
+          await upsertBet(newRowData);
+
           setRows((previousRowsModel) => {
             return previousRowsModel!.map((row) => {
               if(row.id === newRow.id) {
-                const counteragent = possibleCounteragents?.find((c) => {
-                  return c.id === newRow.counteragentId;
-                });
-
-                const newRowData = {
-                  ...row, 
-                  dateCreated: newRow.dateCreated,
-                  betStatus: newRow.betStatus,
-                  stake: newRow.stake,
-                  counteragentId: newRow.counteragentId,
-                  counteragent: counteragent?.name,
-                  sport:	currentRow.sport,
-                  liveStatus:	newRow.liveStatus,
-                  psLimit: newRow.psLimit,
-                  market: currentRow.market,
-                  tournament: currentRow.tournament,
-                  selection: newRow.selection,
-                  amountBGN: newRow.amountBGN,
-                  amountEUR: newRow.amountEUR,
-                  amountUSD: newRow.amountUSD,
-                  amountGBP: newRow.amountGBP,
-                  totalAmount: newRow.totalAmount,
-                  odd: newRow.odd,
-                  dateFinished: newRow.dateFinished,
-                  dateStaked: newRow.dateStaked,
-                  profits: newRow.profits,
-                  notes: newRow.notes,
-                };
-
-                alert(`
-                  newRow: ${JSON.stringify(newRow)} 
-                  currentRow = ${JSON.stringify(currentRow)}`);
                 return newRowData;
               } else {
                 return row;
@@ -458,6 +462,13 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
       <>
         <FreeSoloCreateOption 
           betId={params.id}
+          defaultValue={
+            {
+              id: row.counteragentId.toString(),
+              label: row.counteragent,
+              inputValue: '',
+            }
+          }
           items={
             possibleCounteragents && possibleCounteragents.length > 0
               ? possibleCounteragents.map((counteragent: { id: number; name: string; }) => {
@@ -469,7 +480,7 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
                 })
               : []
           }
-          defaultValue={{ id: row.counteragentId.toString(), label: row.counteragent, inputValue: ''}}
+          // defaultValue={{ id: row.counteragentId.toString(), label: row.counteragent, inputValue: ''}}
           itemType={ItemTypes.COUNTERAGENT}
           onChangeCb={onChangeCb}
           onAddNewValueCb={onAddNewValueCb}
@@ -589,7 +600,7 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
     {
       field: 'betStatus',
       headerName: 'Bet status',
-      type: 'string',
+      type: 'number',
       editable: true,
       width: 150,
     },
@@ -608,14 +619,6 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
       width: 300,
       renderCell: onCounteragentRender,
       renderEditCell: onCounteragentRender,
-      valueSetter: (params: any) => {
-        console.log(`Counteragent valueSetter: ${JSON.stringify(params)}`);
-        return params.row.counteragent;
-      },
-      valueGetter: (params: any) => {
-        // console.log(`Counteragent valueGetter: ${JSON.stringify(params)}`);
-        return params.row.counteragent;
-      },
     },
     {
       field: 'sport',
@@ -626,20 +629,20 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
       renderCell: onSportRender,
       renderEditCell: onSportRender,
     },
-    // {
-    //   field: 'liveStatus',
-    //   headerName: 'Live status',
-    //   type: 'string',
-    //   editable: true,
-    //   width: 150,
-    // },
-    // {
-    //   field: 'psLimit',
-    //   headerName: 'Ps limit',
-    //   type: 'number',
-    //   editable: true,
-    //   width: 150,
-    // },
+    {
+      field: 'liveStatus',
+      headerName: 'Live status',
+      type: 'number',
+      editable: true,
+      width: 150,
+    },
+    {
+      field: 'psLimit',
+      headerName: 'PS Limit',
+      type: 'number',
+      editable: true,
+      width: 150,
+    },
     {
       field: 'market',
       headerName: 'Market',
@@ -658,113 +661,120 @@ export default function Bets(props: { completed: boolean; selectedBetFn: (select
       renderCell: onTournamentRender,
       renderEditCell: onTournamentRender,
     },
-    // {
-    //   field: 'selection',
-    //   headerName: 'Selection',
-    //   type: 'singleSelect',
-    //   editable: true,
-    //   width: 300,
-    //   renderEditCell: (params: GridRenderEditCellParams) => {
-    //     const selections = possibleSelections
-    //       ? possibleSelections[params.row.counteragentId]
-    //           ? possibleSelections[params.row.counteragentId]
-    //           : []
-    //       : [];
+    {
+      field: 'selection',
+      headerName: 'Selection',
+      type: 'singleSelect',
+      editable: true,
+      width: 300,
+      renderEditCell: (params: GridRenderEditCellParams) => {
+        const selections = possibleSelections
+          ? possibleSelections[params.row.counteragentId]
+              ? possibleSelections[params.row.counteragentId]
+              : []
+          : [];
 
-    //     return (
-    //       <>
-    //         <FreeSoloCreateOption
-    //           betId={params.row.id}
-    //           defaultValue={null}
-    //           items={
-    //             selections && selections.length > 0
-    //               ? selections.map((selection: string) => {
-    //                   return {
-    //                     id: selection,
-    //                     label: selection,
-    //                     inputValue: '', 
-    //                   };
-    //                 })
-    //               : []
-    //           }
-    //           itemType={ItemTypes.SELECTION}
-    //           onChangeCb={onChangeCb}
-    //           onAddNewValueCb={onAddNewValueCb} 
-    //         />
-    //       </>
-    //     )
-    //   },
-    // },
-    // {
-    //   field: 'amountBGN',
-    //   headerName: 'BGN',
-    //   type: 'number',
-    //   editable: true,
-    //   width: 150,
-    // },
-    // {
-    //   field: 'amountEUR',
-    //   headerName: 'EUR',
-    //   type: 'number',
-    //   editable: true,
-    //   width: 150,
-    // },
-    // {
-    //   field: 'amountUSD',
-    //   headerName: 'USD',
-    //   type: 'number',
-    //   editable: true,
-    //   width: 150,
-    // },
-    // {
-    //   field: 'amountGBP',
-    //   headerName: 'GBP',
-    //   type: 'number',
-    //   editable: true,
-    //   width: 150,
-    // },
-    // {
-    //   field: 'totalAmount',
-    //   headerName: 'Amount',
-    //   type: 'number',
-    //   editable: true,
-    //   width: 150,
-    // },
-    // {
-    //   field: 'odd',
-    //   headerName: 'Odd',
-    //   type: 'number',
-    //   editable: true,
-    //   width: 150,
-    // },
-    // {
-    //   field: 'dateFinished',
-    //   headerName: 'Date finished',
-    //   type: 'date',
-    //   editable: true,
-    //   width: 150,
-    // },
-    // {
-    //   field: 'dateStaked',
-    //   headerName: 'Date staked',
-    //   type: 'date',
-    //   editable: true,
-    //   width: 150,
-    // },
-    // {
-    //   field: 'profits',
-    //   headerName: 'Profits',
-    //   type: 'number',
-    //   editable: true,
-    //   width: 150,
-    // },
-    // {
-    //   field: 'notes',
-    //   headerName: 'Notes',
-    //   type: 'string',
-    //   editable: true,
-    //   width: 150,
-    // },
+        return (
+          <>
+            <FreeSoloCreateOption
+              betId={params.row.id}
+              defaultValue={null}
+              items={
+                selections && selections.length > 0
+                  ? selections.map((selection: string) => {
+                      return {
+                        id: selection,
+                        label: selection,
+                        inputValue: '', 
+                      };
+                    })
+                  : []
+              }
+              itemType={ItemTypes.SELECTION}
+              onChangeCb={onChangeCb}
+              onAddNewValueCb={onAddNewValueCb} 
+            />
+          </>
+        )
+      },
+    },
+    {
+      field: 'amountBGN',
+      headerName: 'BGN',
+      type: 'number',
+      editable: true,
+      width: 150,
+    },
+    {
+      field: 'amountEUR',
+      headerName: 'EUR',
+      type: 'number',
+      editable: true,
+      width: 150,
+    },
+    {
+      field: 'amountUSD',
+      headerName: 'USD',
+      type: 'number',
+      editable: true,
+      width: 150,
+    },
+    {
+      field: 'amountGBP',
+      headerName: 'GBP',
+      type: 'number',
+      editable: true,
+      width: 150,
+    },
+    {
+      field: 'totalAmount',
+      headerName: 'Total amount',
+      type: 'number',
+      editable: true,
+      width: 150,
+      valueSetter: (params: GridValueSetterParams) => {
+        const totalAmount = params.row.amountBGN 
+          + params.row.amountEUR 
+          + params.row.amountUSD 
+          + params.row.amountGBP;
+        return { ...params.row, totalAmount, };
+      },
+    },
+    {
+      field: 'odd',
+      headerName: 'Odd',
+      type: 'number',
+      editable: true,
+      width: 150,
+    },
+    {
+      field: 'dateFinished',
+      headerName: 'Date finished',
+      type: 'date',
+      editable: true,
+      width: 150,
+    },
+    {
+      field: 'dateStaked',
+      headerName: 'Date staked',
+      type: 'date',
+      editable: true,
+      width: 150,
+    },
+    {
+      field: 'profits',
+      headerName: 'Profits',
+      type: 'number',
+      editable: true,
+      width: 150,
+    },
+    {
+      field: 'notes',
+      headerName: 'Notes',
+      type: 'string',
+      editable: true,
+      width: 150,
+    },
     {
       field: 'actions',
       headerName: 'Actions',

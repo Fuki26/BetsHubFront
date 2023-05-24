@@ -24,25 +24,29 @@ const getCompletedBets = async (): Promise<Array<Bet> | undefined> => {
 
 const upsertBet = async (bet: BetModel) => {
     try {
-        if(bet.id < 0) {
-            return;
-        }
+        const upsertBetResult = await axios.post(`${domain}/UpsertBets`, {
+            Id: bet.id,
+            BetStatus: bet.betStatus,
+            Stake: bet.stake ? bet.stake : 0,
+            CounteragentId: bet.counteragentId,
+            Sport: bet.sport ? bet.sport : '',
+            LiveStatus: bet.liveStatus,
+            PSLimit: bet.psLimit ? bet.psLimit : 0,
+            Market: bet.market ? bet.market : '',
+            Tournament: bet.tournament ? bet.tournament : '',
+            Selection: bet.selection ? bet.selection : '',
+            AmountBGN: bet.amountBGN ? bet.amountBGN : 0,
+            AmountEUR: bet.amountEUR ? bet.amountEUR : 0,
+            AmountUSD: bet.amountUSD ? bet.amountUSD : 0,
+            AmountGBP: bet.amountGBP ? bet.amountGBP : 0,
+            Odd: bet.odd ? bet.odd : 0,
+            DateFinished: bet.dateFinished ? bet.dateFinished.toString() : null,
+            DateStaked: bet.dateStaked ? bet.dateStaked.toString() : null,
+            Profits: bet.profits ? bet.profits : 0,
+            Notes: bet.notes ? bet.notes : '',
+        });
 
-        if(!bet.totalAmount || bet.totalAmount <= 0) {
-            return;
-        }
-
-        if(!bet.counteragentId) {
-            return;
-        }
-
-        if(!bet.dateFinished || !bet.dateStaked) {
-            return;
-        }
-
-        if(!bet.odd || bet.odd <= 0) {
-            return;
-        }
+        const debug = -1;
     } catch(e) {
         console.log(JSON.stringify(e));
     }
