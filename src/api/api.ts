@@ -6,7 +6,7 @@ const domain = 'http://213.91.236.205:5000';
 
 const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
     try {
-        const getBetsResult = await axios.get(`${domain}/GetAllBets?StartIndex=0&Count=1&BetStatus=0`);
+        const getBetsResult = await axios.get(`${domain}/GetAllBets?StartIndex=0&Count=10&BetStatus=0`);
         return getBetsResult.data;
     } catch(e) {
         console.log(JSON.stringify(e));
@@ -15,7 +15,7 @@ const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
 
 const getCompletedBets = async (): Promise<Array<Bet> | undefined> => {
     try {
-        const getBetsResult = await axios.get(`${domain}/GetAllBets?StartIndex=0&Count=2&BetStatus=1`);
+        const getBetsResult = await axios.get(`${domain}/GetAllBets?StartIndex=0&Count=10&BetStatus=1`);
         return getBetsResult.data;
     } catch(e) {
         console.log(JSON.stringify(e));
@@ -24,7 +24,7 @@ const getCompletedBets = async (): Promise<Array<Bet> | undefined> => {
 
 const upsertBet = async (bet: BetModel) => {
     try {
-        const upsertBetResult = await axios.post(`${domain}/UpsertBets`, {
+        const obj = {
             Id: bet.id,
             BetStatus: bet.betStatus,
             Stake: bet.stake ? bet.stake : 0,
@@ -44,7 +44,9 @@ const upsertBet = async (bet: BetModel) => {
             DateStaked: bet.dateStaked ? bet.dateStaked.toString() : null,
             Profits: bet.profits ? bet.profits : 0,
             Notes: bet.notes ? bet.notes : '',
-        });
+        };
+
+        const result = await axios.post(`${domain}/UpsertBets`, obj);
 
         const debug = -1;
     } catch(e) {
@@ -101,9 +103,11 @@ const deleteBet = async (props: { id: number; }) => {
     try {
         const { id, } = props;
         const deleteBetResult = await axios.delete(`${domain}/DeleteBet`, {
-            data: {
-                id,
-            },
+            data: id,
+            headers: {
+                "Accept": "*/*",
+                "Content-Type": "application/json",
+            }
         });
 
         return deleteBetResult.data;
