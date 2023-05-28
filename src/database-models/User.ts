@@ -1,4 +1,4 @@
-import { Role } from ".";
+import { Role, } from '.';
 
 export type User = {
     userName?: string;
@@ -57,4 +57,4 @@ export type User = {
     email?: string;
     roleId: number;
     role: Role;
-}
+};

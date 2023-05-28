@@ -7,7 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import { ItemTypes } from '../Bets/Bets';
+import { ItemTypes } from '../../models/enums';
 
 interface OptionType {
   id?: string;
@@ -24,7 +24,7 @@ export default function FreeSoloCreateOptionDialog(props: {
   itemType: ItemTypes;
   onChangeCb: (props: { betId?: number; itemType: ItemTypes; id?: string; label: string; }) => void;
   onAddNewValueCb: (props: { betId?: number; itemType: ItemTypes; inputValue: string; }) => void;
-  onClick: (props: { betId: number; }) => void;
+  onClick: (props: { id: number; }) => void;
 }) {
   const { betId, items, defaultValue, itemType, onChangeCb, onAddNewValueCb, 
     onClick, } = props;
@@ -79,13 +79,13 @@ export default function FreeSoloCreateOptionDialog(props: {
           if (params.inputValue !== '') {
             filtered.push({
               inputValue: params.inputValue,
-              label: `Add "${params.inputValue}"`,
+              label: `Add '${params.inputValue}'`,
             });
           }
 
           return filtered;
         }}
-        id="free-solo-dialog-demo"
+        id='free-solo-dialog-demo'
         options={items}
         getOptionLabel={(option) => {
           if (typeof option === 'string') {
@@ -103,7 +103,7 @@ export default function FreeSoloCreateOptionDialog(props: {
         sx={{ width: 300 }}
         freeSolo
         renderInput={(params) => <TextField 
-          onClick={() => { onClick({ betId: betId!, })} }
+          onClick={() => { onClick({ id: betId!, })} }
           {...params} 
           label={itemType} 
         />}
@@ -117,8 +117,8 @@ export default function FreeSoloCreateOptionDialog(props: {
             </DialogContentText>
             <TextField
               autoFocus
-              margin="dense"
-              id="name"
+              margin='dense'
+              id='name'
               value={dialogValue.label}
               onChange={(event) =>
                 setDialogValue({
@@ -126,14 +126,14 @@ export default function FreeSoloCreateOptionDialog(props: {
                   label: event.target.value,
                 })
               }
-              label="title"
-              type="text"
-              variant="standard"
+              label='title'
+              type='text'
+              variant='standard'
             />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit">Add</Button>
+            <Button type='submit'>Add</Button>
           </DialogActions>
         </form>
       </Dialog>

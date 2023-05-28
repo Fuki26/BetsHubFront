@@ -5,4 +5,4 @@ export type Currency = {
     conversionRateToBGN: number;
     dateCreated: Date;
     dateChanged: Date;
-}
+};

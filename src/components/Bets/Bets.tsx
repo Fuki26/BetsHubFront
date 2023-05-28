@@ -3,36 +3,17 @@ import { toast } from 'react-toastify';
 import { DataGridPro, GridActionsCellItem, GridColDef,
   GridRowId, GridRowModel, GridRowModes, 
   GridRowModesModel, GridRowParams, GridRowsProp, GridToolbarContainer, GridValidRowModel, 
-  GridValueSetterParams, } from "@mui/x-data-grid-pro";
+  GridValueSetterParams, } from '@mui/x-data-grid-pro';
 import { Button, Dialog, DialogActions, DialogTitle, Paper, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
-import { BetModel } from '../../models';
-import { ActionType, } from '../../models/enums';
+import { BetModel, EditToolbarProps, Enums, ISelectionsResult, } from '../../models';
 import FreeSoloCreateOption from '../Dropdown/FreeSoloCreateOptionDialog';
 import { deleteBet, upsertBet, } from '../../api';
-
-export enum ItemTypes {
-  COUNTERAGENT = 'COUNTERAGENT',
-  SPORT = 'SPORT',
-  MARKET = 'MARKET',
-  TOURNAMENT = 'TOURNAMENT',
-  SELECTION = 'SELECTION',
-};
-
-export interface ISelectionsResult {
-    [key: string]: Array<string>;
-}
-
-interface EditToolbarProps {
-  setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
-  setRowModesModel: (
-    newModel: (oldModel: GridRowModesModel) => GridRowModesModel,
-  ) => void;
-}
+import { ItemTypes } from '../../models/enums';
 
 function EditToolbar(props: EditToolbarProps) {
   const { setRows, setRowModesModel } = props;
@@ -76,7 +57,7 @@ function EditToolbar(props: EditToolbarProps) {
 
   return (
     <GridToolbarContainer>
-      <Button color="primary" variant="contained" startIcon={<AddIcon />} onClick={handleAddNewClick}>
+      <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleAddNewClick}>
         Create a bet
       </Button>
     </GridToolbarContainer>
@@ -84,21 +65,23 @@ function EditToolbar(props: EditToolbarProps) {
 }
 
 export default function Bets(props: { 
-  selectedBetFn: (selectedBet: BetModel) => void;
+  selectBetIdFn: (id: number) => void;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 
-  defaultRows: Array<BetModel> | null;
-  possibleCounteragents: Array<{ id: number; name: string; }> | null;
-  possibleSports: Array<string> | null;
-  possibleTournaments: Array<string> | null;
-  possibleMarkets: Array<string> | null;
-  possibleSelections: ISelectionsResult | null;
+  defaultRows: Array<BetModel> | undefined;
+  possibleCounteragents: Array<{ id: number; name: string; }> | undefined;
+  possibleSports: Array<string> | undefined;
+  possibleTournaments: Array<string> | undefined;
+  possibleMarkets: Array<string> | undefined;
+  possibleSelections: ISelectionsResult | undefined;
 }) {
-  const { selectedBetFn, defaultRows, possibleCounteragents, possibleSports,
+  const { selectBetIdFn, setIsLoading, 
+    defaultRows, possibleCounteragents, possibleSports,
     possibleTournaments, possibleMarkets, possibleSelections, } = props;
 
-  const [ rows, setRows, ] = React.useState<Array<BetModel> | null>(defaultRows);
+  const [ rows, setRows, ] = React.useState<Array<BetModel> | undefined>(defaultRows);
   const [ rowModesModel, setRowModesModel, ] = React.useState<GridRowModesModel>({});
-  const [ deleteRowId, setDeleteRowId, ] = React.useState<number | null>(null);
+  const [ deleteRowId, setDeleteRowId, ] = React.useState<number | undefined>(undefined);
   const [ deleteDialogIsOpened, setOpenDeleteDialog, ] = React.useState(false);
 
   React.useEffect(() => {
@@ -120,7 +103,7 @@ export default function Bets(props: {
   };
   
   const handleCloseOnDeleteDialog = () => {
-    setDeleteRowId(null);
+    setDeleteRowId(undefined);
     setOpenDeleteDialog(false);
   };
 
@@ -135,8 +118,8 @@ export default function Bets(props: {
           return {
             ...row, 
             actionTypeApplied: row.isSavedInDatabase 
-              ? ActionType.EDITED
-              : ActionType.SAVED,
+              ? Enums.ActionType.EDITED
+              : Enums.ActionType.SAVED,
           };
         } else {
           return row;
@@ -162,7 +145,7 @@ export default function Bets(props: {
           if(row.id === id) {
             return {
               ...row, 
-              actionTypeApplied: ActionType.CANCELED,
+              actionTypeApplied: Enums.ActionType.CANCELED,
             };
           } else {
             return row;
@@ -181,7 +164,7 @@ export default function Bets(props: {
         if(row.id === id) {
           return {
             ...row, 
-            actionTypeApplied: ActionType.EDITED,
+            actionTypeApplied: Enums.ActionType.EDITED,
           };
         } else {
           return row;
@@ -198,14 +181,17 @@ export default function Bets(props: {
       return;
     }
 
+      setIsLoading(true);
+      
       await deleteBet({ id: deleteRowId, });
-      setDeleteRowId(null);
+      setDeleteRowId(undefined);
       setOpenDeleteDialog(false);
-
       setRows((previousRows) => previousRows!.filter((row) => row.id !== deleteRowId));
       setRowModesModel((previousRowModesModel) => {
         return { ...previousRowModesModel, [deleteRowId]: { mode: GridRowModes.View } };
       });
+
+      setIsLoading(false);
   };
 
   const handleCopyBetClick = (id: GridRowId) => () => {
@@ -253,10 +239,7 @@ export default function Bets(props: {
   const onRowClick = (params: GridRowParams) => {
     const row = rows!.find((row) => row.id === params.id);
     if(row) {
-      setRowModesModel((previousRowModesModel) => {
-        return { ...previousRowModesModel, [row.id]: { mode: GridRowModes.Edit } }
-      });
-      selectedBetFn(row);
+      selectBetIdFn(row.id);
     }
   }
 
@@ -267,14 +250,14 @@ export default function Bets(props: {
   const processRowUpdate = async (newRow: GridRowModel) => {
     const currentRow = rows?.find((row) => row.id === newRow.id);
     
-    toast(currentRow?.actionTypeApplied === ActionType.CANCELED 
+    toast(currentRow?.actionTypeApplied === Enums.ActionType.CANCELED 
         ? 'Canceled' 
         : `Saved bet with id ${currentRow!.id}`,
       {
         position: 'top-center',
       });
-    if(currentRow?.actionTypeApplied === ActionType.SAVED
-        || currentRow?.actionTypeApplied === ActionType.EDITED) {
+    if(currentRow?.actionTypeApplied === Enums.ActionType.SAVED
+        || currentRow?.actionTypeApplied === Enums.ActionType.EDITED) {
           const newRowData: BetModel = {
             ...currentRow,
             dateCreated: newRow.dateCreated,
@@ -300,8 +283,9 @@ export default function Bets(props: {
             notes: newRow.notes,
           };
 
-          await upsertBet(newRowData);
+          setIsLoading(true);
 
+          await upsertBet(newRowData);
           setRows((previousRowsModel) => {
             return previousRowsModel!.map((row) => {
               if(row.id === newRow.id) {
@@ -311,6 +295,8 @@ export default function Bets(props: {
               }
             });
           });
+
+          setIsLoading(false);
     } else {
 
     }
@@ -326,11 +312,11 @@ export default function Bets(props: {
   
   //#region Dropdown handlers
 
-  const onClick = (props: { betId: number; }) => {
-    const { betId, } = props;
+  const onClick = (props: { id: number; }) => {
+    const { id, } = props;
 
     setRowModesModel((previousRowModesModel) => {
-      return { ...previousRowModesModel, [betId]: { mode: GridRowModes.Edit } }
+      return { ...previousRowModesModel, [id]: { mode: GridRowModes.Edit } }
     });
   }
 
@@ -774,36 +760,36 @@ export default function Bets(props: {
           ? [
                 <GridActionsCellItem
                   icon={<SaveIcon />}
-                  label="Save"
+                  label='Save'
                   onClick={handleSaveClick(params.id)}
                 />,
                 <GridActionsCellItem
                   icon={<CancelIcon />}
-                  label="Cancel"
-                  className="textPrimary"
+                  label='Cancel'
+                  className='textPrimary'
                   onClick={handleCancelClick(params.id)}
-                  color="inherit"
+                  color='inherit'
                 />,
             ]
           : [
               <GridActionsCellItem
                 icon={<EditIcon />}
-                label="Edit"
-                className="textPrimary"
+                label='Edit'
+                className='textPrimary'
                 onClick={handleEditClick(params.id)}
-                color="inherit"
+                color='inherit'
               />,
               <GridActionsCellItem
                 icon={<DeleteIcon />}
-                label="Delete"
+                label='Delete'
                 onClick={handleClickOpenOnDeleteDialog(params.id)}
-                color="inherit"
+                color='inherit'
               />,
               <GridActionsCellItem
                 icon={<AddIcon />}
-                label="Copy bet"
+                label='Copy bet'
                 onClick={handleCopyBetClick(params.id)}
-                color="inherit"
+                color='inherit'
               />,
             ]
       },
@@ -832,11 +818,11 @@ export default function Bets(props: {
                 <Dialog
                   open={deleteDialogIsOpened}
                   onClose={handleCloseOnDeleteDialog}
-                  aria-labelledby="alert-dialog-title"
-                  aria-describedby="alert-dialog-description"
+                  aria-labelledby='alert-dialog-title'
+                  aria-describedby='alert-dialog-description'
                 >
-                  <DialogTitle id="alert-dialog-title">
-                    {"Are you sure you want to delete the bet?"}
+                  <DialogTitle id='alert-dialog-title'>
+                    {'Are you sure you want to delete the bet?'}
                   </DialogTitle>
                   <DialogActions>
                     <Button onClick={handleDeleteClick} autoFocus>Ok</Button>

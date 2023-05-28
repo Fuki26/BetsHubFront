@@ -1,4 +1,4 @@
-import { ActionType } from "./enums";
+import { ActionType } from './enums';
 
 export type UserModel = {
     id?: string;
@@ -10,4 +10,4 @@ export type UserModel = {
 
     actionTypeApplied?: ActionType;
     isSavedInDatabase: boolean;
-}
+};

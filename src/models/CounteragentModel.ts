@@ -1,4 +1,4 @@
-import { ActionType } from "./enums";
+import { ActionType, } from './enums';
 
 export type CounteragentModel = {
     id: number;
@@ -13,4 +13,4 @@ export type CounteragentModel = {
 
     actionTypeApplied?: ActionType;
     isSavedInDatabase: boolean;
-}
+};

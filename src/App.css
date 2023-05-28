@@ -28,6 +28,14 @@
   color: #61dafb;
 }
 
+.progress-bar {
+  position: absolute !important;
+  width: 250px !important;
+  height: 250px !important;
+  top: 40% !important;
+  left: 50% !important;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

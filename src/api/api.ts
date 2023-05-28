@@ -1,31 +1,34 @@
-import axios from "axios";
-import { Bet, Counteragent } from "../database-models";
-import { BetModel } from "../models";
+import axios from 'axios';
+import { Bet, Counteragent, Expense, Statistics, } from '../database-models';
+import { BetModel, ExpenseModel, ISelectionsResult, } from '../models';
+import { StatisticType } from '../models/enums';
 
 const domain = 'http://213.91.236.205:5000';
 
-const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
+export const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
     try {
         const getBetsResult = await axios.get(`${domain}/GetAllBets?StartIndex=0&Count=10&BetStatus=0`);
         return getBetsResult.data;
     } catch(e) {
-        console.log(JSON.stringify(e));
+        alert(JSON.stringify(e));
     }
 }
 
-const getCompletedBets = async (): Promise<Array<Bet> | undefined> => {
+export const getCompletedBets = async (): Promise<Array<Bet> | undefined> => {
     try {
         const getBetsResult = await axios.get(`${domain}/GetAllBets?StartIndex=0&Count=10&BetStatus=1`);
         return getBetsResult.data;
     } catch(e) {
-        console.log(JSON.stringify(e));
+        alert(JSON.stringify(e));
     }
 }
 
-const upsertBet = async (bet: BetModel) => {
+export const upsertBet = async (bet: BetModel) => {
     try {
         const obj = {
-            Id: bet.id,
+            Id: bet.isSavedInDatabase
+                ? bet.id
+                : null,
             BetStatus: bet.betStatus,
             Stake: bet.stake ? bet.stake : 0,
             CounteragentId: bet.counteragentId,
@@ -46,84 +49,104 @@ const upsertBet = async (bet: BetModel) => {
             Notes: bet.notes ? bet.notes : '',
         };
 
-        const result = await axios.post(`${domain}/UpsertBets`, obj);
-
-        const debug = -1;
+        await axios.post(`${domain}/UpsertBets`, obj);
     } catch(e) {
-        console.log(JSON.stringify(e));
+        alert(JSON.stringify(e));
     }
 }
 
-const getCounteragents = async (): Promise<Array<Counteragent> | undefined> => {
+export const getCounteragents = async (): Promise<Array<Counteragent> | undefined> => {
     try {
         const getCountaagentsResult = await axios.get(`${domain}/GetAllCounteragents`);
         return getCountaagentsResult.data;
     } catch(e) {
-        console.log(JSON.stringify(e));
+        alert(JSON.stringify(e));
     }
 };
 
-const getSports = async (): Promise<Array<string> | undefined> => {
+export const getSports = async (): Promise<Array<string> | undefined> => {
     try {
         const getCountaagentsResult = await axios.get(`${domain}/GetAllSports`);
         return getCountaagentsResult.data;
     } catch(e) {
-        console.log(JSON.stringify(e));
+        alert(JSON.stringify(e));
     }
 };
 
-const getTournaments = async () => {
+export const getTournaments = async (): Promise<Array<string> | undefined> => {
     try {
         const getCountaagentsResult = await axios.get(`${domain}/GetAllTournaments`);
         return getCountaagentsResult.data;
     } catch(e) {
-        console.log(JSON.stringify(e));
+        alert(JSON.stringify(e));
     }
 };
 
-const getMarkets = async () => {
+export const getMarkets = async (): Promise<Array<string> | undefined> => {
     try {
         const getCountaagentsResult = await axios.get(`${domain}/GetAllMarkets`);
         return getCountaagentsResult.data;
     } catch(e) {
-        console.log(JSON.stringify(e));
+        alert(JSON.stringify(e));
     }
 }
 
-const getSelections = async () => {
+export const getSelections = async (): Promise<ISelectionsResult | undefined> => {
     try {
         const getCountaagentsResult = await axios.get(`${domain}/GetAllSelections`);
         return getCountaagentsResult.data;
     } catch(e) {
-        console.log(JSON.stringify(e));
+        alert(JSON.stringify(e));
     }
 }
 
-const deleteBet = async (props: { id: number; }) => {
+export const deleteBet = async (props: { id: number; }) => {
     try {
         const { id, } = props;
         const deleteBetResult = await axios.delete(`${domain}/DeleteBet`, {
             data: id,
             headers: {
-                "Accept": "*/*",
-                "Content-Type": "application/json",
+                'Accept': '*/*',
+                'Content-Type': 'application/json',
             }
         });
 
         return deleteBetResult.data;
     } catch(e) {
-        console.log(JSON.stringify(e));
+        alert(JSON.stringify(e));
     }
 }
 
-export {
-    getPendingBets,
-    getCompletedBets,
-    upsertBet,
-    getCounteragents,
-    getSports,
-    getTournaments,
-    getMarkets,
-    getSelections,
-    deleteBet,
+export const getBetStatistics = async (props: { 
+    id: number; 
+    type: StatisticType; 
+}): Promise<Statistics | undefined> => {
+    try {
+        const { id, type, } = props;
+        const getBetsResult = 
+            await axios.get(`${domain}/GetStatistics?BetId=${id}&StatisticsType=${type}`);
+        return { 
+            ...getBetsResult.data,
+            type,
+        };
+    } catch(e) {
+        alert(JSON.stringify(e));
+    }
+}
+
+export const getExpenses = async (): Promise<Array<Expense> | undefined> => {
+    try {
+        const getExpensesResult = await axios.get(`${domain}/GetAllExpenses`);
+        return getExpensesResult.data;
+    } catch(e) {
+        alert(JSON.stringify(e));
+    }
+}
+
+export const upsertExpense = async (expense: ExpenseModel) => {
+    try {
+        await axios.post(`${domain}/UpsertExpense?Id=${expense.id}&CounteragentId=${expense.counteragentId}&Description=${expense.description}&Amount=${expense.amount}`);
+    } catch(e) {
+        alert(JSON.stringify(e));
+    }
 };

@@ -5,4 +5,4 @@ enum PreliveLiveStatus {
     PRE_LIVE_0_0 = 2,
 };
 
-export default PreliveLiveStatus;
+export  { PreliveLiveStatus, };

@@ -17,7 +17,7 @@ export function SideNav(props: { open: any; onClose: any; }) {
       }}
     >
       <Box
-        component="nav"
+        component='nav'
         sx={{
           flexGrow: 1,
           px: 2,
@@ -25,7 +25,7 @@ export function SideNav(props: { open: any; onClose: any; }) {
         }}
       >
         <Stack
-          component="ul"
+          component='ul'
           spacing={0.5}
           sx={{
             listStyle: 'none',
@@ -65,7 +65,7 @@ export function SideNav(props: { open: any; onClose: any; }) {
   if (lgUp) {
     return (
       <Drawer
-        anchor="left"
+        anchor='left'
         open
         PaperProps={{
           sx: {
@@ -74,7 +74,7 @@ export function SideNav(props: { open: any; onClose: any; }) {
             width: 280
           }
         }}
-        variant="permanent"
+        variant='permanent'
       >
         {content}
       </Drawer>
@@ -83,7 +83,7 @@ export function SideNav(props: { open: any; onClose: any; }) {
 
   return (
     <Drawer
-      anchor="left"
+      anchor='left'
       onClose={onClose}
       open={open}
       PaperProps={{
@@ -94,7 +94,7 @@ export function SideNav(props: { open: any; onClose: any; }) {
         }
       }}
       sx={{ zIndex: (theme) => theme.zIndex.appBar + 100 }}
-      variant="temporary"
+      variant='temporary'
     >
       {content}
     </Drawer>

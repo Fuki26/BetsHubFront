@@ -4,4 +4,4 @@ enum ActionType {
     SAVED,
 };
 
-export default ActionType;
+export { ActionType, };

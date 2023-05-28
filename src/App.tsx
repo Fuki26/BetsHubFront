@@ -8,6 +8,7 @@ import { Counteragents, } from './pages/counteragents/index';
 import { Users } from './pages/users/index';
 import { Currency } from './pages/currency/index';
 import PersistentDrawerLeft from './pages/ApplicationComponent/ApplicationComponent';
+import Search from './pages/search/Search';
 
 const SIDE_NAV_WIDTH = 280;
 const LayoutRoot = styled('div')(({ theme }) => ({
@@ -28,27 +29,27 @@ const LayoutContainer = styled('div')({
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <Hub />,
   },
   {
-    path: "/hub",
+    path: '/hub',
     element: <Hub />,
   },
   {
-    path: "/search",
-    element: <Hub />,
+    path: '/search',
+    element: <Search />,
   },
   {
-    path: "/counteragents",
+    path: '/counteragents',
     element: <Counteragents />,
   },
   {
-    path: "/users",
+    path: '/users',
     element: <Users />,
   },
   {
-    path: "/currency",
+    path: '/currency',
     element: <Currency />,
   },
 ]);

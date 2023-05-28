@@ -6,7 +6,7 @@ export const items = [
     title: 'Home',
     path: '/',
     icon: (
-      <SvgIcon fontSize="small">
+      <SvgIcon fontSize='small'>
         <CopyrightSharp />
       </SvgIcon>
     )
@@ -15,7 +15,7 @@ export const items = [
     title: 'Hub',
     path: '/hub',
     icon: (
-      <SvgIcon fontSize="small">
+      <SvgIcon fontSize='small'>
         <CopyrightSharp />
       </SvgIcon>
     )
@@ -24,7 +24,7 @@ export const items = [
     title: 'Search',
     path: '/search',
     icon: (
-      <SvgIcon fontSize="small">
+      <SvgIcon fontSize='small'>
         <SearchRounded />
       </SvgIcon>
     )
@@ -33,7 +33,7 @@ export const items = [
     title: 'Counteragents',
     path: '/counteragents',
     icon: (
-      <SvgIcon fontSize="small">
+      <SvgIcon fontSize='small'>
         <SupportAgentRounded />
       </SvgIcon>
     )
@@ -42,7 +42,7 @@ export const items = [
     title: 'Users',
     path: '/users',
     icon: (
-      <SvgIcon fontSize="small">
+      <SvgIcon fontSize='small'>
         <PeopleRounded />
       </SvgIcon>
     )
@@ -51,7 +51,7 @@ export const items = [
     title: 'Currency',
     path: '/currency',
     icon: (
-      <SvgIcon fontSize="small">
+      <SvgIcon fontSize='small'>
         <EuroRounded />
       </SvgIcon>
     )

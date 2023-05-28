@@ -1,5 +1,5 @@
-import { User } from ".";
-import { CounteragentCategory } from "./CounteragentCategory";
+import { User, } from '.';
+import { CounteragentCategory, } from './CounteragentCategory';
 
 export type Counteragent = {
     id: number;
@@ -11,4 +11,4 @@ export type Counteragent = {
     dateChanged: Date;
     userId: string;
     user: User;
-}
+};

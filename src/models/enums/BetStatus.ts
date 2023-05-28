@@ -3,4 +3,4 @@ enum BetStatus {
     Completed = 1,
 };
 
-export default BetStatus;
+export  { BetStatus, };

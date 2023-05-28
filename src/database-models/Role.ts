@@ -1,4 +1,4 @@
-import { User } from ".";
+import { User, } from '.';
 
 export type Role = {
     id: number;
@@ -7,4 +7,4 @@ export type Role = {
     name?: string;
     roleType: number;
     users: Array<User>;
-}
+};

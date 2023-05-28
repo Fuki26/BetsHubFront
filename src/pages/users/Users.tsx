@@ -1,15 +1,16 @@
 import { useEffect, } from 'react';
 import * as React from 'react';
-import { DataGridPro, GridActionsCellItem, GridColDef, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp, GridToolbarContainer } from "@mui/x-data-grid-pro";
-import axios from "axios";
+import { DataGridPro, GridActionsCellItem, GridColDef, GridRowId, 
+  GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp, GridToolbarContainer, } 
+from '@mui/x-data-grid-pro';
+import axios from 'axios';
 import { Button, Paper } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Close';
 import { User } from '../../database-models';
-import { UserModel } from '../../models';
-import { ActionType } from '../../models/enums';
+import { UserModel, Enums, } from '../../models';
 import { toast } from 'react-toastify';
 
 
@@ -46,7 +47,7 @@ function EditToolbar(props: EditToolbarProps) {
 
   return (
     <GridToolbarContainer>
-      <Button color="primary" variant="contained" startIcon={<AddIcon />} onClick={handleClick}>
+      <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleClick}>
         Add user
       </Button>
     </GridToolbarContainer>
@@ -60,7 +61,7 @@ export default function Users() {
   useEffect(() => {
     (async function() {
       try {
-        const getAllUsersResult = await axios.get("http://213.91.236.205:5000/GetAllUsers");
+        const getAllUsersResult = await axios.get('http://213.91.236.205:5000/GetAllUsers');
         const allUsers: Array<UserModel> 
           = getAllUsersResult.data.map((user: User) => {
           return {
@@ -90,8 +91,8 @@ export default function Users() {
           return {
             ...row, 
             actionTypeApplied: row.isSavedInDatabase 
-              ? ActionType.EDITED
-              : ActionType.SAVED,
+              ? Enums.ActionType.EDITED
+              : Enums.ActionType.SAVED,
           };
         } else {
           return row;
@@ -109,7 +110,7 @@ export default function Users() {
         if(row.id === id) {
           return {
             ...row, 
-            actionTypeApplied: ActionType.CANCELED,
+            actionTypeApplied: Enums.ActionType.CANCELED,
           };
         } else {
           return row;
@@ -127,7 +128,7 @@ export default function Users() {
         if(row.id === id) {
           return {
             ...row, 
-            actionTypeApplied: ActionType.EDITED,
+            actionTypeApplied: Enums.ActionType.EDITED,
           };
         } else {
           return row;
@@ -145,7 +146,7 @@ export default function Users() {
 
   const processRowUpdate = (newRow: GridRowModel) => {
     const currentRow = rows?.find((row) => row.id === newRow.id);
-    toast(currentRow?.actionTypeApplied === ActionType.CANCELED 
+    toast(currentRow?.actionTypeApplied === Enums.ActionType.CANCELED 
         ? 'Canceled' 
         : `Saved user with id ${currentRow!.id}`, 
       {
@@ -231,24 +232,24 @@ export default function Users() {
           ? [
                 <GridActionsCellItem
                   icon={<SaveIcon />}
-                  label="Save"
+                  label='Save'
                   onClick={handleSaveClick(params.id)}
                 />,
                 <GridActionsCellItem
                   icon={<CancelIcon />}
-                  label="Cancel"
-                  className="textPrimary"
+                  label='Cancel'
+                  className='textPrimary'
                   onClick={handleCancelClick(params.id)}
-                  color="inherit"
+                  color='inherit'
                 />,
             ]
           : [
               <GridActionsCellItem
                 icon={<EditIcon />}
-                label="Edit"
-                className="textPrimary"
+                label='Edit'
+                className='textPrimary'
                 onClick={handleEditClick(params.id)}
-                color="inherit"
+                color='inherit'
               />,
             ]
       },

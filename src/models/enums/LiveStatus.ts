@@ -5,4 +5,4 @@ enum LiveStatus {
     LiveNoScore = 3,
 };
 
-export default LiveStatus;
+export { LiveStatus, };

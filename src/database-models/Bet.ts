@@ -1,4 +1,4 @@
-import { Counteragent } from "./Counteragent"
+import { Counteragent, } from './Counteragent';
 
 export type Bet = {
     id: number;
@@ -25,4 +25,4 @@ export type Bet = {
     totalAmount?: number;
 
     //user??
-}
+};

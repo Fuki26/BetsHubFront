@@ -1,12 +1,12 @@
-import { Counteragent } from ".";
+import { Counteragent, } from '.';
 
 export type Expense = {
     id: number;
     counteragentId?: number;
     counteragent?: Counteragent;
     description: string;
-    dateFrom: Date;
-    dateTo: Date;
-    dateCreated: Date;
+    dateFrom: string;
+    dateTo: string;
+    dateCreated: string;
     amount: number;
-}
+};

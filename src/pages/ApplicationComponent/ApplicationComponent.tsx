@@ -59,16 +59,16 @@ export default function PersistentDrawerLeft() {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBar position="fixed" open={open}
+      <AppBar position='fixed' open={open}
         sx={{
           backgroundColor: 'neutral.800',
         }}
       >
         <Toolbar>
           <IconButton
-            aria-label="open drawer"
+            aria-label='open drawer'
             onClick={handleDrawerOpen}
-            edge="start"
+            edge='start'
             sx={{ 
               mr: 2, 
               backgroundColor: 'neutral.800',
@@ -78,7 +78,7 @@ export default function PersistentDrawerLeft() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant='h6' noWrap component='div'>
             {window.location.pathname.substring(1)}
           </Typography>
         </Toolbar>
@@ -94,8 +94,8 @@ export default function PersistentDrawerLeft() {
             color: 'common.white',
           },
         }}
-        variant="persistent"
-        anchor="left"
+        variant='persistent'
+        anchor='left'
         open={open}
       >
         <DrawerHeader>
@@ -104,7 +104,7 @@ export default function PersistentDrawerLeft() {
           </IconButton>
         </DrawerHeader>
         <Box
-            component="nav"
+            component='nav'
             sx={{
             flexGrow: 1,
             px: 2,
@@ -112,7 +112,7 @@ export default function PersistentDrawerLeft() {
             }}
         >
             <Stack
-                component="ul"
+                component='ul'
                 spacing={0.5}
                 sx={{
                     listStyle: 'none',
