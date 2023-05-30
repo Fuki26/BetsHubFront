@@ -58,50 +58,50 @@ export default function Search() {
 
   const [ rows, setRows] = React.useState<Array<BetModel> | undefined>(undefined);
   const [ filteredRows, setFilteredRows] = React.useState<Array<BetModel> | undefined>(undefined);
-  const [ possibleCounteragents, setCounteragents ] = React.useState<Array<{ id: number; name: string; }> | undefined>(undefined);
-  const [ possibleSports, setSports ] = React.useState<Array<string> | undefined>(undefined);
-  const [ possibleTournaments, setTournaments ] = React.useState<Array<string> | undefined>(undefined);
-  const [ possibleMarkets, setMarkets ] = React.useState<Array<string> | undefined>(undefined);
-  const [ possibleSelections, setSelections ] = React.useState<ISelectionsResult | undefined>(undefined);
+  // const [ possibleCounteragents, setCounteragents ] = React.useState<Array<{ id: number; name: string; }> | undefined>(undefined);
+  // const [ possibleSports, setSports ] = React.useState<Array<string> | undefined>(undefined);
+  // const [ possibleTournaments, setTournaments ] = React.useState<Array<string> | undefined>(undefined);
+  // const [ possibleMarkets, setMarkets ] = React.useState<Array<string> | undefined>(undefined);
+  // const [ possibleSelections, setSelections ] = React.useState<ISelectionsResult | undefined>(undefined);
 
   useEffect(() => {
     (async () => {
       try {
         setIsLoading(true);
         let pendingBets: Array<BetModel> = (await getPendingBets())!.map(betToBetModelMapper);
-        const getAllCounteragentsResult = await getCounteragents();
-        const getAllSportsResult = await getSports();
-        const getAllMarketsResult = await getMarkets();
-        const getAllTournamentsResult = await getTournaments();
-        const getAllSelectionsResult = await getSelections();
+        // const getAllCounteragentsResult = await getCounteragents();
+        // const getAllSportsResult = await getSports();
+        // const getAllMarketsResult = await getMarkets();
+        // const getAllTournamentsResult = await getTournaments();
+        // const getAllSelectionsResult = await getSelections();
         setIsLoading(false);
 
         setRows(pendingBets);
         setFilteredRows(pendingBets);
-        const counterAgents: Array<{ id: number; name: string; }> | undefined = getAllCounteragentsResult?.map((counteragent) => {
-          return {
-            id: counteragent.id,
-            name: counteragent.name,
-          };
-        });
+        // const counterAgents: Array<{ id: number; name: string; }> | undefined = getAllCounteragentsResult?.map((counteragent) => {
+        //   return {
+        //     id: counteragent.id,
+        //     name: counteragent.name,
+        //   };
+        // });
 
-        setCounteragents(counterAgents ? counterAgents : []);
+        // setCounteragents(counterAgents ? counterAgents : []);
 
-        if(getAllSportsResult) {
-          setSports(getAllSportsResult);
-        }
+        // if(getAllSportsResult) {
+        //   setSports(getAllSportsResult);
+        // }
 
-        if(getAllMarketsResult) {
-          setMarkets(getAllMarketsResult);
-        }
+        // if(getAllMarketsResult) {
+        //   setMarkets(getAllMarketsResult);
+        // }
 
-        if(getAllTournamentsResult) {
-          setTournaments(getAllTournamentsResult);
-        }
+        // if(getAllTournamentsResult) {
+        //   setTournaments(getAllTournamentsResult);
+        // }
 
-        if(getAllSelectionsResult) {
-          setSelections(getAllSelectionsResult);
-        }
+        // if(getAllSelectionsResult) {
+        //   setSelections(getAllSelectionsResult);
+        // }
       } catch (e) {
         console.error(e);
       }
@@ -291,19 +291,19 @@ export default function Search() {
       </LocalizationProvider>
       <Typography variant='h4'>Bets</Typography>
       {
-        filteredRows
-          ? (
-              <Bets selectBetIdFn={selectBetId}
-                setIsLoading={setIsLoading} 
-                defaultRows={filteredRows}
-                possibleCounteragents={possibleCounteragents}
-                possibleSports={possibleSports}
-                possibleTournaments={possibleTournaments}
-                possibleMarkets={possibleMarkets}
-                possibleSelections={possibleSelections}
-              />
-            )
-          : null
+        // filteredRows
+        //   ? (
+        //       <Bets selectBetIdFn={selectBetId}
+        //         setIsLoading={setIsLoading} 
+        //         defaultRows={filteredRows}
+        //         // possibleCounteragents={possibleCounteragents}
+        //         // possibleSports={possibleSports}
+        //         // possibleTournaments={possibleTournaments}
+        //         // possibleMarkets={possibleMarkets}
+        //         // possibleSelections={possibleSelections}
+        //       />
+        //     )
+        //   : null
       }
     </Paper>
   );

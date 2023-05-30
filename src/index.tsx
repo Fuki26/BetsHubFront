@@ -5,14 +5,13 @@ import { createTheme, } from './theme';
 import App from './App';
 import './index.css';
 
-
 const defaultMaterialTheme = createTheme();
 
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={defaultMaterialTheme}>
       <CssBaseline />
-      <App/>
+        <App/>
     </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')

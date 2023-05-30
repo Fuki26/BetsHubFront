@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { toast } from 'react-toastify';
 import { DataGridPro, GridActionsCellItem, GridColDef,
+  GridRenderEditCellParams,
   GridRowId, GridRowModel, GridRowModes, 
   GridRowModesModel, GridRowParams, GridRowsProp, GridToolbarContainer, GridValidRowModel, 
   GridValueSetterParams, } from '@mui/x-data-grid-pro';
-import { Button, Dialog, DialogActions, DialogTitle, Paper, } from '@mui/material';
+import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, Paper, TextField, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
@@ -69,15 +70,16 @@ export default function Bets(props: {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 
   defaultRows: Array<BetModel> | undefined;
-  possibleCounteragents: Array<{ id: number; name: string; }> | undefined;
-  possibleSports: Array<string> | undefined;
-  possibleTournaments: Array<string> | undefined;
-  possibleMarkets: Array<string> | undefined;
-  possibleSelections: ISelectionsResult | undefined;
+  possibleCounteragents: Array<{ value: string; label: string; }> | undefined;
+  possibleSports: Array<{ value: string; label: string; }> | undefined;
+  possibleTournaments: Array<{ value: string; label: string; }> | undefined;
+  possibleMarkets: Array<{ value: string; label: string; }> | undefined;
 }) {
   const { selectBetIdFn, setIsLoading, 
-    defaultRows, possibleCounteragents, possibleSports,
-    possibleTournaments, possibleMarkets, possibleSelections, } = props;
+    defaultRows, 
+    possibleCounteragents, possibleSports,
+    possibleTournaments, possibleMarkets,
+  } = props;
 
   const [ rows, setRows, ] = React.useState<Array<BetModel> | undefined>(defaultRows);
   const [ rowModesModel, setRowModesModel, ] = React.useState<GridRowModesModel>({});
@@ -320,268 +322,38 @@ export default function Bets(props: {
     });
   }
 
-  const onChangeCb = (props: { betId?: number; itemType: ItemTypes; 
-    id?: string; label: string; }): void => {
-    const { betId, itemType, id, label, } = props;
+  const onChange = (event: any, value: {
+    rowId: GridRowId | undefined;
+    type: string;
+    value?: string;
+    label?: string,
+  } | null): void => {
     setRows((previousRowsModel) => {
       return previousRowsModel!.map((row) => {
-        if(row.id === betId) {
-          switch(itemType) {
-            case ItemTypes.COUNTERAGENT: {
-              const counteragent = possibleCounteragents?.find((c: { id: number; name: string; }) => {
-                return parseInt(id!) === c.id;
-              });
-
-              return {
-                ...row, 
-                counteragentId: counteragent?.id,
-                counteragent: counteragent?.name,
-              };
-            };
-            case ItemTypes.SPORT: {
-              return {
-                ...row, 
-                sport: label,
-              };
-            };
-            case ItemTypes.MARKET: {
-              return {
-                ...row, 
-                market: label,
-              };
-            };
-            case ItemTypes.TOURNAMENT: {
-              return {
-                ...row, 
-                tournament: label,
-              };
-            };
-            case ItemTypes.SELECTION: {
-              return {
-                ...row, 
-                selection: label,
-              };
-            };
-          }
+        if(row.id === value?.rowId) {
+          return {
+            ...row, 
+            counteragentId: value.type === ItemTypes.COUNTERAGENT
+              ? parseInt(value.value!)
+              : row.counteragentId,
+            counteragent: value.type === ItemTypes.COUNTERAGENT
+              ? value.label
+              : row.counteragent,
+            sport: value.type === ItemTypes.SPORT
+              ? value.value
+              : row.sport,
+            market: value.type === ItemTypes.MARKET
+              ? value.value
+              : row.market,
+            tournament: value.type === ItemTypes.TOURNAMENT
+              ? value.value
+              : row.tournament,
+          };
+        } else {
+          return row;
         }
-          
-        return row;
       });
     });
-  }
-
-  const onAddNewValueCb = (props: { betId?: number; itemType: ItemTypes; inputValue: string; }): void => {
-    const { betId, itemType, inputValue, } = props;
-    setRows((previousRowsModel) => {
-      return previousRowsModel!.map((row) => {
-        if(row.id === betId) {
-          switch(itemType) {
-            case ItemTypes.COUNTERAGENT: {
-              return {
-                ...row, 
-                counteragentId: undefined,
-                counteragent: inputValue,
-              };
-            };
-            case ItemTypes.SPORT: {
-              return {
-                ...row, 
-                sport: inputValue,
-              };
-            };
-            case ItemTypes.MARKET: {
-              return {
-                ...row, 
-                market: inputValue,
-              };
-            };
-            case ItemTypes.TOURNAMENT: {
-              return {
-                ...row, 
-                tournament: inputValue,
-              };
-            };
-            case ItemTypes.SELECTION: {
-              return {
-                ...row, 
-                selection: inputValue,
-              };
-            };
-          }
-        }
-          
-        return row;
-      });
-    });
-  }
-
-  const onCounteragentRender = (params: GridValidRowModel) => {
-    const row = rows?.find((r) => r.id === params.id);
-    if(!row || !possibleCounteragents) {
-      return;
-    }
-
-    return (
-      <>
-        <FreeSoloCreateOption 
-          betId={params.id}
-          items={
-            possibleCounteragents.map((counteragent: { id: number; name: string; }) => {
-              return {
-                id: counteragent.id.toString(),
-                label: counteragent.name,
-                inputValue: '', 
-              };
-            })
-          }
-          defaultValue={
-            row.counteragentId && row.counteragent
-              ? { id: row.counteragentId.toString(), label: row.counteragent, inputValue: '', }
-              : null
-          }
-          itemType={ItemTypes.COUNTERAGENT}
-          onChangeCb={onChangeCb}
-          onAddNewValueCb={onAddNewValueCb}
-          onClick={onClick}
-        />
-      </>
-    );
-  }
-
-  const onSportRender = (params: GridValidRowModel) => {
-    const row = rows?.find((r) => r.id === params.id);
-    if(!row || !possibleSports) {
-      return;
-    }
-
-    return (
-      <>
-        <FreeSoloCreateOption 
-          betId={params.id}
-          items={
-            possibleSports.map((sport: string) => {
-              return {
-                id: sport,
-                label: sport,
-                inputValue: '', 
-              };
-            })
-          }
-          defaultValue={
-            row.sport
-              ? { id: row.sport, label: row.sport, inputValue: ''}
-              : null
-          }
-          itemType={ItemTypes.SPORT}
-          onChangeCb={onChangeCb}
-          onAddNewValueCb={onAddNewValueCb}
-          onClick={onClick}
-        />
-      </>
-    );
-  }
-
-  const onMarketRender = (params: GridValidRowModel) => {
-    const row = rows?.find((r) => r.id === params.id);
-    if(!row || !possibleMarkets) {
-      return;
-    }
-
-    return (
-      <>
-        <FreeSoloCreateOption 
-          betId={params.id}
-          items={
-            possibleMarkets.map((market: string) => {
-              return {
-                id: market,
-                label: market,
-                inputValue: '', 
-              };
-            })
-          }
-          defaultValue={
-            row.market
-              ? { id: row.market, label: row.market, inputValue: ''}
-              : null
-          }
-          itemType={ItemTypes.MARKET}
-          onChangeCb={onChangeCb}
-          onAddNewValueCb={onAddNewValueCb}
-          onClick={onClick}
-        />
-      </>
-    );
-  }
-
-  const onTournamentRender = (params: GridValidRowModel) => {
-    const row = rows?.find((r) => r.id === params.id);
-    if(!row || !possibleTournaments) {
-      return;
-    }
-
-    return (
-      <>
-        <FreeSoloCreateOption 
-          betId={params.id}
-          items={
-            possibleTournaments.map((tournament: string) => {
-              return {
-                id: tournament,
-                label: tournament,
-                inputValue: '', 
-              };
-            })
-          }
-          defaultValue={
-            row.tournament
-              ? { id: row.tournament, label: row.tournament, inputValue: ''}
-              : null
-          }
-          itemType={ItemTypes.TOURNAMENT}
-          onChangeCb={onChangeCb}
-          onAddNewValueCb={onAddNewValueCb}
-          onClick={onClick}
-        />
-      </>
-    );
-  }
-
-  const onSelectionRender = (params: GridValidRowModel) => {
-    const row = rows?.find((r) => r.id === params.id);
-
-    if(!row || !row.counteragentId
-        || !possibleSelections 
-        || !possibleSelections[row.counteragentId]) {
-      return;
-    }
-
-    return (
-      <>
-        <FreeSoloCreateOption 
-          betId={params.id}
-          items={
-            possibleSelections[row!.counteragentId!]
-              .map((tournament: string) => {
-                  return {
-                    id: tournament,
-                    label: tournament,
-                    inputValue: '', 
-                  };
-              })
-          }
-          defaultValue={
-            row.selection
-              ? { id: row.selection, label: row.selection, inputValue: ''}
-              : null
-          }
-          itemType={ItemTypes.SELECTION}
-          onChangeCb={onChangeCb}
-          onAddNewValueCb={onAddNewValueCb}
-          onClick={onClick}
-        />
-      </>
-    );
   }
 
   //#endreigon Dropdown handlers
@@ -618,8 +390,48 @@ export default function Bets(props: {
       type: 'singleSelect',
       editable: true,
       width: 300,
-      renderCell: onCounteragentRender,
-      renderEditCell: onCounteragentRender,
+      valueOptions: possibleCounteragents,
+      renderEditCell: (params: GridRenderEditCellParams) => {
+        const row = rows 
+          ? rows?.find((r) => r.id === params.id)
+          : undefined;
+
+        if(!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <Autocomplete
+            disablePortal
+            options={
+              possibleCounteragents
+                ? possibleCounteragents.map((counteragent) => {
+                  return {
+                        rowId: params.id, 
+                        type: ItemTypes.COUNTERAGENT, 
+                        value: counteragent.value, 
+                        label: counteragent.label, 
+                      };
+                  })
+                : []
+            }       
+            sx={{ width: 300 }}
+            renderInput={(params: any) => <TextField {...params} 
+              label={ItemTypes.COUNTERAGENT} />}
+            onChange={onChange}
+            value={
+              row.counteragentId
+                ? {
+                    rowId: params.id,
+                    type: ItemTypes.COUNTERAGENT,
+                    value: row.counteragentId.toString(),
+                    label: row.counteragent,
+                  }
+                : null
+            }
+          />
+        )
+      }
     },
     {
       field: 'sport',
@@ -627,8 +439,48 @@ export default function Bets(props: {
       type: 'singleSelect',
       editable: true,
       width: 300,
-      renderCell: onSportRender,
-      renderEditCell: onSportRender,
+      valueOptions: possibleSports,
+      renderEditCell: (params: GridRenderEditCellParams) => {
+        const row = rows 
+          ? rows?.find((r) => r.id === params.id)
+          : undefined;
+
+        if(!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <Autocomplete
+            disablePortal
+            options={
+              possibleSports
+                ? possibleSports.map((sport) => {
+                  return {
+                        rowId: params.id, 
+                        type: ItemTypes.SPORT, 
+                        value: sport.value, 
+                        label: sport.label + ' ', 
+                      };
+                  })
+                : []
+            }       
+            sx={{ width: 300 }}
+            renderInput={(params: any) => <TextField {...params} 
+              label={ItemTypes.SPORT} />}
+            onChange={onChange}
+            value={
+              row.sport
+                ? {
+                    rowId: params.id,
+                    type: ItemTypes.SPORT,
+                    value: row.sport,
+                    label: row.sport + ' ',
+                  }
+                : null
+            }
+          />
+        )
+      }
     },
     {
       field: 'liveStatus',
@@ -650,8 +502,48 @@ export default function Bets(props: {
       type: 'singleSelect',
       editable: true,
       width: 300,
-      renderCell: onMarketRender,
-      renderEditCell: onMarketRender,
+      valueOptions: possibleMarkets,
+      renderEditCell: (params: GridRenderEditCellParams) => {
+        const row = rows 
+          ? rows?.find((r) => r.id === params.id)
+          : undefined;
+
+        if(!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <Autocomplete
+            disablePortal
+            options={
+              possibleMarkets
+                ? possibleMarkets.map((market) => {
+                  return {
+                        rowId: params.id, 
+                        type: ItemTypes.MARKET, 
+                        value: market.value, 
+                        label: market.label + ' ', 
+                      };
+                  })
+                : []
+            }       
+            sx={{ width: 300 }}
+            renderInput={(params: any) => <TextField {...params} 
+              label={ItemTypes.MARKET} />}
+            onChange={onChange}
+            value={
+              row.market
+                ? {
+                    rowId: params.id,
+                    type: ItemTypes.MARKET,
+                    value: row.market,
+                    label: row.market + ' ',
+                  }
+                : null
+            }
+          />
+        )
+      }
     },
     {
       field: 'tournament',
@@ -659,17 +551,48 @@ export default function Bets(props: {
       type: 'singleSelect',
       editable: true,
       width: 300,
-      renderCell: onTournamentRender,
-      renderEditCell: onTournamentRender,
-    },
-    {
-      field: 'selection',
-      headerName: 'Selection',
-      type: 'singleSelect',
-      editable: true,
-      width: 300,
-      renderCell: onSelectionRender,
-      renderEditCell: onSelectionRender,
+      valueOptions: possibleTournaments,
+      renderEditCell: (params: GridRenderEditCellParams) => {
+        const row = rows 
+          ? rows?.find((r) => r.id === params.id)
+          : undefined;
+
+        if(!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <Autocomplete
+            disablePortal
+            options={
+              possibleTournaments
+                ? possibleTournaments.map((tournament) => {
+                  return {
+                        rowId: params.id, 
+                        type: ItemTypes.TOURNAMENT, 
+                        value: tournament.value, 
+                        label: tournament.label + ' ', 
+                      };
+                  })
+                : []
+            }       
+            sx={{ width: 300 }}
+            renderInput={(params: any) => <TextField {...params} 
+              label={ItemTypes.TOURNAMENT} />}
+            onChange={onChange}
+            value={
+              row.market
+                ? {
+                    rowId: params.id,
+                    type: ItemTypes.TOURNAMENT,
+                    value: row.tournament,
+                    label: row.tournament + ' ',
+                  }
+                : null
+            }
+          />
+        )
+      }
     },
     {
       field: 'amountBGN',
@@ -804,6 +727,8 @@ export default function Bets(props: {
               <>
                 <DataGridPro
                   columns={columns}
+                  columnBuffer={2} 
+                  columnThreshold={2}
                   rows={rows}   
                   slots={{
                     toolbar: EditToolbar,
@@ -814,6 +739,7 @@ export default function Bets(props: {
                     toolbar: { setRows, setRowModesModel },
                   }}
                   onRowClick={onRowClick}
+                  editMode='row'
                 />
                 <Dialog
                   open={deleteDialogIsOpened}
