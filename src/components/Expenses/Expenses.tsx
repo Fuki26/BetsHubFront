@@ -11,7 +11,7 @@ import CancelIcon from '@mui/icons-material/Close';
 import { EditToolbarProps, Enums, ExpenseModel, } from '../../models';
 // import { deleteExpense, } from '../../api';
 import { ItemTypes } from '../../models/enums';
-import { upsertExpense } from '../../api';
+import { deleteExpense, upsertExpense } from '../../api';
 
 export default function Expenses(props: { 
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -179,7 +179,7 @@ export default function Expenses(props: {
 
     setIsLoading(true);
 
-    // await deleteExpense({ id: deleteRowId, });
+    await deleteExpense({ id: deleteRowId, });
     setDeleteRowId(null);
     setOpenDeleteDialog(false);
 
@@ -246,14 +246,6 @@ export default function Expenses(props: {
   //#endregion Rows update handler
   
   //#region Dropdown handlers
-
-  const onClick = (props: { id: number; }) => {
-    const { id, } = props;
-
-    setRowModesModel((previousRowModesModel) => {
-      return { ...previousRowModesModel, [id]: { mode: GridRowModes.Edit } }
-    });
-  }
 
   const onChange = (event: any, value: {
     rowId: GridRowId | undefined;

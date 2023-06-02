@@ -11,4 +11,5 @@ export type Counteragent = {
     dateChanged: Date;
     userId: string;
     user: User;
+    deleted: boolean;
 };

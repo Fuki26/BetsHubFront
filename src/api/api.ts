@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Bet, Counteragent, Expense, Statistics, } from '../database-models';
-import { BetModel, ExpenseModel, ISelectionsResult, } from '../models';
+import { BetModel, CounteragentModel, ExpenseModel, ISelectionsResult, } from '../models';
 import { StatisticType } from '../models/enums';
 
 const domain = 'http://213.91.236.205:5000';
@@ -24,33 +24,27 @@ export const getCompletedBets = async (): Promise<Array<Bet> | undefined> => {
     }
 }
 
-export const upsertBet = async (bet: BetModel) => {
+export const getBetStatistics = async (props: { 
+    id: number; 
+    type: StatisticType; 
+}): Promise<Statistics | undefined> => {
     try {
-        const obj = {
-            Id: bet.isSavedInDatabase
-                ? bet.id
-                : null,
-            BetStatus: bet.betStatus,
-            Stake: bet.stake ? bet.stake : 0,
-            CounteragentId: bet.counteragentId,
-            Sport: bet.sport ? bet.sport : '',
-            LiveStatus: bet.liveStatus,
-            PSLimit: bet.psLimit ? bet.psLimit : 0,
-            Market: bet.market ? bet.market : '',
-            Tournament: bet.tournament ? bet.tournament : '',
-            Selection: bet.selection ? bet.selection : '',
-            AmountBGN: bet.amountBGN ? bet.amountBGN : 0,
-            AmountEUR: bet.amountEUR ? bet.amountEUR : 0,
-            AmountUSD: bet.amountUSD ? bet.amountUSD : 0,
-            AmountGBP: bet.amountGBP ? bet.amountGBP : 0,
-            Odd: bet.odd ? bet.odd : 0,
-            DateFinished: bet.dateFinished ? bet.dateFinished.toString() : null,
-            DateStaked: bet.dateStaked ? bet.dateStaked.toString() : null,
-            Profits: bet.profits ? bet.profits : 0,
-            Notes: bet.notes ? bet.notes : '',
+        const { id, type, } = props;
+        const getBetsResult = 
+            await axios.get(`${domain}/GetStatistics?BetId=${id}&StatisticsType=${type}`);
+        return { 
+            ...getBetsResult.data,
+            type,
         };
-        console.log(`UPSERT BET - ${JSON.stringify(obj)}`);
-        await axios.post(`${domain}/UpsertBets`, obj);
+    } catch(e) {
+        alert(JSON.stringify(e));
+    }
+}
+
+export const getExpenses = async (): Promise<Array<Expense> | undefined> => {
+    try {
+        const getExpensesResult = await axios.get(`${domain}/GetAllExpenses`);
+        return getExpensesResult.data;
     } catch(e) {
         alert(JSON.stringify(e));
     }
@@ -118,27 +112,67 @@ export const deleteBet = async (props: { id: number; }) => {
     }
 }
 
-export const getBetStatistics = async (props: { 
-    id: number; 
-    type: StatisticType; 
-}): Promise<Statistics | undefined> => {
+export const deleteExpense = async (props: { id: number; }) => {
     try {
-        const { id, type, } = props;
-        const getBetsResult = 
-            await axios.get(`${domain}/GetStatistics?BetId=${id}&StatisticsType=${type}`);
-        return { 
-            ...getBetsResult.data,
-            type,
-        };
+        const { id, } = props;
+        const deleteExpenseResult = await axios.delete(`${domain}/DeleteExpense`, {
+            data: id,
+            headers: {
+                'Accept': '*/*',
+                'Content-Type': 'application/json',
+            }
+        });
+
+        return deleteExpenseResult.data;
     } catch(e) {
         alert(JSON.stringify(e));
     }
 }
 
-export const getExpenses = async (): Promise<Array<Expense> | undefined> => {
+export const deleteCounteragent = async (props: { id: number; }) => {
     try {
-        const getExpensesResult = await axios.get(`${domain}/GetAllExpenses`);
-        return getExpensesResult.data;
+        const { id, } = props;
+        const deleteCounteragentResult = await axios.delete(`${domain}/DeleteCounteragent`, {
+            data: id,
+            headers: {
+                'Accept': '*/*',
+                'Content-Type': 'application/json',
+            }
+        });
+
+        return deleteCounteragentResult.data;
+    } catch(e) {
+        alert(JSON.stringify(e));
+    }
+}
+
+export const upsertBet = async (bet: BetModel) => {
+    try {
+        const obj = {
+            Id: bet.isSavedInDatabase
+                ? bet.id
+                : null,
+            BetStatus: bet.betStatus,
+            Stake: bet.stake ? bet.stake : 0,
+            CounteragentId: bet.counteragentId,
+            Sport: bet.sport ? bet.sport : '',
+            LiveStatus: bet.liveStatus,
+            PSLimit: bet.psLimit ? bet.psLimit : 0,
+            Market: bet.market ? bet.market : '',
+            Tournament: bet.tournament ? bet.tournament : '',
+            Selection: bet.selection ? bet.selection : '',
+            AmountBGN: bet.amountBGN ? bet.amountBGN : 0,
+            AmountEUR: bet.amountEUR ? bet.amountEUR : 0,
+            AmountUSD: bet.amountUSD ? bet.amountUSD : 0,
+            AmountGBP: bet.amountGBP ? bet.amountGBP : 0,
+            Odd: bet.odd ? bet.odd : 0,
+            DateFinished: bet.dateFinished ? bet.dateFinished.toString() : null,
+            DateStaked: bet.dateStaked ? bet.dateStaked.toString() : null,
+            Profits: bet.profits ? bet.profits : 0,
+            Notes: bet.notes ? bet.notes : '',
+        };
+        console.log(`UPSERT BET - ${JSON.stringify(obj)}`);
+        await axios.post(`${domain}/UpsertBets`, obj);
     } catch(e) {
         alert(JSON.stringify(e));
     }
@@ -148,6 +182,15 @@ export const upsertExpense = async (expense: ExpenseModel) => {
     try {
         console.log(`UPSERT EXPENSE - ${JSON.stringify(expense)}`);
         await axios.post(`${domain}/UpsertExpense?Id=${expense.id}&CounteragentId=${expense.counteragentId}&Description=${expense.description}&Amount=${expense.amount}`);
+    } catch(e) {
+        alert(JSON.stringify(e));
+    }
+};
+
+export const upsertCounteragent = async (counteragent: CounteragentModel) => {
+    try {
+        console.log(`UPSERT COUNTERAGENT - ${JSON.stringify(counteragent)}`);
+        await axios.post(`${domain}/UpsertCounteragent?Id=${counteragent.id}&Name=${counteragent.name}&CounteragentCategoryId=${counteragent.counteragentCategoryId}&MaxRate=${counteragent.maxRate}&UserId=${counteragent.userId}`);
     } catch(e) {
         alert(JSON.stringify(e));
     }

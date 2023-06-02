@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { CircularProgress, FormControlLabel, Paper, Radio, RadioGroup, Typography} from '@mui/material';
 import Bets from '../../components/Bets/Bets';
-import { BetModel, ISelectionsResult, StatisticItemModel } from '../../models';
+import { BetModel, ExpenseModel, ISelectionsResult, StatisticItemModel } from '../../models';
 import { getBetStatistics, getCompletedBets, getCounteragents, getExpenses, getMarkets, 
   getPendingBets, getSelections, getSports, getTournaments } from '../../api';
-import { Bet, Statistics } from '../../database-models';
+import { Bet, Expense, Statistics } from '../../database-models';
 import { StatisticType } from '../../models/enums';
 import { DataGridPro, GridColDef } from '@mui/x-data-grid-pro';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -58,50 +58,106 @@ export default function Search() {
 
   const [ rows, setRows] = React.useState<Array<BetModel> | undefined>(undefined);
   const [ filteredRows, setFilteredRows] = React.useState<Array<BetModel> | undefined>(undefined);
-  // const [ possibleCounteragents, setCounteragents ] = React.useState<Array<{ id: number; name: string; }> | undefined>(undefined);
-  // const [ possibleSports, setSports ] = React.useState<Array<string> | undefined>(undefined);
-  // const [ possibleTournaments, setTournaments ] = React.useState<Array<string> | undefined>(undefined);
-  // const [ possibleMarkets, setMarkets ] = React.useState<Array<string> | undefined>(undefined);
+  const [ possibleCounteragents, setCounteragents ] = 
+    React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
+  const [ possibleSports, setSports ] = 
+    React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
+  const [ possibleTournaments, setTournaments ] = 
+    React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
+  const [ possibleMarkets, setMarkets ] =
+    React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
   // const [ possibleSelections, setSelections ] = React.useState<ISelectionsResult | undefined>(undefined);
+  const [ expensesRows, setExpensesRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
 
   useEffect(() => {
     (async () => {
       try {
         setIsLoading(true);
-        let pendingBets: Array<BetModel> = (await getPendingBets())!.map(betToBetModelMapper);
-        // const getAllCounteragentsResult = await getCounteragents();
-        // const getAllSportsResult = await getSports();
-        // const getAllMarketsResult = await getMarkets();
-        // const getAllTournamentsResult = await getTournaments();
+        let bets: Array<BetModel> = (await getPendingBets())!.map(betToBetModelMapper);
+        const getAllCounteragentsResult = await getCounteragents();
+        const getAllSportsResult = await getSports();
+        const getAllTournamentsResult = await getTournaments();
+        const getAllMarketsResult = await getMarkets();
+        
         // const getAllSelectionsResult = await getSelections();
+        const getAllExpenses: Array<Expense> | undefined  = await getExpenses();
         setIsLoading(false);
 
-        setRows(pendingBets);
-        setFilteredRows(pendingBets);
-        // const counterAgents: Array<{ id: number; name: string; }> | undefined = getAllCounteragentsResult?.map((counteragent) => {
-        //   return {
-        //     id: counteragent.id,
-        //     name: counteragent.name,
-        //   };
-        // });
+        setRows(bets);
+        setFilteredRows(bets);
 
-        // setCounteragents(counterAgents ? counterAgents : []);
+        const counterAgents: Array<{ value: string; label: string; }> | undefined = 
+          getAllCounteragentsResult
+            ? getAllCounteragentsResult.map((counteragent) => {
+                return {
+                  value: counteragent.id.toString(),
+                  label: counteragent.name,
+                };
+              })
+            : [];
 
-        // if(getAllSportsResult) {
-        //   setSports(getAllSportsResult);
-        // }
+        setCounteragents(counterAgents);
 
-        // if(getAllMarketsResult) {
-        //   setMarkets(getAllMarketsResult);
-        // }
+        const sports: Array<{ value: string; label: string; }> | undefined =
+          getAllSportsResult
+              ? getAllSportsResult.map((sport) => {
+                  return {
+                    value: sport,
+                    label: sport,
+                  };
+                })
+              : [];
+        setSports(sports);
 
-        // if(getAllTournamentsResult) {
-        //   setTournaments(getAllTournamentsResult);
-        // }
+        const markets: Array<{ value: string; label: string; }> | undefined =
+          getAllMarketsResult
+              ? getAllMarketsResult.map((market) => {
+                  return {
+                    value: market,
+                    label: market,
+                  };
+                })
+              : [];
+        setMarkets(markets);
+
+        const tournaments: Array<{ value: string; label: string; }> | undefined =
+          getAllTournamentsResult
+              ? getAllTournamentsResult.map((tournament) => {
+                  return {
+                    value: tournament,
+                    label: tournament,
+                  };
+                })
+              : [];
+        setTournaments(tournaments);
 
         // if(getAllSelectionsResult) {
         //   setSelections(getAllSelectionsResult);
         // }
+
+        const expenses: Array<ExpenseModel> | undefined = getAllExpenses
+                ? getAllExpenses.map((expense) => {
+                    return {
+                      id: expense.id,
+                      counteragentId: expense.counteragentId
+                        ? expense.counteragentId
+                        : undefined,
+                      counteragent: expense.counteragent
+                        ? expense.counteragent.name
+                        : undefined,
+                      amount: expense.amount,
+                      description: expense.description,
+                      dateCreated: new Date(expense.dateCreated),
+                      dateFrom: new Date(expense.dateFrom),
+                      dateTo: new Date(expense.dateTo), 
+          
+                      actionTypeApplied: undefined,
+                      isSavedInDatabase: true,
+                    };
+                  })
+                : [];
+
+        setExpensesRows(expenses);
       } catch (e) {
         console.error(e);
       }
@@ -291,19 +347,19 @@ export default function Search() {
       </LocalizationProvider>
       <Typography variant='h4'>Bets</Typography>
       {
-        // filteredRows
-        //   ? (
-        //       <Bets selectBetIdFn={selectBetId}
-        //         setIsLoading={setIsLoading} 
-        //         defaultRows={filteredRows}
-        //         // possibleCounteragents={possibleCounteragents}
-        //         // possibleSports={possibleSports}
-        //         // possibleTournaments={possibleTournaments}
-        //         // possibleMarkets={possibleMarkets}
-        //         // possibleSelections={possibleSelections}
-        //       />
-        //     )
-        //   : null
+        filteredRows
+          ? (
+              <Bets selectBetIdFn={selectBetId}
+                setIsLoading={setIsLoading} 
+                defaultRows={filteredRows}
+                possibleCounteragents={possibleCounteragents}
+                possibleSports={possibleSports}
+                possibleTournaments={possibleTournaments}
+                possibleMarkets={possibleMarkets}
+                // possibleSelections={possibleSelections}
+              />
+            )
+          : null
       }
     </Paper>
   );
