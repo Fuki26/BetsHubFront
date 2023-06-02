@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Hub } from './pages/hub/index';
 import { Counteragents, } from './pages/counteragents/index';
 import { Users } from './pages/users/index';
-import { Currency } from './pages/currency/index';
+import { Currencies } from './pages/currency/index';
 import PersistentDrawerLeft from './pages/ApplicationComponent/ApplicationComponent';
 import Search from './pages/search/Search';
 
@@ -45,12 +45,12 @@ const router = createBrowserRouter([
     element: <Counteragents />,
   },
   {
-    path: '/users',
-    element: <Users />,
+    path: '/currency',
+    element: <Currencies />,
   },
   {
-    path: '/currency',
-    element: <Currency />,
+    path: '/users',
+    element: <Users />,
   },
 ]);
 

@@ -3,6 +3,6 @@ export type Currency = {
     name: string;
     abbreviation: string;
     conversionRateToBGN: number;
-    dateCreated: Date;
-    dateChanged: Date;
+    dateCreated: string;
+    dateChanged: string;
 };

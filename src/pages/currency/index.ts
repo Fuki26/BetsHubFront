@@ -1,7 +1,7 @@
-import Currency from './Currency';
+import Currencies from './Currencies';
 import * as currencyAgentsAPI from './currencyAPI';
 
 export {
-    Currency,
+    Currencies,
     currencyAgentsAPI,
 };

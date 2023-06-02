@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { Bet, Counteragent, CounteragentCategory, Expense, Statistics, User, } from '../database-models';
-import { BetModel, CounteragentModel, ExpenseModel, ISelectionsResult, } from '../models';
+import { Bet, Counteragent, CounteragentCategory, Currency, Expense, Statistics, User, } from '../database-models';
+import { BetModel, CounteragentModel, CurrencyModel, ExpenseModel, ISelectionsResult, } from '../models';
 import { StatisticType } from '../models/enums';
 
 const domain = 'http://213.91.236.205:5000';
@@ -72,6 +72,15 @@ export const getUsers = async (): Promise<Array<User> | undefined> => {
     try {
         const getUsersResult = await axios.get(`${domain}/GetAllUsers`);
         return getUsersResult.data;
+    } catch(e) {
+        alert(JSON.stringify(e));
+    }
+};
+
+export const getCurrencies = async (): Promise<Array<Currency> | undefined> => {
+    try {
+        const getCurrenciesResult = await axios.get(`${domain}/GetAllCurrencies`);
+        return getCurrenciesResult.data;
     } catch(e) {
         alert(JSON.stringify(e));
     }
@@ -209,6 +218,15 @@ export const upsertCounteragent = async (counteragent: CounteragentModel) => {
     try {
         console.log(`UPSERT COUNTERAGENT - ${JSON.stringify(counteragent)}`);
         await axios.post(`${domain}/UpsertCounteragent?Id=${counteragent.id}&Name=${counteragent.name}&CounteragentCategoryId=${counteragent.counteragentCategoryId}&MaxRate=${counteragent.maxRate}&UserId=${counteragent.userId}`);
+    } catch(e) {
+        alert(JSON.stringify(e));
+    }
+};
+
+export const upsertCurrency = async (currency: CurrencyModel) => {
+    try {
+        console.log(`UPSERT CURRENCY - ${JSON.stringify(currency)}`);
+        await axios.post(`${domain}/UpsertCurrency?Id=${currency.id}&Name=${currency.name}&Abbreviation=${currency.abbreviation}&ConversionRateToBGN=${currency.conversionRateToBGN}`);
     } catch(e) {
         alert(JSON.stringify(e));
     }
