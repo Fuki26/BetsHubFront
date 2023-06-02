@@ -49,7 +49,7 @@ export const upsertBet = async (bet: BetModel) => {
             Profits: bet.profits ? bet.profits : 0,
             Notes: bet.notes ? bet.notes : '',
         };
-
+        console.log(`UPSERT BET - ${JSON.stringify(obj)}`);
         await axios.post(`${domain}/UpsertBets`, obj);
     } catch(e) {
         alert(JSON.stringify(e));
@@ -146,6 +146,7 @@ export const getExpenses = async (): Promise<Array<Expense> | undefined> => {
 
 export const upsertExpense = async (expense: ExpenseModel) => {
     try {
+        console.log(`UPSERT EXPENSE - ${JSON.stringify(expense)}`);
         await axios.post(`${domain}/UpsertExpense?Id=${expense.id}&CounteragentId=${expense.counteragentId}&Description=${expense.description}&Amount=${expense.amount}`);
     } catch(e) {
         alert(JSON.stringify(e));

@@ -1,17 +1,14 @@
 import * as React from 'react';
 import { toast } from 'react-toastify';
-import { DataGridPro, GridActionsCellItem, GridColDef,
-  GridRowId, GridRowModel, GridRowModes, 
-  GridRowModesModel, GridRowParams, GridRowsProp, GridToolbarContainer, 
-  GridValidRowModel, } from '@mui/x-data-grid-pro';
-import { Button, Dialog, DialogActions, DialogTitle, Paper, } from '@mui/material';
+import { DataGridPro, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
+  GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer , } from '@mui/x-data-grid-pro';
+import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, Paper, TextField, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
 import { EditToolbarProps, Enums, ExpenseModel, } from '../../models';
-import FreeSoloCreateOption from '../Dropdown/FreeSoloCreateOptionDialog';
 // import { deleteExpense, } from '../../api';
 import { ItemTypes } from '../../models/enums';
 import { upsertExpense } from '../../api';
@@ -19,7 +16,7 @@ import { upsertExpense } from '../../api';
 export default function Expenses(props: { 
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   defaultRows: Array<ExpenseModel> | null;
-  possibleCounteragents: Array<{ id: number; name: string; }> | undefined;
+  possibleCounteragents: Array<{ value: string; label: string; }> | undefined;
 }) {
   const { setIsLoading, defaultRows, possibleCounteragents, } = props;
 
@@ -52,8 +49,8 @@ export default function Expenses(props: {
       setRows((oldRows) => [...oldRows, 
         { 
           id,
-          counteragentId: contraagent.id,
-          counteragent: contraagent.name,
+          counteragentId: parseInt(contraagent.value),
+          counteragent: contraagent.label,
           amount: 0,
           description: '',
           dateCreated: new Date(),
@@ -152,13 +149,27 @@ export default function Expenses(props: {
             actionTypeApplied: Enums.ActionType.EDITED,
           };
         } else {
-          return row;
+          return {
+            ...row, 
+            actionTypeApplied: undefined,
+          };
         }
       });
     });
     setRowModesModel((previousRowModesModel) => {
-      return { ...previousRowModesModel, [id]: { mode: GridRowModes.Edit } }
-    })
+      let newRowsModel: GridRowModesModel = {};
+      newRowsModel[id] = { mode: GridRowModes.Edit };
+      for(var i = 0; i <= rows!.length - 1; i++) {
+        const currentRow = rows![i];
+        if(currentRow.id === id) {
+          newRowsModel[currentRow.id] = { mode: GridRowModes.Edit };
+        } else {
+          newRowsModel[currentRow.id] = { mode: GridRowModes.View };
+        }
+      }
+
+      return newRowsModel;
+    });
   };
 
   const handleDeleteClick = async () => {
@@ -179,15 +190,6 @@ export default function Expenses(props: {
 
     setIsLoading(false);
   };
-
-  const onRowClick = (params: GridRowParams) => {
-    const row = rows!.find((row) => row.id === params.id);
-    if(row) {
-      setRowModesModel((previousRowModesModel) => {
-        return { ...previousRowModesModel, [row.id]: { mode: GridRowModes.Edit } }
-      });
-    }
-  }
 
   //#endregion Actions handlers
 
@@ -253,96 +255,24 @@ export default function Expenses(props: {
     });
   }
 
-  const onChangeCb = (props: { 
-        expenseId?: number; 
-        itemType: ItemTypes; 
-        id?: string; 
-        label: string; 
-    }): void => {
-    const { expenseId, itemType, id, label, } = props;
+  const onChange = (event: any, value: {
+    rowId: GridRowId | undefined;
+    value?: string;
+    label?: string,
+  } | null): void => {
     setRows((previousRowsModel) => {
       return previousRowsModel!.map((row) => {
-        if(row.id === expenseId) {
-          switch(itemType) {
-            case ItemTypes.COUNTERAGENT: {
-              const counteragent = possibleCounteragents?.find((c: { id: number; name: string; }) => {
-                return parseInt(id!) === c.id;
-              });
-
-              if(!counteragent) {
-                return row;
-              }
-
-              return {
-                ...row, 
-                counteragentId: counteragent?.id,
-                counteragent: counteragent?.name,
-              };
-            };
-          }
+        if(row.id === value?.rowId) {
+          return {
+            ...row, 
+            counteragentId: parseInt(value.value!),
+            counteragent: value.label,
+          };
+        } else {
+          return row;
         }
-          
-        return row;
       });
     });
-  }
-
-  const onAddNewValueCb = (props: { 
-        expenseId?: number; 
-        itemType: ItemTypes; 
-        inputValue: string; 
-    }): void => {
-    const { expenseId, itemType, inputValue, } = props;
-    setRows((previousRowsModel) => {
-      return previousRowsModel!.map((row) => {
-        if(row.id === expenseId) {
-          switch(itemType) {
-            case ItemTypes.COUNTERAGENT: {
-              return {
-                ...row, 
-                counteragentId: undefined,
-                counteragent: inputValue,
-              };
-            };
-          }
-        }
-          
-        return row;
-      });
-    });
-  }
-
-  const onCounteragentRender = (params: GridValidRowModel) => {
-    const row = rows?.find((r) => r.id === params.id);
-    if(!row || !possibleCounteragents) {
-      return;
-    }
-
-    return (
-      <>
-        <FreeSoloCreateOption 
-          betId={params.id}
-          items={
-            possibleCounteragents.map((counteragent: { id: number; name: string; }) => {
-              return {
-                id: counteragent.id.toString(),
-                label: counteragent.name,
-                inputValue: '', 
-              };
-            })
-          }
-          defaultValue={
-            row.counteragentId && row.counteragent
-              ? { id: row.counteragentId.toString(), label: row.counteragent, inputValue: '', }
-              : null
-          }
-          itemType={ItemTypes.COUNTERAGENT}
-          onChangeCb={onChangeCb}
-          onAddNewValueCb={onAddNewValueCb}
-          onClick={onClick}
-        />
-      </>
-    );
   }
 
 
@@ -359,8 +289,63 @@ export default function Expenses(props: {
         type: 'singleSelect',
         editable: true,
         width: 300,
-        renderCell: onCounteragentRender,
-        renderEditCell: onCounteragentRender,
+        renderCell: (params: GridRenderCellParams) => {
+          const row = rows 
+            ? rows?.find((r) => r.id === params.id)
+            : undefined;
+  
+          if(!row) {
+            throw Error(`Row did not found.`);
+          }
+  
+          return (
+            <>
+              {row.counteragent}
+            </>
+          )
+        },
+        renderEditCell: (params: GridRenderEditCellParams) => {
+          const row = rows 
+            ? rows?.find((r) => r.id === params.id)
+            : undefined;
+  
+          if(!row) {
+            throw Error(`Row did not found.`);
+          }
+  
+          return (
+            <Autocomplete
+              options={
+                possibleCounteragents
+                  ? possibleCounteragents.map((counteragent) => {
+                    return {
+                          rowId: params.id,
+                          value: counteragent.value, 
+                          label: counteragent.label, 
+                        };
+                    })
+                  : []
+              }       
+              sx={{ width: 300 }}
+              renderInput={(params: any) => <TextField {...params} 
+                label={ItemTypes.COUNTERAGENT} />}
+              onChange={onChange}
+              value={
+                row.counteragentId && row.counteragent
+                  ? {
+                      rowId: params.id,
+                      value: row.counteragentId.toString(),
+                      label: row.counteragent,
+                    }
+                  : {
+                      rowId: params.id,
+                      value: '',
+                      label: '',
+                    }
+              }
+            />
+          )
+        }
     },
     {
         field: 'amount',
@@ -447,6 +432,8 @@ export default function Expenses(props: {
               <>
                 <DataGridPro
                   columns={columns}
+                  columnBuffer={2} 
+                  columnThreshold={2}
                   rows={rows}   
                   slots={{
                     toolbar: editToolbar,
@@ -456,7 +443,7 @@ export default function Expenses(props: {
                   slotProps={{
                     toolbar: { setRows, setRowModesModel },
                   }}
-                  onRowClick={onRowClick}
+                  editMode='row'
                 />
                 <Dialog
                   open={deleteDialogIsOpened}

@@ -70,7 +70,7 @@ export default function Hub() {
   const [ possibleMarkets, setMarkets ] =
     React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
   // const [ possibleSelections, setSelections ] = React.useState<ISelectionsResult | undefined>(undefined);
-  // const [ expensesRows, setExpensesRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
+  const [ expensesRows, setExpensesRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
 
   useEffect(() => {
     (async () => {
@@ -84,7 +84,7 @@ export default function Hub() {
         const getAllMarketsResult = await getMarkets();
         
         // const getAllSelectionsResult = await getSelections();
-        // const getAllExpenses: Array<Expense> | undefined  = await getExpenses();
+        const getAllExpenses: Array<Expense> | undefined  = await getExpenses();
         setIsLoading(false);
 
         setPendingRows(pendingBets);
@@ -141,25 +141,29 @@ export default function Hub() {
         //   setSelections(getAllSelectionsResult);
         // }
 
-        // setExpensesRows(getAllExpenses?.map((expense) => {
-        //   return {
-        //     id: expense.id,
-        //     counteragentId: expense.counteragentId
-        //       ? expense.counteragentId
-        //       : undefined,
-        //     counteragent: expense.counteragent
-        //       ? expense.counteragent.name
-        //       : undefined,
-        //     amount: expense.amount,
-        //     description: expense.description,
-        //     dateCreated: new Date(expense.dateCreated),
-        //     dateFrom: new Date(expense.dateFrom),
-        //     dateTo: new Date(expense.dateTo), 
+        const expenses: Array<ExpenseModel> | undefined = getAllExpenses
+                ? getAllExpenses.map((expense) => {
+                    return {
+                      id: expense.id,
+                      counteragentId: expense.counteragentId
+                        ? expense.counteragentId
+                        : undefined,
+                      counteragent: expense.counteragent
+                        ? expense.counteragent.name
+                        : undefined,
+                      amount: expense.amount,
+                      description: expense.description,
+                      dateCreated: new Date(expense.dateCreated),
+                      dateFrom: new Date(expense.dateFrom),
+                      dateTo: new Date(expense.dateTo), 
+          
+                      actionTypeApplied: undefined,
+                      isSavedInDatabase: true,
+                    };
+                  })
+                : [];
 
-        //     actionTypeApplied: undefined,
-        //     isSavedInDatabase: true,
-        //   };
-        // }));
+        setExpensesRows(expenses);
       } catch (e) {
         console.error(e);
       }
@@ -377,12 +381,13 @@ export default function Hub() {
                 possibleSports={possibleSports}
                 possibleTournaments={possibleTournaments}
                 possibleMarkets={possibleMarkets}
+                // possibleSelections={possibleSelections}
               />
             )
           : null
       }
 
-      {/* <Typography variant='h4'>Expenses</Typography>
+      <Typography variant='h4'>Expenses</Typography>
       {
         expensesRows
           ? (
@@ -393,7 +398,7 @@ export default function Hub() {
               />
             )
           : null
-      } */}
+      }
       
     </Paper>
   );

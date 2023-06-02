@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { toast } from 'react-toastify';
 import { DataGridPro, GridActionsCellItem, GridColDef,
-  GridRenderEditCellParams,
-  GridRowId, GridRowModel, GridRowModes, 
-  GridRowModesModel, GridRowParams, GridRowsProp, GridToolbarContainer, GridValidRowModel, 
-  GridValueSetterParams, } from '@mui/x-data-grid-pro';
-import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, Paper, TextField, } from '@mui/material';
+  GridRenderCellParams,
+  GridRenderEditCellParams,GridRowId, GridRowModel, GridRowModes, 
+  GridRowModesModel, GridRowParams, GridToolbarContainer, GridValueSetterParams, } from '@mui/x-data-grid-pro';
+import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, 
+  Paper, TextField, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
@@ -169,13 +169,27 @@ export default function Bets(props: {
             actionTypeApplied: Enums.ActionType.EDITED,
           };
         } else {
-          return row;
+          return {
+            ...row,
+            actionTypeApplied: undefined,
+          };
         }
       });
     });
     setRowModesModel((previousRowModesModel) => {
-      return { ...previousRowModesModel, [id]: { mode: GridRowModes.Edit } }
-    })
+      let newRowsModel: GridRowModesModel = {};
+      newRowsModel[id] = { mode: GridRowModes.Edit };
+      for(var i = 0; i <= rows!.length - 1; i++) {
+        const currentRow = rows![i];
+        if(currentRow.id === id) {
+          newRowsModel[currentRow.id] = { mode: GridRowModes.Edit };
+        } else {
+          newRowsModel[currentRow.id] = { mode: GridRowModes.View };
+        }
+      }
+
+      return newRowsModel;
+    });
   };
 
   const handleDeleteClick = async () => {
@@ -391,6 +405,21 @@ export default function Bets(props: {
       editable: true,
       width: 300,
       valueOptions: possibleCounteragents,
+      renderCell: (params: GridRenderCellParams) => {
+        const row = rows 
+          ? rows?.find((r) => r.id === params.id)
+          : undefined;
+
+        if(!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <>
+            {row.counteragent}
+          </>
+        )
+      },
       renderEditCell: (params: GridRenderEditCellParams) => {
         const row = rows 
           ? rows?.find((r) => r.id === params.id)
@@ -440,6 +469,21 @@ export default function Bets(props: {
       editable: true,
       width: 300,
       valueOptions: possibleSports,
+      renderCell: (params: GridRenderCellParams) => {
+        const row = rows 
+          ? rows?.find((r) => r.id === params.id)
+          : undefined;
+
+        if(!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <>
+            {row.sport}
+          </>
+        )
+      },
       renderEditCell: (params: GridRenderEditCellParams) => {
         const row = rows 
           ? rows?.find((r) => r.id === params.id)
@@ -503,6 +547,21 @@ export default function Bets(props: {
       editable: true,
       width: 300,
       valueOptions: possibleMarkets,
+      renderCell: (params: GridRenderCellParams) => {
+        const row = rows 
+          ? rows?.find((r) => r.id === params.id)
+          : undefined;
+
+        if(!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <>
+            {row.market}
+          </>
+        )
+      },
       renderEditCell: (params: GridRenderEditCellParams) => {
         const row = rows 
           ? rows?.find((r) => r.id === params.id)
@@ -552,6 +611,21 @@ export default function Bets(props: {
       editable: true,
       width: 300,
       valueOptions: possibleTournaments,
+      renderCell: (params: GridRenderCellParams) => {
+        const row = rows 
+          ? rows?.find((r) => r.id === params.id)
+          : undefined;
+
+        if(!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <>
+            {row.tournament}
+          </>
+        )
+      },
       renderEditCell: (params: GridRenderEditCellParams) => {
         const row = rows 
           ? rows?.find((r) => r.id === params.id)
