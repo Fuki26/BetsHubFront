@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Bet, Counteragent, Expense, Statistics, } from '../database-models';
+import { Bet, Counteragent, CounteragentCategory, Expense, Statistics, User, } from '../database-models';
 import { BetModel, CounteragentModel, ExpenseModel, ISelectionsResult, } from '../models';
 import { StatisticType } from '../models/enums';
 
@@ -54,6 +54,24 @@ export const getCounteragents = async (): Promise<Array<Counteragent> | undefine
     try {
         const getCountaagentsResult = await axios.get(`${domain}/GetAllCounteragents`);
         return getCountaagentsResult.data;
+    } catch(e) {
+        alert(JSON.stringify(e));
+    }
+};
+
+export const getCounteragentsCategories = async (): Promise<Array<CounteragentCategory> | undefined> => {
+    try {
+        const getCounteragentsCategoriesResult = await axios.get(`${domain}/GetAllCounteragentsCategories`);
+        return getCounteragentsCategoriesResult.data;
+    } catch(e) {
+        alert(JSON.stringify(e));
+    }
+};
+
+export const getUsers = async (): Promise<Array<User> | undefined> => {
+    try {
+        const getUsersResult = await axios.get(`${domain}/GetAllUsers`);
+        return getUsersResult.data;
     } catch(e) {
         alert(JSON.stringify(e));
     }

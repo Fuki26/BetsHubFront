@@ -1,9 +1,9 @@
 import { ActionType, } from './enums';
 
 export type CounteragentModel = {
-    id: number;
+    id: number | null;
     name: string;
-    counteragentCategoryId: string; 
+    counteragentCategoryId: number; 
     counteragentCategory: string; 
     // usedMinRate: number; 
     // usedMaxRate: number; 

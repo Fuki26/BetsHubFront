@@ -4,6 +4,7 @@ enum ItemTypes {
     MARKET = 'MARKET',
     TOURNAMENT = 'TOURNAMENT',
     SELECTION = 'SELECTION',
+    USER = 'USER',
 };
 
 export {

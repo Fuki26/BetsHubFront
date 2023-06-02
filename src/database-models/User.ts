@@ -14,7 +14,7 @@ export type User = {
     lockoutEnd?: string;
     lockoutEnabled: boolean;
     accessFailedCount: number;
-    id?: string;
+    id: string;
     password: string;
     address: string;
     device: string;

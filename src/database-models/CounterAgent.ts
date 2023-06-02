@@ -7,8 +7,8 @@ export type Counteragent = {
     counteragentCategoryId: number;
     counteragentCategory: CounteragentCategory;     
     maxRate: number;
-    dateCreated: Date;
-    dateChanged: Date;
+    dateCreated: string;
+    dateChanged: string;
     userId: string;
     user: User;
     deleted: boolean;

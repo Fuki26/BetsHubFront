@@ -2,47 +2,113 @@ import * as React from 'react';
 import { toast } from 'react-toastify';
 import { DataGridPro, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
   GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer , } from '@mui/x-data-grid-pro';
-import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, Paper, TextField, } from '@mui/material';
+import { Autocomplete, Button, CircularProgress, Dialog, DialogActions, DialogTitle, Paper, TextField, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
-import { CounteragentModel, EditToolbarProps, Enums, ExpenseModel, } from '../../models';
+import { CounteragentModel, EditToolbarProps, Enums, } from '../../models';
 import { ItemTypes } from '../../models/enums';
-import { deleteCounteragent, deleteExpense, upsertCounteragent, upsertExpense } from '../../api';
+import { deleteCounteragent, getCounteragents, getCounteragentsCategories, getUsers, upsertCounteragent, } from '../../api';
+import { Counteragent, CounteragentCategory, User } from '../../database-models';
 
-export default function Counteragents(props: { 
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  defaultRows: Array<CounteragentModel> | null;
-  possibleCounteragentsCategories: Array<{ value: string; label: string; }> | undefined;
-}) {
-  const { setIsLoading, defaultRows, possibleCounteragentsCategories, } = props;
+export default function Counteragents(props: {}) {
 
-  const [ rows, setRows, ] = React.useState<Array<CounteragentModel> | null>(defaultRows);
+  const [ isLoading, setIsLoading, ] = React.useState<boolean>(false);
+
+  const [ rows, setRows] = React.useState<Array<CounteragentModel> | undefined>(undefined);
+  const [ possibleCounteragentsCategories, setPossibleCounteragentsCategories ] = 
+    React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
+  const [ possibleUsers, setPossibleUsers ] = 
+    React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
   const [ rowModesModel, setRowModesModel, ] = React.useState<GridRowModesModel>({});
   const [ deleteRowId, setDeleteRowId, ] = React.useState<number | null>(null);
   const [ deleteDialogIsOpened, setOpenDeleteDialog, ] = React.useState(false);
 
   React.useEffect(() => {
-    setRows((oldRows) => {
-      return defaultRows;
-    });
+    (async () => {
+      try {
+        setIsLoading(true);
+        const counteragentsDatabaseModels: Array<Counteragent> | undefined 
+          = await getCounteragents();
+        let counteragents: Array<CounteragentModel> = counteragentsDatabaseModels
+          ? counteragentsDatabaseModels.map((c: Counteragent) => {
+              return {
+                id: c.id,
+                name: c.name,
+                counteragentCategoryId: c.counteragentCategoryId,
+                counteragentCategory: c.counteragentCategory && c.counteragentCategory.name
+                  ? c.counteragentCategory.name
+                  : '',
+                maxRate: c.maxRate,
+                dateCreated: new Date(c.dateCreated),
+                dateChanged: new Date(c.dateChanged),
+                userId: c.userId,
+                user: c.user && c.user.userName
+                  ? c.user.userName
+                  : '',
 
-    setRowModesModel(() => {
-      return {};
-    });
-  }, [ defaultRows, ]);
+                actionTypeApplied: undefined,
+                isSavedInDatabase: true,
+              };
+            })
+          : [];
+
+        const getCounteragentsCategoriesResult = await getCounteragentsCategories();
+        const getUsersResult = await getUsers();
+
+        const counteragentsCategories: Array<{ value: string; label: string; }> | undefined = 
+          getCounteragentsCategoriesResult
+            ? getCounteragentsCategoriesResult.map((counteragentCategory: CounteragentCategory) => {
+                return {
+                  value: counteragentCategory.id.toString(),
+                  label: counteragentCategory.name
+                    ? counteragentCategory.name
+                    : '',
+                };
+              })
+            : [];
+        
+        const users: Array<{ value: string; label: string; }> | undefined = 
+          getUsersResult
+            ? getUsersResult.map((user: User) => {
+                return {
+                  value: user.id.toString(),
+                  label: user.userName
+                    ? user.userName
+                    : '',
+                };
+              })
+            : [];
+
+        setRows(counteragents);
+        setPossibleCounteragentsCategories(counteragentsCategories);
+        setPossibleUsers(users);
+
+        setIsLoading(false);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  }, []);
 
   const editToolbar = (props: EditToolbarProps) => {
     const { setRows, setRowModesModel } = props;
-  
-    if(!possibleCounteragentsCategories || possibleCounteragentsCategories.length === 0) {
-      alert('There are not any possible counteragents categories in the system. You cannot create a counteragent.');
-      return null;
-    }
 
-    const counteragentCategory = possibleCounteragentsCategories[0];
+    const counteragentCategory = !possibleCounteragentsCategories || possibleCounteragentsCategories.length === 0
+      ? {
+          value: '',
+          label: ''
+        } 
+      : possibleCounteragentsCategories[0];
+
+    const user = !possibleUsers || possibleUsers.length === 0
+      ? {
+          value: '',
+          label: ''
+        } 
+      : possibleUsers[0];
     const handleAddNewClick = () => {
       const id = Math.round(Math.random() * 1000000);
       setRows((oldRows) => [...oldRows, 
@@ -53,7 +119,7 @@ export default function Counteragents(props: {
           maxRate: 0,
           dateCreated: new Date(),
           dateChanged: new Date(),
-          user: '',
+          user: user.label,
       
           actionTypeApplied: undefined,
           isSavedInDatabase: false,
@@ -93,8 +159,8 @@ export default function Counteragents(props: {
   //#region Actions handlers
 
   const handleSaveClick = (id: GridRowId) => () => {
-    setRows((previousRowsModel) => {
-      return previousRowsModel!.map((row) => {
+    setRows((previousRowsModel: any) => {
+      return previousRowsModel!.map((row: any) => {
         if(row.id === id) {
           return {
             ...row, 
@@ -163,7 +229,7 @@ export default function Counteragents(props: {
         if(currentRow.id === id) {
           newRowsModel[currentRow.id] = { mode: GridRowModes.Edit };
         } else {
-          newRowsModel[currentRow.id] = { mode: GridRowModes.View };
+          newRowsModel[currentRow.id!] = { mode: GridRowModes.View };
         }
       }
 
@@ -219,7 +285,11 @@ export default function Counteragents(props: {
 
           setIsLoading(true);
           
-          await upsertCounteragent(newRowData);
+          await upsertCounteragent({ ...newRowData, 
+            id: currentRow.actionTypeApplied === Enums.ActionType.SAVED 
+              ? null
+              : currentRow.id
+          });
 
           setRows((previousRowsModel) => {
             return previousRowsModel!.map((row) => {
@@ -252,12 +322,29 @@ export default function Counteragents(props: {
     value?: string;
     label?: string,
   } | null): void => {
+    if(!value || !value.value || !value.label) {
+      alert(`Provided value from dropdown is ${JSON.stringify(value)}. The dropdown value cannot be set.`);
+      return;
+    }
+
     setRows((previousRowsModel) => {
-      return previousRowsModel!.map((row) => {
-        if(row.id === value?.rowId) {
+      if(!previousRowsModel) {
+        return [];
+      }
+
+      return previousRowsModel.map((row) => {
+        const isValidId = !value.value || isNaN(parseInt(value.value))
+          ? false
+          : true;
+        if(!isValidId) {
+          alert(`Provided value from dropdown is ${JSON.stringify(value)}. The dropdown value cannot be set.`);
+          return row;
+        }
+
+        if(row.id === value.rowId) {
           return {
             ...row, 
-            counteragentCategoryId: value.value!,
+            counteragentCategoryId: parseInt(value.value!),
             counteragentCategory: value.label!,
           };
         } else {
@@ -272,9 +359,14 @@ export default function Counteragents(props: {
     value?: string;
     label?: string,
   } | null): void => {
+    if(!value || !value.value || !value.label) {
+      alert(`Provided value from dropdown is ${JSON.stringify(value)}. The dropdown value cannot be set.`);
+      return;
+    }
+
     setRows((previousRowsModel) => {
       return previousRowsModel!.map((row) => {
-        if(row.id === value?.rowId) {
+        if(row.id === value.rowId) {
           return {
             ...row, 
             userId: value.value!,
@@ -296,103 +388,160 @@ export default function Counteragents(props: {
         type: 'number',
     },
     {
-        field: 'counteragent',
-        headerName: 'counteragent',
-        type: 'singleSelect',
-        editable: true,
-        width: 300,
-        renderCell: (params: GridRenderCellParams) => {
-          const row = rows 
-            ? rows?.find((r) => r.id === params.id)
-            : undefined;
-  
-          if(!row) {
-            throw Error(`Row did not found.`);
-          }
-  
-          return (
-            <>
-              {row.counteragent}
-            </>
-          )
-        },
-        renderEditCell: (params: GridRenderEditCellParams) => {
-          const row = rows 
-            ? rows?.find((r) => r.id === params.id)
-            : undefined;
-  
-          if(!row) {
-            throw Error(`Row did not found.`);
-          }
-  
-          return (
-            <Autocomplete
-              options={
-                possibleCounteragents
-                  ? possibleCounteragents.map((counteragent) => {
-                    return {
-                          rowId: params.id,
-                          value: counteragent.value, 
-                          label: counteragent.label, 
-                        };
-                    })
-                  : []
-              }       
-              sx={{ width: 300 }}
-              renderInput={(params: any) => <TextField {...params} 
-                label={ItemTypes.COUNTERAGENT} />}
-              onChange={onChange}
-              value={
-                row.counteragentId && row.counteragent
-                  ? {
-                      rowId: params.id,
-                      value: row.counteragentId.toString(),
-                      label: row.counteragent,
-                    }
-                  : {
-                      rowId: params.id,
-                      value: '',
-                      label: '',
-                    }
-              }
-            />
-          )
+      field: 'name',
+      headerName: 'Name',
+      type: 'string',
+      editable: true,
+      width: 150,
+    },
+    {
+      field: 'counteragentCategory',
+      headerName: 'Counteragent category',
+      type: 'singleSelect',
+      editable: true,
+      width: 300,
+      renderCell: (params: GridRenderCellParams) => {
+        const row = rows 
+          ? rows.find((r) => r.id === params.id)
+          : undefined;
+
+        if(!row) {
+          throw Error(`Row did not found.`);
         }
+
+        return (
+          <>
+            {row.counteragentCategory}
+          </>
+        )
+      },
+      renderEditCell: (params: GridRenderEditCellParams) => {
+        const row = rows 
+          ? rows.find((r) => r.id === params.id)
+          : undefined;
+
+        if(!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <Autocomplete
+            options={
+              possibleCounteragentsCategories
+                ? possibleCounteragentsCategories.map((counteragentCategory) => {
+                  return {
+                        rowId: params.id,
+                        value: counteragentCategory.value, 
+                        label: counteragentCategory.label, 
+                      };
+                  })
+                : []
+            }       
+            sx={{ width: 300 }}
+            renderInput={(params: any) => <TextField {...params} 
+              label={ItemTypes.COUNTERAGENT} />}
+            onChange={onCounterAgentCategoryChange}
+            value={
+              row.counteragentCategoryId && row.counteragentCategory
+                ? {
+                    rowId: params.id,
+                    value: row.counteragentCategoryId.toString(),
+                    label: row.counteragentCategory,
+                  }
+                : {
+                    rowId: params.id,
+                    value: '',
+                    label: '',
+                  }
+            }
+          />
+        )
+      }
     },
     {
-        field: 'amount',
-        headerName: 'amount',
-        type: 'number',
-        editable: true,
-        width: 150,
+      field: 'maxRate',
+      headerName: 'Max rate',
+      type: 'number',
+      editable: true,
+      width: 150,
     },
     {
-        field: 'description',
-        headerName: 'description',
-        type: 'string',
-        editable: true,
-        width: 150,
+      field: 'dateCreated',
+      headerName: 'Date created',
+      type: 'date',
+      editable: true,
+      width: 150,
     },
     {
-        field: 'dateCreated',
-        headerName: 'dateCreated',
-        type: 'date',
-        editable: true,
-        width: 150,
+      field: 'dateChanged',
+      headerName: 'Date changed',
+      type: 'date',
+      editable: true,
+      width: 150,
     },
     {
-        field: 'dateFrom',
-        headerName: 'dateFrom',
-        type: 'date',
-        editable: true,
-        width: 150,
-    },
-    {
-        field: 'dateTo',
-        headerName: 'dateTo',
-        type: 'date',
-        editable: true,
-        width: 150,
+      field: 'user',
+      headerName: 'User',
+      type: 'singleSelect',
+      editable: true,
+      width: 300,
+      renderCell: (params: GridRenderCellParams) => {
+        const row = rows 
+          ? rows.find((r) => r.id === params.id)
+          : undefined;
+
+        if(!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <>
+            {row.user}
+          </>
+        )
+      },
+      renderEditCell: (params: GridRenderEditCellParams) => {
+        const row = rows 
+          ? rows.find((r) => r.id === params.id)
+          : undefined;
+
+        if(!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <Autocomplete
+            options={
+              possibleUsers
+                ? possibleUsers.map((user) => {
+                  return {
+                        rowId: params.id,
+                        value: user.value, 
+                        label: user.label, 
+                      };
+                  })
+                : []
+            }       
+            sx={{ width: 300 }}
+            renderInput={(params: any) => <TextField {...params} 
+              label={ItemTypes.USER} />}
+            onChange={onUserChange}
+            value={
+              row.userId && row.user
+                ? {
+                    rowId: params.id,
+                    value: row.userId.toString(),
+                    label: row.user,
+                  }
+                : {
+                    rowId: params.id,
+                    value: '',
+                    label: '',
+                  }
+            }
+          />
+        )
+      }
     },
     {
       field: 'actions',
@@ -439,6 +588,27 @@ export default function Counteragents(props: {
   return (
     <Paper sx={{ padding: '5%', }}>
       {
+        isLoading
+          ? (
+              <>
+                <CircularProgress color="success" 
+                  size={250}
+                  disableShrink={true}
+                  style={{
+                    position: 'fixed', 
+                    top: '40%', 
+                    right: '50%', 
+                    zIndex: 9999999999999,
+                    transition: 'none',
+                  }}
+
+                />
+              </>
+              
+            )
+          : null
+      }
+      {
         rows
           ? (
               <>
@@ -464,7 +634,7 @@ export default function Counteragents(props: {
                   aria-describedby='alert-dialog-description'
                 >
                   <DialogTitle id='alert-dialog-title'>
-                    {'Are you sure you want to delete the expense?'}
+                    {'Are you sure you want to delete the counteragent?'}
                   </DialogTitle>
                   <DialogActions>
                     <Button onClick={handleDeleteClick} autoFocus>Ok</Button>
