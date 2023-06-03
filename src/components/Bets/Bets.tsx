@@ -12,7 +12,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
 import { BetModel, EditToolbarProps, Enums, ISelectionsResult, } from '../../models';
-import FreeSoloCreateOption from '../Dropdown/FreeSoloCreateOptionDialog';
 import { deleteBet, upsertBet, } from '../../api';
 import { ItemTypes } from '../../models/enums';
 
@@ -71,13 +70,14 @@ export default function Bets(props: {
 
   defaultRows: Array<BetModel> | undefined;
   possibleCounteragents: Array<{ value: string; label: string; }> | undefined;
+  allSelections: ISelectionsResult;
   possibleSports: Array<{ value: string; label: string; }> | undefined;
   possibleTournaments: Array<{ value: string; label: string; }> | undefined;
   possibleMarkets: Array<{ value: string; label: string; }> | undefined;
 }) {
   const { selectBetIdFn, setIsLoading, 
     defaultRows, 
-    possibleCounteragents, possibleSports,
+    possibleCounteragents, allSelections, possibleSports,
     possibleTournaments, possibleMarkets,
   } = props;
 
@@ -328,14 +328,6 @@ export default function Bets(props: {
   
   //#region Dropdown handlers
 
-  const onClick = (props: { id: number; }) => {
-    const { id, } = props;
-
-    setRowModesModel((previousRowModesModel) => {
-      return { ...previousRowModesModel, [id]: { mode: GridRowModes.Edit } }
-    });
-  }
-
   const onChange = (event: any, value: {
     rowId: GridRowId | undefined;
     type: string;
@@ -353,6 +345,9 @@ export default function Bets(props: {
             counteragent: value.type === ItemTypes.COUNTERAGENT
               ? value.label
               : row.counteragent,
+            selection: value.type === ItemTypes.SELECTION
+              ? value.label
+              : row.selection,
             sport: value.type === ItemTypes.SPORT
               ? value.value
               : row.sport,
@@ -423,7 +418,7 @@ export default function Bets(props: {
       },
       renderEditCell: (params: GridRenderEditCellParams) => {
         const row = rows 
-          ? rows?.find((r) => r.id === params.id)
+          ? rows.find((r) => r.id === params.id)
           : undefined;
 
         if(!row) {
@@ -464,6 +459,69 @@ export default function Bets(props: {
       }
     },
     {
+      field: 'selection',
+      headerName: 'Selection',
+      type: 'singleSelect',
+      editable: true,
+      width: 300,
+      renderCell: (params: GridRenderCellParams) => {
+        const row = rows 
+          ? rows.find((r) => r.id === params.id)
+          : undefined;
+
+        if(!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <>
+            {row.selection}
+          </>
+        );
+      },
+      renderEditCell: (params: GridRenderEditCellParams) => {
+        const row = rows 
+          ? rows.find((r) => r.id === params.id)
+          : undefined;
+
+        if(!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        const possibleSelections: Array<string> = row.counteragentId
+          ? allSelections[row.counteragentId]
+          : [];
+        return (
+          <Autocomplete
+            disablePortal
+            options={possibleSelections.map((selection: string) => {
+                  return {
+                        rowId: params.id, 
+                        type: ItemTypes.SELECTION, 
+                        value: selection, 
+                        label: selection, 
+                      };
+                  })
+            }       
+            sx={{ width: 300 }}
+            renderInput={(params: any) => <TextField {...params} 
+              label={ItemTypes.SELECTION} />}
+            onChange={onChange}
+            value={
+              row.selection
+                ? {
+                    rowId: params.id,
+                    type: ItemTypes.SELECTION,
+                    value: row.selection,
+                    label: row.selection,
+                  }
+                : null
+            }
+          />
+        )
+      }
+    },
+    {
       field: 'sport',
       headerName: 'Sport',
       type: 'singleSelect',
@@ -472,7 +530,7 @@ export default function Bets(props: {
       valueOptions: possibleSports,
       renderCell: (params: GridRenderCellParams) => {
         const row = rows 
-          ? rows?.find((r) => r.id === params.id)
+          ? rows.find((r) => r.id === params.id)
           : undefined;
 
         if(!row) {
@@ -487,7 +545,7 @@ export default function Bets(props: {
       },
       renderEditCell: (params: GridRenderEditCellParams) => {
         const row = rows 
-          ? rows?.find((r) => r.id === params.id)
+          ? rows.find((r) => r.id === params.id)
           : undefined;
 
         if(!row) {
@@ -551,7 +609,7 @@ export default function Bets(props: {
       valueOptions: possibleMarkets,
       renderCell: (params: GridRenderCellParams) => {
         const row = rows 
-          ? rows?.find((r) => r.id === params.id)
+          ? rows.find((r) => r.id === params.id)
           : undefined;
 
         if(!row) {
@@ -566,7 +624,7 @@ export default function Bets(props: {
       },
       renderEditCell: (params: GridRenderEditCellParams) => {
         const row = rows 
-          ? rows?.find((r) => r.id === params.id)
+          ? rows.find((r) => r.id === params.id)
           : undefined;
 
         if(!row) {
@@ -615,7 +673,7 @@ export default function Bets(props: {
       valueOptions: possibleTournaments,
       renderCell: (params: GridRenderCellParams) => {
         const row = rows 
-          ? rows?.find((r) => r.id === params.id)
+          ? rows.find((r) => r.id === params.id)
           : undefined;
 
         if(!row) {
@@ -630,7 +688,7 @@ export default function Bets(props: {
       },
       renderEditCell: (params: GridRenderEditCellParams) => {
         const row = rows 
-          ? rows?.find((r) => r.id === params.id)
+          ? rows.find((r) => r.id === params.id)
           : undefined;
 
         if(!row) {

@@ -1,9 +1,9 @@
 enum ItemTypes {
     COUNTERAGENT = 'COUNTERAGENT',
+    SELECTION = 'SELECTION',
     SPORT = 'SPORT',
     MARKET = 'MARKET',
     TOURNAMENT = 'TOURNAMENT',
-    SELECTION = 'SELECTION',
     USER = 'USER',
 };
 

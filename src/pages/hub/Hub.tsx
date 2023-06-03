@@ -1,5 +1,5 @@
 import React, { Profiler, useEffect } from 'react';
-import { CircularProgress, FormControlLabel, Paper, Radio, RadioGroup, Typography} from '@mui/material';
+import { Box, CircularProgress, FormControlLabel, Paper, Radio, RadioGroup, Typography} from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
@@ -69,7 +69,7 @@ export default function Hub() {
     React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
   const [ possibleMarkets, setMarkets ] =
     React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
-  // const [ possibleSelections, setSelections ] = React.useState<ISelectionsResult | undefined>(undefined);
+  const [ possibleSelections, setSelections ] = React.useState<ISelectionsResult | undefined>(undefined);
   const [ expensesRows, setExpensesRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
 
   useEffect(() => {
@@ -78,12 +78,40 @@ export default function Hub() {
         setIsLoading(true);
         let pendingBets: Array<BetModel> = (await getPendingBets())!.map(betToBetModelMapper);
         let completedBets: Array<BetModel> = (await getCompletedBets())!.map(betToBetModelMapper);
-        const getAllCounteragentsResult = await getCounteragents();
-        const getAllSportsResult = await getSports();
-        const getAllTournamentsResult = await getTournaments();
-        const getAllMarketsResult = await getMarkets();
+        const getCounteragentsResult = await getCounteragents();
+        // const getSelectionsResult = await getSelections();
+        const getSelectionsResult = {
+          '1': [
+            'Selection 1',
+          ],
+          '2': [
+            'Selection 1',
+            'Selection 2',
+          ],
+          '3': [
+            'Selection 1',
+            'Selection 2',
+            'Selection 3',
+          ],
+          '4': [
+            'Selection 1',
+            'Selection 2',
+            'Selection 3',
+            'Selection 4',
+          ],
+          '5': [
+            'Selection 1',
+            'Selection 2',
+            'Selection 3',
+            'Selection 4',
+            'Selection 5'
+          ],
+        }
+        setSelections(getSelectionsResult);
+        const getSportsResult = await getSports();
+        const getTournamentsResult = await getTournaments();
+        const getMarketsResult = await getMarkets();
         
-        // const getAllSelectionsResult = await getSelections();
         const getAllExpenses: Array<Expense> | undefined  = await getExpenses();
         setIsLoading(false);
 
@@ -93,8 +121,8 @@ export default function Hub() {
         setFilteredCompletedRows(completedBets);
 
         const counterAgents: Array<{ value: string; label: string; }> | undefined = 
-          getAllCounteragentsResult
-            ? getAllCounteragentsResult.map((counteragent) => {
+          getCounteragentsResult
+            ? getCounteragentsResult.map((counteragent) => {
                 return {
                   value: counteragent.id.toString(),
                   label: counteragent.name,
@@ -105,8 +133,8 @@ export default function Hub() {
         setCounteragents(counterAgents);
 
         const sports: Array<{ value: string; label: string; }> | undefined =
-          getAllSportsResult
-              ? getAllSportsResult.map((sport) => {
+          getSportsResult
+              ? getSportsResult.map((sport) => {
                   return {
                     value: sport,
                     label: sport,
@@ -116,8 +144,8 @@ export default function Hub() {
         setSports(sports);
 
         const markets: Array<{ value: string; label: string; }> | undefined =
-          getAllMarketsResult
-              ? getAllMarketsResult.map((market) => {
+          getMarketsResult
+              ? getMarketsResult.map((market) => {
                   return {
                     value: market,
                     label: market,
@@ -127,8 +155,8 @@ export default function Hub() {
         setMarkets(markets);
 
         const tournaments: Array<{ value: string; label: string; }> | undefined =
-          getAllTournamentsResult
-              ? getAllTournamentsResult.map((tournament) => {
+          getTournamentsResult
+              ? getTournamentsResult.map((tournament) => {
                   return {
                     value: tournament,
                     label: tournament,
@@ -136,10 +164,6 @@ export default function Hub() {
                 })
               : [];
         setTournaments(tournaments);
-
-        // if(getAllSelectionsResult) {
-        //   setSelections(getAllSelectionsResult);
-        // }
 
         const expenses: Array<ExpenseModel> | undefined = getAllExpenses
                 ? getAllExpenses.map((expense) => {
@@ -364,7 +388,7 @@ export default function Hub() {
                 possibleSports={possibleSports}
                 possibleTournaments={possibleTournaments}
                 possibleMarkets={possibleMarkets}
-                // possibleSelections={possibleSelections}
+                allSelections={possibleSelections ? possibleSelections : {}}
               />
             )
           : null
@@ -381,24 +405,30 @@ export default function Hub() {
                 possibleSports={possibleSports}
                 possibleTournaments={possibleTournaments}
                 possibleMarkets={possibleMarkets}
-                // possibleSelections={possibleSelections}
+                allSelections={possibleSelections ? possibleSelections : {}}
               />
             )
           : null
       }
 
-      <Typography variant='h4'>Expenses</Typography>
+      {/* <Typography variant='h4'>Expenses</Typography>
       {
         expensesRows
           ? (
-              <Expenses 
-                setIsLoading={setIsLoading}
-                defaultRows={expensesRows}
-                possibleCounteragents={possibleCounteragents}
-              />
+              <Box style={{ 
+                maxHeight: 300, 
+                overflow: "hidden",
+                overflowY: "scroll",
+              }}>
+                <Expenses 
+                  setIsLoading={setIsLoading}
+                  defaultRows={expensesRows}
+                  possibleCounteragents={possibleCounteragents}
+                />
+              </Box>
             )
           : null
-      }
+      } */}
       
     </Paper>
   );

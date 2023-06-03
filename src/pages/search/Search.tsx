@@ -346,7 +346,7 @@ export default function Search() {
         }}/>
       </LocalizationProvider>
       <Typography variant='h4'>Bets</Typography>
-      {
+      {/* {
         filteredRows
           ? (
               <Bets selectBetIdFn={selectBetId}
@@ -360,7 +360,7 @@ export default function Search() {
               />
             )
           : null
-      }
+      } */}
     </Paper>
   );
 }

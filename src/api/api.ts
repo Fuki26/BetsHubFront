@@ -8,7 +8,7 @@ const domain = 'http://213.91.236.205:5000';
 export const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
     try {
         const getBetsResult = 
-            await axios.get(`${domain}/GetAllBets?StartIndex=0&Count=2&BetStatus=0`);
+            await axios.get(`${domain}/GetAllBets?StartIndex=0&Count=200&BetStatus=0`);
         return getBetsResult.data;
     } catch(e) {
         alert(JSON.stringify(e));
