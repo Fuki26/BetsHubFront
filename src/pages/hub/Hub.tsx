@@ -1,4 +1,4 @@
-import React, { Profiler, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Box, CircularProgress, FormControlLabel, Paper, Radio, RadioGroup, Typography} from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -6,7 +6,7 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import Bets from '../../components/Bets/Bets';
 import { BetModel, ExpenseModel, ISelectionsResult, StatisticItemModel } from '../../models';
 import { getBetStatistics, getCompletedBets, getCounteragents, getExpenses, getMarkets, 
-  getPendingBets, getSelections, getSports, getTournaments } from '../../api';
+  getPendingBets, getSports, getTournaments } from '../../api';
 import { Bet, Expense, Statistics } from '../../database-models';
 import { StatisticType } from '../../models/enums';
 import { DataGridPro, GridColDef } from '@mui/x-data-grid-pro';
@@ -117,8 +117,20 @@ export default function Hub() {
 
         setPendingRows(pendingBets);
         setCompletedRows(completedBets);
-        setFilteredPendingRows(pendingBets);
-        setFilteredCompletedRows(completedBets);
+        setFilteredPendingRows(pendingBets.filter((b) => {
+          const now = new Date();
+          return b.dateFinished 
+            && b.dateFinished.getFullYear() === now.getFullYear()
+            && b.dateFinished.getMonth() === now.getMonth()
+            && b.dateFinished.getDate() === now.getDate()
+        }));
+        setFilteredCompletedRows(completedBets.filter((b) => {
+          const now = new Date();
+          return b.dateFinished 
+            && b.dateFinished.getFullYear() === now.getFullYear()
+            && b.dateFinished.getMonth() === now.getMonth()
+            && b.dateFinished.getDate() === now.getDate()
+        }));
 
         const counterAgents: Array<{ value: string; label: string; }> | undefined = 
           getCounteragentsResult
@@ -188,6 +200,7 @@ export default function Hub() {
                 : [];
 
         setExpensesRows(expenses);
+        setDate(new Date());
       } catch (e) {
         console.error(e);
       }
@@ -201,7 +214,9 @@ export default function Hub() {
         for(var i = 0; i <= pendingRows?.length - 1; i++) {
           const currentRow = pendingRows[i];
           if(currentRow.dateFinished 
-            && currentRow.dateFinished.getTime() < date.getTime()) {
+            && currentRow.dateFinished.getFullYear() === date.getFullYear()
+            && currentRow.dateFinished.getMonth() === date.getMonth()
+            && currentRow.dateFinished.getDate() === date.getDate()) {
               bets.push(currentRow);
           }
         }
@@ -218,7 +233,9 @@ export default function Hub() {
         for(var i = 0; i <= completedRows?.length - 1; i++) {
           const currentRow = completedRows[i];
           if(currentRow.dateFinished 
-            && currentRow.dateFinished.getTime() < date.getTime()) {
+            && currentRow.dateFinished.getFullYear() === date.getFullYear()
+            && currentRow.dateFinished.getMonth() === date.getMonth()
+            && currentRow.dateFinished.getDate() === date.getDate()) {
               bets.push(currentRow);
           }
         }
