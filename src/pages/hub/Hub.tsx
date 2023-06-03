@@ -411,7 +411,7 @@ export default function Hub() {
           : null
       }
 
-      {/* <Typography variant='h4'>Expenses</Typography>
+      <Typography variant='h4'>Expenses</Typography>
       {
         expensesRows
           ? (
@@ -428,7 +428,7 @@ export default function Hub() {
               </Box>
             )
           : null
-      } */}
+      }
       
     </Paper>
   );

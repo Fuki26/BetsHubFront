@@ -66,52 +66,112 @@ export default function Search() {
     React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
   const [ possibleMarkets, setMarkets ] =
     React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
-  // const [ possibleSelections, setSelections ] = React.useState<ISelectionsResult | undefined>(undefined);
+  const [ possibleSelections, setSelections ] = React.useState<ISelectionsResult | undefined>(undefined);
   const [ expensesRows, setExpensesRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
 
   useEffect(() => {
     (async () => {
       try {
         setIsLoading(true);
-        let bets: Array<BetModel> = (await getPendingBets())!.map(betToBetModelMapper);
-        const getAllCounteragentsResult = await getCounteragents();
-        const getAllSportsResult = await getSports();
-        const getAllTournamentsResult = await getTournaments();
-        const getAllMarketsResult = await getMarkets();
-        
-        // const getAllSelectionsResult = await getSelections();
-        const getAllExpenses: Array<Expense> | undefined  = await getExpenses();
-        setIsLoading(false);
 
+        //#region Bets
+
+        let bets: Array<BetModel> = (await getPendingBets())!.map(betToBetModelMapper);
         setRows(bets);
         setFilteredRows(bets);
 
+        //#endregion Bets
+
+        //#region Counteragents
+
+        const getCounteragentsResult = await getCounteragents();
         const counterAgents: Array<{ value: string; label: string; }> | undefined = 
-          getAllCounteragentsResult
-            ? getAllCounteragentsResult.map((counteragent) => {
+          getCounteragentsResult
+            ? getCounteragentsResult.map((counteragent) => {
                 return {
                   value: counteragent.id.toString(),
                   label: counteragent.name,
                 };
               })
             : [];
-
         setCounteragents(counterAgents);
 
+        //#endregion Counteragents
+
+
+        //#region Selections
+
+        // const getSelectionsResult = await getSelections();
+        const getSelectionsResult = {
+          '1': [
+            'Selection 1',
+          ],
+          '2': [
+            'Selection 1',
+            'Selection 2',
+          ],
+          '3': [
+            'Selection 1',
+            'Selection 2',
+            'Selection 3',
+          ],
+          '4': [
+            'Selection 1',
+            'Selection 2',
+            'Selection 3',
+            'Selection 4',
+          ],
+          '5': [
+            'Selection 1',
+            'Selection 2',
+            'Selection 3',
+            'Selection 4',
+            'Selection 5'
+          ],
+        }
+        setSelections(getSelectionsResult);
+
+        //#endregion Selections
+
+        
+        //#region Sports
+
+        const getSportsResult = await getSports();
         const sports: Array<{ value: string; label: string; }> | undefined =
-          getAllSportsResult
-              ? getAllSportsResult.map((sport) => {
-                  return {
-                    value: sport,
-                    label: sport,
-                  };
-                })
-              : [];
+        getSportsResult
+            ? getSportsResult.map((sport) => {
+                return {
+                  value: sport,
+                  label: sport,
+                };
+              })
+            : [];
         setSports(sports);
 
+        //#endregion Sports
+              
+        //#region Tournaments
+
+        const getTournamentsResult = await getTournaments();
+        const tournaments: Array<{ value: string; label: string; }> | undefined =
+        getTournamentsResult
+            ? getTournamentsResult.map((tournament) => {
+                return {
+                  value: tournament,
+                  label: tournament,
+                };
+              })
+            : [];
+        setTournaments(tournaments);
+
+        //#endregion Tournaments
+
+        //#region Markets
+
+        const getMarketsResult = await getMarkets();
         const markets: Array<{ value: string; label: string; }> | undefined =
-          getAllMarketsResult
-              ? getAllMarketsResult.map((market) => {
+          getMarketsResult
+              ? getMarketsResult.map((market) => {
                   return {
                     value: market,
                     label: market,
@@ -120,23 +180,14 @@ export default function Search() {
               : [];
         setMarkets(markets);
 
-        const tournaments: Array<{ value: string; label: string; }> | undefined =
-          getAllTournamentsResult
-              ? getAllTournamentsResult.map((tournament) => {
-                  return {
-                    value: tournament,
-                    label: tournament,
-                  };
-                })
-              : [];
-        setTournaments(tournaments);
+        //#endregion Markets
 
-        // if(getAllSelectionsResult) {
-        //   setSelections(getAllSelectionsResult);
-        // }
 
-        const expenses: Array<ExpenseModel> | undefined = getAllExpenses
-                ? getAllExpenses.map((expense) => {
+        //#region Expenses
+
+        const getExpensesResult: Array<Expense> | undefined  = await getExpenses();
+        const expenses: Array<ExpenseModel> | undefined = getExpensesResult
+                ? getExpensesResult.map((expense) => {
                     return {
                       id: expense.id,
                       counteragentId: expense.counteragentId
@@ -156,8 +207,12 @@ export default function Search() {
                     };
                   })
                 : [];
-
         setExpensesRows(expenses);
+
+
+        //#endregion Expenses
+      
+        setIsLoading(false);
       } catch (e) {
         console.error(e);
       }
@@ -346,7 +401,7 @@ export default function Search() {
         }}/>
       </LocalizationProvider>
       <Typography variant='h4'>Bets</Typography>
-      {/* {
+      {
         filteredRows
           ? (
               <Bets selectBetIdFn={selectBetId}
@@ -356,11 +411,11 @@ export default function Search() {
                 possibleSports={possibleSports}
                 possibleTournaments={possibleTournaments}
                 possibleMarkets={possibleMarkets}
-                // possibleSelections={possibleSelections}
+                allSelections={possibleSelections ? possibleSelections : {}}
               />
             )
           : null
-      } */}
+      }
     </Paper>
   );
 }
