@@ -387,8 +387,9 @@ export default function Bets(props: {
     {
       field: 'betStatus',
       headerName: 'Bet status',
-      type: 'number',
+      type: 'singleSelect',
       editable: true,
+      valueOptions: [ 0, 1 ],
       width: 150,
     },
     {
@@ -529,8 +530,9 @@ export default function Bets(props: {
     {
       field: 'liveStatus',
       headerName: 'Live status',
-      type: 'number',
+      type: 'singleSelect',
       editable: true,
+      valueOptions: [ 0, 1, 2, 3 ],
       width: 150,
     },
     {
@@ -709,6 +711,13 @@ export default function Bets(props: {
           + params.row.amountGBP;
         return { ...params.row, totalAmount, };
       },
+      valueGetter: (params: GridValueSetterParams) => {
+        const totalAmount = params.row.amountBGN 
+          + params.row.amountEUR 
+          + params.row.amountUSD 
+          + params.row.amountGBP;
+        return totalAmount;
+      },
     },
     {
       field: 'odd',
@@ -794,7 +803,7 @@ export default function Bets(props: {
   ];
 
   return (
-    <Paper sx={{ padding: '5%', }}>
+    <Paper sx={{ padding: '5%'}}>
       {
         rows
           ? (

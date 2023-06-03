@@ -8,7 +8,7 @@ const domain = 'http://213.91.236.205:5000';
 export const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
     try {
         const getBetsResult = 
-            await axios.get(`${domain}/GetAllBets?StartIndex=0&Count=200&BetStatus=0`);
+            await axios.get(`${domain}/GetAllBets?StartIndex=0&Count=2&BetStatus=0`);
         return getBetsResult.data;
     } catch(e) {
         alert(JSON.stringify(e));
@@ -199,7 +199,7 @@ export const upsertBet = async (bet: BetModel) => {
             Notes: bet.notes ? bet.notes : '',
         };
         console.log(`UPSERT BET - ${JSON.stringify(obj)}`);
-        await axios.post(`${domain}/UpsertBets`, obj);
+        await axios.post(`${domain}/UpsertBets?BetStatus=${obj.BetStatus}&Stake=${obj.Stake}&CounteragentId=${obj.CounteragentId}&Sport=${obj.Sport}&LiveStatus=${obj.LiveStatus}&PSLimit=${obj.PSLimit}&Market=${obj.Market}&Tournament=${obj.Tournament}&Selection=${obj.Selection}&AmountBGN=${obj.AmountBGN}&AmountEUR=${obj.AmountEUR}&AmountUSD=${obj.AmountUSD}&AmountGBP=${obj.AmountGBP}&Odd=${obj.Odd}&Profits=${obj.Profits}&Notes=${obj.Notes}`);
     } catch(e) {
         alert(JSON.stringify(e));
     }
