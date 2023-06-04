@@ -211,7 +211,10 @@ export const upsertBet = async (bet: BetModel) => {
 export const upsertExpense = async (expense: ExpenseModel) => {
     try {
         console.log(`UPSERT EXPENSE - ${JSON.stringify(expense)}`);
-        await axios.post(`${domain}/UpsertExpense?Id=${expense.id}&CounteragentId=${expense.counteragentId}&Description=${expense.description}&Amount=${expense.amount}`);
+        const id = expense.isSavedInDatabase
+            ? `Id=${expense.id}&`
+            : '';
+        await axios.post(`${domain}/UpsertExpense?${id}CounteragentId=${expense.counteragentId}&Description=${expense.description}&Amount=${expense.amount}`);
     } catch(e) {
         alert(JSON.stringify(e));
     }
@@ -220,7 +223,10 @@ export const upsertExpense = async (expense: ExpenseModel) => {
 export const upsertCounteragent = async (counteragent: CounteragentModel) => {
     try {
         console.log(`UPSERT COUNTERAGENT - ${JSON.stringify(counteragent)}`);
-        await axios.post(`${domain}/UpsertCounteragent?Id=${counteragent.id}&Name=${counteragent.name}&CounteragentCategoryId=${counteragent.counteragentCategoryId}&MaxRate=${counteragent.maxRate}&UserId=${counteragent.userId}`);
+        const id = counteragent.isSavedInDatabase
+            ? `Id=${counteragent.id}&`
+            : '';
+        await axios.post(`${domain}/UpsertCounteragent?${id}Name=${counteragent.name}&CounteragentCategoryId=${counteragent.counteragentCategoryId}&MaxRate=${counteragent.maxRate}&UserId=${counteragent.userId}`);
     } catch(e) {
         alert(JSON.stringify(e));
     }
@@ -229,7 +235,10 @@ export const upsertCounteragent = async (counteragent: CounteragentModel) => {
 export const upsertCurrency = async (currency: CurrencyModel) => {
     try {
         console.log(`UPSERT CURRENCY - ${JSON.stringify(currency)}`);
-        await axios.post(`${domain}/UpsertCurrency?Id=${currency.id}&Name=${currency.name}&Abbreviation=${currency.abbreviation}&ConversionRateToBGN=${currency.conversionRateToBGN}`);
+        const id = currency.isSavedInDatabase
+            ? `Id=${currency.id}&`
+            : '';
+        await axios.post(`${domain}/UpsertCurrency?${id}Name=${currency.name}&Abbreviation=${currency.abbreviation}&ConversionRateToBGN=${currency.conversionRateToBGN}`);
     } catch(e) {
         alert(JSON.stringify(e));
     }

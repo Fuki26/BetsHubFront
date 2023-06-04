@@ -436,17 +436,11 @@ export default function Hub() {
       {
         expensesRows
           ? (
-              <Box style={{ 
-                maxHeight: 300, 
-                overflow: "hidden",
-                overflowY: "scroll",
-              }}>
-                <Expenses 
-                  setIsLoading={setIsLoading}
-                  defaultRows={expensesRows}
-                  possibleCounteragents={possibleCounteragents}
-                />
-              </Box>
+              <Expenses 
+                setIsLoading={setIsLoading}
+                defaultRows={expensesRows}
+                possibleCounteragents={possibleCounteragents}
+              />
             )
           : null
       }

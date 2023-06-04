@@ -357,7 +357,7 @@ export default function Expenses(props: {
         field: 'dateCreated',
         headerName: 'dateCreated',
         type: 'date',
-        editable: true,
+        editable: false,
         width: 150,
     },
     {
