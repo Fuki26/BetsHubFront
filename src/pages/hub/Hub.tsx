@@ -398,7 +398,9 @@ export default function Hub() {
       {
         filteredPendingRows
           ? (
-              <Bets selectBetIdFn={selectBetId}
+              <Bets 
+                isRead={false}
+                selectBetIdFn={selectBetId}
                 setIsLoading={setIsLoading} 
                 defaultRows={filteredPendingRows}
                 possibleCounteragents={possibleCounteragents}
@@ -415,7 +417,9 @@ export default function Hub() {
       {
         filteredCompletedRows
           ? (
-              <Bets selectBetIdFn={selectBetId}
+              <Bets
+                isRead={true} 
+                selectBetIdFn={selectBetId}
                 setIsLoading={setIsLoading}
                 defaultRows={filteredCompletedRows}
                 possibleCounteragents={possibleCounteragents}

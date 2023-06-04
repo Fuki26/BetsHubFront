@@ -65,6 +65,7 @@ function EditToolbar(props: EditToolbarProps) {
 }
 
 export default function Bets(props: { 
+  isRead: boolean;
   selectBetIdFn: (id: number) => void;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 
@@ -75,10 +76,9 @@ export default function Bets(props: {
   possibleTournaments: Array<{ value: string; label: string; }> | undefined;
   possibleMarkets: Array<{ value: string; label: string; }> | undefined;
 }) {
-  const { selectBetIdFn, setIsLoading, 
-    defaultRows, 
-    possibleCounteragents, allSelections, possibleSports,
-    possibleTournaments, possibleMarkets,
+  const { isRead, selectBetIdFn, setIsLoading, 
+    defaultRows, possibleCounteragents, allSelections, 
+    possibleSports, possibleTournaments, possibleMarkets,
   } = props;
 
   const [ rows, setRows, ] = React.useState<Array<BetModel> | undefined>(defaultRows);
@@ -820,7 +820,10 @@ export default function Bets(props: {
       cellClassName: 'actions',
       getActions: (params) => {
         const isInEditMode = rowModesModel[params.id]?.mode === GridRowModes.Edit;
-        return isInEditMode 
+        if(isRead) {
+          return [];
+        } else {
+          return isInEditMode 
           ? [
                 <GridActionsCellItem
                   icon={<SaveIcon />}
@@ -856,6 +859,7 @@ export default function Bets(props: {
                 color='inherit'
               />,
             ]
+        }
       },
     }
   ];
@@ -872,7 +876,9 @@ export default function Bets(props: {
                   columnThreshold={2}
                   rows={rows}   
                   slots={{
-                    toolbar: EditToolbar,
+                    toolbar: isRead
+                      ? undefined
+                      : EditToolbar,
                   }}
                   rowModesModel={rowModesModel}
                   processRowUpdate={processRowUpdate}

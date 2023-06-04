@@ -404,7 +404,9 @@ export default function Search() {
       {
         filteredRows
           ? (
-              <Bets selectBetIdFn={selectBetId}
+              <Bets
+                isRead={false} 
+                selectBetIdFn={selectBetId}
                 setIsLoading={setIsLoading} 
                 defaultRows={filteredRows}
                 possibleCounteragents={possibleCounteragents}
