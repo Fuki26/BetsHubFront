@@ -41,7 +41,7 @@ function EditToolbar(props: EditToolbarProps) {
         totalAmount: undefined,
         odd: undefined,
         dateFinished: undefined,
-        dateStaked: undefined,
+        dateStaked: new Date(),
         profits: undefined,
         notes: undefined,
     
@@ -236,8 +236,8 @@ export default function Bets(props: {
           amountGBP: undefined,
           totalAmount: undefined,
           odd: undefined,
-          dateFinished: clickedRow?.dateFinished,
-          dateStaked: clickedRow?.dateStaked,
+          dateFinished: undefined,
+          dateStaked: new Date(),
           profits: clickedRow?.profits,
           notes: clickedRow?.notes,
       
@@ -293,7 +293,7 @@ export default function Bets(props: {
             amountGBP: newRow.amountGBP,
             totalAmount: newRow.totalAmount,
             odd: newRow.odd,
-            dateFinished: newRow.dateFinished,
+            dateFinished: new Date(),
             dateStaked: newRow.dateStaked,
             profits: newRow.profits,
             notes: newRow.notes,
@@ -760,7 +760,7 @@ export default function Bets(props: {
       field: 'totalAmount',
       headerName: 'Total amount',
       type: 'number',
-      editable: true,
+      editable: false,
       width: 150,
       valueSetter: (params: GridValueSetterParams) => {
         const totalAmount = params.row.amountBGN 
@@ -788,21 +788,21 @@ export default function Bets(props: {
       field: 'dateFinished',
       headerName: 'Date finished',
       type: 'date',
-      editable: true,
+      editable: false,
       width: 150,
     },
     {
       field: 'dateStaked',
       headerName: 'Date staked',
       type: 'date',
-      editable: true,
+      editable: false,
       width: 150,
     },
     {
       field: 'profits',
       headerName: 'Profits',
       type: 'number',
-      editable: true,
+      editable: false,
       width: 150,
     },
     {
