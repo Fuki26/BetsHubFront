@@ -10,6 +10,7 @@ import { DataGridPro, GridColDef } from '@mui/x-data-grid-pro';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
+import Expenses from '../../components/Expenses/Expenses';
 
 
 const betToBetModelMapper = (bet: Bet) => {
@@ -70,6 +71,7 @@ export default function Search() {
     React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
   const [ possibleSelections, setSelections ] = React.useState<ISelectionsResult | undefined>(undefined);
   const [ expensesRows, setExpensesRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
+  const [ filteredExpensesRows, setFilteredExpensesRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
 
   useEffect(() => {
     (async () => {
@@ -82,8 +84,8 @@ export default function Search() {
         setRows(bets);
         const dateFrom: Date = new Date();
         dateFrom.setMonth(dateFrom.getMonth() - 1);
+        const now = new Date();
         setFilteredRows(bets.filter((b) => {
-          const now = new Date();
           if(b.dateFinished) {
             return b.dateFinished.getTime() > dateFrom.getTime()
               && b.dateFinished.getTime() < now.getTime();
@@ -220,6 +222,10 @@ export default function Search() {
                   })
                 : [];
         setExpensesRows(expenses);
+        setFilteredExpensesRows(expenses.filter((e) => {
+          return e.dateCreated.getTime() > dateFrom.getTime()
+            && e.dateCreated.getTime() < now.getTime();
+        }));
 
         setDateFrom(dateFrom);
         setDateTo(new Date());
@@ -264,6 +270,39 @@ export default function Search() {
         }
 
         return bets;
+      } else {
+        return [];
+      }
+    });
+
+    setFilteredExpensesRows((previousRowsModel: Array<ExpenseModel> | undefined) => {
+      if(expensesRows) {
+        const expenses: Array<ExpenseModel> = [];
+        for(var i = 0; i <= expensesRows.length - 1; i++) {
+          const currentRow = expensesRows[i];
+          if(counteragentId && counteragentId !== currentRow.counteragentId) {
+            continue;
+          }
+
+          if(dateFrom && dateTo) {
+            if(currentRow.dateCreated.getTime() > dateFrom.getTime() 
+              && currentRow.dateCreated.getTime() < dateTo.getTime()) {
+                expenses.push(currentRow);
+            }
+          } else if(dateFrom && !dateTo) {
+            if(currentRow.dateCreated.getTime() > dateFrom.getTime()) {
+                expenses.push(currentRow);
+            }
+          } else if(!dateFrom && dateTo) {
+            if(currentRow.dateCreated.getTime() < dateTo.getTime()) {
+              expenses.push(currentRow);
+            }
+          } else {
+            expenses.push(currentRow); 
+          }
+        }
+
+        return expenses;
       } else {
         return [];
       }
@@ -451,6 +490,19 @@ export default function Search() {
                 possibleTournaments={possibleTournaments}
                 possibleMarkets={possibleMarkets}
                 allSelections={possibleSelections ? possibleSelections : {}}
+              />
+            )
+          : null
+      }
+      <Typography variant='h4'>Expenses</Typography>
+      {
+        filteredExpensesRows
+          ? (
+              <Expenses 
+                isRead={true}
+                setIsLoading={setIsLoading}
+                defaultRows={filteredExpensesRows}
+                possibleCounteragents={possibleCounteragents}
               />
             )
           : null

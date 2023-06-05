@@ -437,6 +437,7 @@ export default function Hub() {
         expensesRows
           ? (
               <Expenses 
+                isRead={false}
                 setIsLoading={setIsLoading}
                 defaultRows={expensesRows}
                 possibleCounteragents={possibleCounteragents}

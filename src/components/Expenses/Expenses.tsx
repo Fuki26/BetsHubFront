@@ -14,11 +14,12 @@ import { ItemTypes } from '../../models/enums';
 import { deleteExpense, upsertExpense } from '../../api';
 
 export default function Expenses(props: { 
+  isRead: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   defaultRows: Array<ExpenseModel> | null;
   possibleCounteragents: Array<{ value: string; label: string; }> | undefined;
 }) {
-  const { setIsLoading, defaultRows, possibleCounteragents, } = props;
+  const { isRead, setIsLoading, defaultRows, possibleCounteragents, } = props;
 
   const [ rows, setRows, ] = React.useState<Array<ExpenseModel> | null>(defaultRows);
   const [ rowModesModel, setRowModesModel, ] = React.useState<GridRowModesModel>({});
@@ -382,7 +383,10 @@ export default function Expenses(props: {
       cellClassName: 'actions',
       getActions: (params) => {
         const isInEditMode = rowModesModel[params.id]?.mode === GridRowModes.Edit;
-        return isInEditMode 
+        if(isRead) {
+          return [];
+        } else {
+          return isInEditMode 
           ? [
                 <GridActionsCellItem
                   icon={<SaveIcon />}
@@ -412,6 +416,7 @@ export default function Expenses(props: {
                 color='inherit'
               />,
             ]
+        }
       },
     }
   ];
@@ -428,7 +433,9 @@ export default function Expenses(props: {
                   columnThreshold={2}
                   rows={rows}   
                   slots={{
-                    toolbar: editToolbar,
+                    toolbar: isRead
+                      ? undefined
+                      : editToolbar,
                   }}
                   rowModesModel={rowModesModel}
                   processRowUpdate={processRowUpdate}
