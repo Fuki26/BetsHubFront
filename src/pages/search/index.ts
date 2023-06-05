@@ -1,7 +1,5 @@
-import FullFeaturedCrudGrid from './Search';
-import * as searchAPI from './searchAPI';
+import Search from './Search';
 
 export {
-    FullFeaturedCrudGrid,
-    searchAPI,
+    Search,
 };
