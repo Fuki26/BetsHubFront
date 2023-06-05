@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react';
-import { CircularProgress, FormControlLabel, Paper, Radio, RadioGroup, Typography} from '@mui/material';
+import { Autocomplete, CircularProgress, FormControlLabel, Paper, Radio, RadioGroup, TextField, Typography} from '@mui/material';
 import Bets from '../../components/Bets/Bets';
 import { BetModel, ExpenseModel, ISelectionsResult, StatisticItemModel } from '../../models';
-import { getBetStatistics, getCompletedBets, getCounteragents, getExpenses, getMarkets, 
-  getPendingBets, getSelections, getSports, getTournaments } from '../../api';
+import { getBetStatistics, getCounteragents, getExpenses, getMarkets, 
+  getPendingBets, getSports, getTournaments } from '../../api';
 import { Bet, Expense, Statistics } from '../../database-models';
 import { StatisticType } from '../../models/enums';
 import { DataGridPro, GridColDef } from '@mui/x-data-grid-pro';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 
 
 const betToBetModelMapper = (bet: Bet) => {
@@ -55,6 +56,7 @@ export default function Search() {
   
   const [ dateFrom, setDateFrom] = React.useState<Date | undefined>(undefined);
   const [ dateTo, setDateTo] = React.useState<Date | undefined>(undefined);
+  const [ counteragentId, setCounteragentId ] = React.useState<number | undefined>(undefined);
 
   const [ rows, setRows] = React.useState<Array<BetModel> | undefined>(undefined);
   const [ filteredRows, setFilteredRows] = React.useState<Array<BetModel> | undefined>(undefined);
@@ -78,7 +80,17 @@ export default function Search() {
 
         let bets: Array<BetModel> = (await getPendingBets())!.map(betToBetModelMapper);
         setRows(bets);
-        setFilteredRows(bets);
+        const dateFrom: Date = new Date();
+        dateFrom.setMonth(dateFrom.getMonth() - 1);
+        setFilteredRows(bets.filter((b) => {
+          const now = new Date();
+          if(b.dateFinished) {
+            return b.dateFinished.getTime() > dateFrom.getTime()
+              && b.dateFinished.getTime() < now.getTime();
+          } else {
+            return false;
+          }
+        }));
 
         //#endregion Bets
 
@@ -209,6 +221,8 @@ export default function Search() {
                 : [];
         setExpensesRows(expenses);
 
+        setDateFrom(dateFrom);
+        setDateTo(new Date());
 
         //#endregion Expenses
       
@@ -225,6 +239,10 @@ export default function Search() {
         const bets: Array<BetModel> = [];
         for(var i = 0; i <= rows?.length - 1; i++) {
           const currentRow = rows[i];
+          if(counteragentId && counteragentId !== currentRow.counteragentId) {
+            continue;
+          }
+
           if(currentRow.dateFinished) {
             if(dateFrom && dateTo) {
               if(currentRow.dateFinished?.getTime() > dateFrom.getTime() 
@@ -250,7 +268,7 @@ export default function Search() {
         return [];
       }
     });
-  }, [ dateFrom, dateTo, ]);
+  }, [ dateFrom, dateTo, counteragentId, ]);
 
 
   useEffect(() => {
@@ -393,19 +411,38 @@ export default function Search() {
           : null
       }
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker label="From" value={dateFrom} onChange={(newValue) => {
+        <DatePicker label="From" value={dayjs(dateFrom)} onChange={(newValue) => {
           setDateFrom(newValue ? new Date(newValue?.toISOString()) : undefined);
         }} />
-        <DatePicker label="To" value={dateTo} onChange={(newValue) => {
+        <DatePicker label="To" value={dayjs(dateTo)} onChange={(newValue) => {
           setDateTo(newValue ? new Date(newValue?.toISOString()) : undefined);
         }}/>
       </LocalizationProvider>
+      <Autocomplete
+        disablePortal
+        id="combo-box-demo"
+        options={possibleCounteragents ? possibleCounteragents : []}
+        sx={{ width: 300 }}
+        renderInput={(params) => <TextField {...params} label="Counteragent" />}
+        onChange={(event, counteragent) => {
+          if(counteragent) {
+            const isInvalidId = isNaN(parseInt(counteragent.value));
+            if(!isInvalidId) {
+              setCounteragentId(parseInt(counteragent.value));
+            } else {
+              setCounteragentId(undefined);
+            }
+          } else {
+            setCounteragentId(undefined);
+          }
+        }}
+      />
       <Typography variant='h4'>Bets</Typography>
       {
         filteredRows
           ? (
               <Bets
-                isRead={false} 
+                isRead={true} 
                 selectBetIdFn={selectBetId}
                 setIsLoading={setIsLoading} 
                 defaultRows={filteredRows}
