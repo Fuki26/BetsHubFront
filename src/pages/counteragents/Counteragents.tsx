@@ -14,7 +14,6 @@ import { deleteCounteragent, getCounteragents, getCounteragentsCategories, getUs
 import { Counteragent, CounteragentCategory, User } from '../../database-models';
 
 export default function Counteragents(props: {}) {
-
   const [ isLoading, setIsLoading, ] = React.useState<boolean>(false);
 
   const [ rows, setRows] = React.useState<Array<CounteragentModel> | undefined>(undefined);
@@ -277,8 +276,12 @@ export default function Counteragents(props: {}) {
             counteragentCategoryId: newRow.counteragentCategoryId, 
             counteragentCategory: currentRow.counteragentCategory,
             maxRate: newRow.maxRate,
-            dateCreated: newRow.dateCreated,
-            dateChanged: newRow.dateChanged,
+            dateCreated: currentRow.actionTypeApplied === Enums.ActionType.SAVED
+              ? new Date()
+              : newRow.dateCreated,
+            dateChanged: currentRow.actionTypeApplied === Enums.ActionType.EDITED
+              ? new Date()
+              : newRow.dateChanged,
             userId: newRow.userId, 
             user: currentRow.user,
           };
@@ -469,14 +472,14 @@ export default function Counteragents(props: {}) {
       field: 'dateCreated',
       headerName: 'Date created',
       type: 'date',
-      editable: true,
+      editable: false,
       width: 150,
     },
     {
       field: 'dateChanged',
       headerName: 'Date changed',
       type: 'date',
-      editable: true,
+      editable: false,
       width: 150,
     },
     {

@@ -222,8 +222,12 @@ export default function Currencies() {
             name: newRow.name,
             abbreviation: newRow.abbreviation,
             conversionRateToBGN: newRow.conversionRateToBGN,
-            dateCreated: newRow.dateCreated,
-            dateChanged: newRow.dateChanged,
+            dateCreated: currentRow.actionTypeApplied === Enums.ActionType.SAVED
+              ? new Date()
+              : newRow.dateCreated,
+            dateChanged: currentRow.actionTypeApplied === Enums.ActionType.EDITED
+              ? new Date()
+              : newRow.dateChanged
           };
 
           setIsLoading(true);
@@ -290,14 +294,14 @@ export default function Currencies() {
       field: 'dateCreated',
       headerName: 'Date created',
       type: 'date',
-      editable: true,
+      editable: false,
       width: 150,
     },
     {
       field: 'dateChanged',
       headerName: 'Date changed',
       type: 'date',
-      editable: true,
+      editable: false,
       width: 150,
     },
     {
@@ -331,12 +335,12 @@ export default function Currencies() {
                 onClick={handleEditClick(params.id)}
                 color='inherit'
               />,
-              <GridActionsCellItem
-                icon={<DeleteIcon />}
-                label='Delete'
-                onClick={handleClickOpenOnDeleteDialog(params.id)}
-                color='inherit'
-              />,
+              // <GridActionsCellItem
+              //   icon={<DeleteIcon />}
+              //   label='Delete'
+              //   onClick={handleClickOpenOnDeleteDialog(params.id)}
+              //   color='inherit'
+              // />,
             ]
       },
     }
