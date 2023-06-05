@@ -264,7 +264,7 @@ export default function Counteragents(props: {}) {
     
     toast(currentRow?.actionTypeApplied === Enums.ActionType.CANCELED 
         ? 'Canceled' 
-        : `Saved expense with id ${currentRow!.id}`,
+        : `Saved counteragent with id ${currentRow!.id}`,
       {
         position: 'top-center',
       });
