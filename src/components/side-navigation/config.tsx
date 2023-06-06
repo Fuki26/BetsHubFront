@@ -12,15 +12,6 @@ export const items = [
     )
   },
   {
-    title: 'Hub',
-    path: '/hub',
-    icon: (
-      <SvgIcon fontSize='small'>
-        <CopyrightSharp />
-      </SvgIcon>
-    )
-  },
-  {
     title: 'Search',
     path: '/search',
     icon: (
