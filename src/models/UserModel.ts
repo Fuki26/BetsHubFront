@@ -1,5 +1,5 @@
-import { Role } from '../database-models';
-import { ActionType } from './enums';
+import { Role, } from '../database-models';
+import { ActionType, } from './enums';
 
 export type UserModel = {
     id?: string;

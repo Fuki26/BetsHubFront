@@ -5,7 +5,7 @@ import { StatisticType } from '../models/enums';
 
 const domain = 'http://213.91.236.205:5000';
 
-export const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
+const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
     try {
         const getBetsResult = 
             await axios.get(`${domain}/GetAllBets?StartIndex=0&Count=5000&BetStatus=0`);
@@ -15,7 +15,7 @@ export const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
     }
 }
 
-export const getCompletedBets = async (): Promise<Array<Bet> | undefined> => {
+const getCompletedBets = async (): Promise<Array<Bet> | undefined> => {
     try {
         const getBetsResult = await axios.get(`${domain}/GetAllBets?StartIndex=0&Count=5000&BetStatus=1`);
         return getBetsResult.data;
@@ -24,7 +24,7 @@ export const getCompletedBets = async (): Promise<Array<Bet> | undefined> => {
     }
 }
 
-export const getBetStatistics = async (props: { 
+const getBetStatistics = async (props: { 
     id: number; 
     type: StatisticType; 
 }): Promise<Statistics | undefined> => {
@@ -41,7 +41,7 @@ export const getBetStatistics = async (props: {
     }
 }
 
-export const getExpenses = async (): Promise<Array<Expense> | undefined> => {
+const getExpenses = async (): Promise<Array<Expense> | undefined> => {
     try {
         const getExpensesResult = await axios.get(`${domain}/GetAllExpenses`);
         return getExpensesResult.data;
@@ -50,7 +50,7 @@ export const getExpenses = async (): Promise<Array<Expense> | undefined> => {
     }
 }
 
-export const getCounteragents = async (): Promise<Array<Counteragent> | undefined> => {
+const getCounteragents = async (): Promise<Array<Counteragent> | undefined> => {
     try {
         const getCountaagentsResult = await axios.get(`${domain}/GetAllCounteragents`);
         return getCountaagentsResult.data;
@@ -59,7 +59,7 @@ export const getCounteragents = async (): Promise<Array<Counteragent> | undefine
     }
 };
 
-export const getCounteragentsCategories = async (): Promise<Array<CounteragentCategory> | undefined> => {
+const getCounteragentsCategories = async (): Promise<Array<CounteragentCategory> | undefined> => {
     try {
         const getCounteragentsCategoriesResult = await axios.get(`${domain}/GetAllCounteragentsCategories`);
         return getCounteragentsCategoriesResult.data;
@@ -68,7 +68,7 @@ export const getCounteragentsCategories = async (): Promise<Array<CounteragentCa
     }
 };
 
-export const getUsers = async (): Promise<Array<User> | undefined> => {
+const getUsers = async (): Promise<Array<User> | undefined> => {
     try {
         const getUsersResult = await axios.get(`${domain}/GetAllUsers`);
         return getUsersResult.data;
@@ -77,7 +77,7 @@ export const getUsers = async (): Promise<Array<User> | undefined> => {
     }
 };
 
-export const getCurrencies = async (): Promise<Array<Currency> | undefined> => {
+const getCurrencies = async (): Promise<Array<Currency> | undefined> => {
     try {
         const getCurrenciesResult = await axios.get(`${domain}/GetAllCurrencies`);
         return getCurrenciesResult.data;
@@ -86,7 +86,7 @@ export const getCurrencies = async (): Promise<Array<Currency> | undefined> => {
     }
 };
 
-export const getSports = async (): Promise<Array<string> | undefined> => {
+const getSports = async (): Promise<Array<string> | undefined> => {
     try {
         const getCountaagentsResult = await axios.get(`${domain}/GetAllSports`);
         return getCountaagentsResult.data;
@@ -95,7 +95,7 @@ export const getSports = async (): Promise<Array<string> | undefined> => {
     }
 };
 
-export const getTournaments = async (): Promise<Array<string> | undefined> => {
+const getTournaments = async (): Promise<Array<string> | undefined> => {
     try {
         const getCountaagentsResult = await axios.get(`${domain}/GetAllTournaments`);
         return getCountaagentsResult.data;
@@ -104,7 +104,7 @@ export const getTournaments = async (): Promise<Array<string> | undefined> => {
     }
 };
 
-export const getMarkets = async (): Promise<Array<string> | undefined> => {
+const getMarkets = async (): Promise<Array<string> | undefined> => {
     try {
         const getCountaagentsResult = await axios.get(`${domain}/GetAllMarkets`);
         return getCountaagentsResult.data;
@@ -113,7 +113,7 @@ export const getMarkets = async (): Promise<Array<string> | undefined> => {
     }
 }
 
-export const getSelections = async (): Promise<ISelectionsResult | undefined> => {
+const getSelections = async (): Promise<ISelectionsResult | undefined> => {
     try {
         const getCountaagentsResult = await axios.get(`${domain}/GetAllSelections`);
         return getCountaagentsResult.data;
@@ -122,7 +122,7 @@ export const getSelections = async (): Promise<ISelectionsResult | undefined> =>
     }
 }
 
-export const deleteBet = async (props: { id: number; }) => {
+const deleteBet = async (props: { id: number; }) => {
     try {
         const { id, } = props;
         const deleteBetResult = await axios.delete(`${domain}/DeleteBet`, {
@@ -139,7 +139,7 @@ export const deleteBet = async (props: { id: number; }) => {
     }
 }
 
-export const deleteExpense = async (props: { id: number; }) => {
+const deleteExpense = async (props: { id: number; }) => {
     try {
         const { id, } = props;
         const deleteExpenseResult = await axios.delete(`${domain}/DeleteExpense`, {
@@ -156,7 +156,7 @@ export const deleteExpense = async (props: { id: number; }) => {
     }
 }
 
-export const deleteCounteragent = async (props: { id: number; }) => {
+const deleteCounteragent = async (props: { id: number; }) => {
     try {
         const { id, } = props;
         const deleteCounteragentResult = await axios.delete(`${domain}/DeleteCounteragent`, {
@@ -173,7 +173,7 @@ export const deleteCounteragent = async (props: { id: number; }) => {
     }
 }
 
-export const upsertBet = async (bet: BetModel) => {
+const upsertBet = async (bet: BetModel) => {
     try {
         const obj = {
             Id: bet.isSavedInDatabase
@@ -208,7 +208,7 @@ export const upsertBet = async (bet: BetModel) => {
     }
 }
 
-export const upsertExpense = async (expense: ExpenseModel) => {
+const upsertExpense = async (expense: ExpenseModel) => {
     try {
         console.log(`UPSERT EXPENSE - ${JSON.stringify(expense)}`);
         const id = expense.isSavedInDatabase
@@ -220,7 +220,7 @@ export const upsertExpense = async (expense: ExpenseModel) => {
     }
 };
 
-export const upsertCounteragent = async (counteragent: CounteragentModel) => {
+const upsertCounteragent = async (counteragent: CounteragentModel) => {
     try {
         console.log(`UPSERT COUNTERAGENT - ${JSON.stringify(counteragent)}`);
         const id = counteragent.isSavedInDatabase
@@ -232,7 +232,7 @@ export const upsertCounteragent = async (counteragent: CounteragentModel) => {
     }
 };
 
-export const upsertCurrency = async (currency: CurrencyModel) => {
+const upsertCurrency = async (currency: CurrencyModel) => {
     try {
         console.log(`UPSERT CURRENCY - ${JSON.stringify(currency)}`);
         const id = currency.isSavedInDatabase
@@ -242,4 +242,26 @@ export const upsertCurrency = async (currency: CurrencyModel) => {
     } catch(e) {
         alert(JSON.stringify(e));
     }
+};
+
+export {
+    getPendingBets,
+    getCompletedBets,
+    getBetStatistics,
+    getExpenses,
+    getCounteragents,
+    getCounteragentsCategories,
+    getUsers,
+    getCurrencies,
+    getSports,
+    getTournaments,
+    getMarkets,
+    getSelections,
+    deleteBet,
+    deleteExpense,
+    deleteCounteragent,
+    upsertBet,
+    upsertExpense,
+    upsertCounteragent,
+    upsertCurrency,
 };

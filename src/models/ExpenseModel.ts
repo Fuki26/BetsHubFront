@@ -1,4 +1,4 @@
-import { ActionType } from './enums';
+import { ActionType, } from './enums';
 
 export type ExpenseModel = {
     id: number;
@@ -12,4 +12,4 @@ export type ExpenseModel = {
 
     actionTypeApplied?: ActionType;
     isSavedInDatabase: boolean;
-}
+};

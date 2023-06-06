@@ -28,4 +28,4 @@ export type BetModel = {
 
     actionTypeApplied?: ActionType;
     isSavedInDatabase: boolean;
-}
+};

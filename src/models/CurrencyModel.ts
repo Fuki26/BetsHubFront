@@ -1,4 +1,4 @@
-import { ActionType } from "./enums";
+import { ActionType, } from "./enums";
 
 export type CurrencyModel = {
     id: number | null;
