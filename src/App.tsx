@@ -9,6 +9,8 @@ import { Users } from './pages/users/index';
 import { Currencies } from './pages/currency/index';
 import PersistentDrawerLeft from './pages/ApplicationComponent/ApplicationComponent';
 import Search from './pages/search/Search';
+import { AuthProvider } from './providers/AuthProvider';
+import Login from './pages/authentication/Login';
 
 const SIDE_NAV_WIDTH = 280;
 const LayoutRoot = styled('div')(({ theme }) => ({
@@ -29,28 +31,28 @@ const LayoutContainer = styled('div')({
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <Hub />,
+    path: '/login',
+    element: <Login />,
   },
   {
-    path: '/hub',
-    element: <Hub />,
+    path: '/',
+    element: (<Hub />),
   },
   {
     path: '/search',
-    element: <Search />,
+    element: (<Search />),
   },
   {
     path: '/counteragents',
-    element: <Counteragents />,
+    element: (<Counteragents />),
   },
   {
     path: '/currency',
-    element: <Currencies />,
+    element: (<Currencies />),
   },
   {
     path: '/users',
-    element: <Users />,
+    element: (<Users />),
   },
 ]);
 
@@ -75,17 +77,19 @@ function App() {
 
   return (
     <>
-      <PersistentDrawerLeft/>
-      <LayoutRoot>
-        <LayoutContainer>
-          <div>
-            <header>
-              <RouterProvider router={router}/>
-            </header>
-            <ToastContainer />
-          </div>
-        </LayoutContainer>
-      </LayoutRoot>
+      <AuthProvider>
+        <PersistentDrawerLeft/>
+        <LayoutRoot>
+          <LayoutContainer>
+            <div>
+              <header>
+                <RouterProvider router={router}/>
+              </header>
+              <ToastContainer />
+            </div>
+          </LayoutContainer>
+        </LayoutRoot>
+      </AuthProvider>
     </>
   );
 }
