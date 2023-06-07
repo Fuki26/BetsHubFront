@@ -97,19 +97,17 @@ function App() {
 
   return (
     <>
-      <AuthProvider>
-        <PersistentDrawerLeft/>
-        <LayoutRoot>
-          <LayoutContainer>
-            <div>
-              <header>
-                <RouterProvider router={router}/>
-              </header>
-              <ToastContainer />
-            </div>
-          </LayoutContainer>
-        </LayoutRoot>
-      </AuthProvider>
+      <PersistentDrawerLeft/>
+      <LayoutRoot>
+        <LayoutContainer>
+          <div>
+            <header>
+              <RouterProvider router={router}/>
+            </header>
+            <ToastContainer />
+          </div>
+        </LayoutContainer>
+      </LayoutRoot>
     </>
   );
 }
