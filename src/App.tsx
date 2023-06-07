@@ -9,6 +9,8 @@ import { Users } from './pages/users/index';
 import { Currencies } from './pages/currency/index';
 import PersistentDrawerLeft from './pages/ApplicationComponent/ApplicationComponent';
 import Search from './pages/search/Search';
+import Authentication from './pages/authentication/Authentication';
+import RequireAuth from './contexts/providers/RequireAuthProvider';
 
 const SIDE_NAV_WIDTH = 280;
 const LayoutRoot = styled('div')(({ theme }) => ({
@@ -29,28 +31,48 @@ const LayoutContainer = styled('div')({
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <Hub />,
+    path: '/login',
+    element: <Authentication />,
   },
   {
-    path: '/hub',
-    element: <Hub />,
+    path: '/',
+    element: (
+      <RequireAuth>
+        <Hub />
+      </RequireAuth>
+    ),
   },
   {
     path: '/search',
-    element: <Search />,
+    element: (
+      <RequireAuth>
+        <Search />
+      </RequireAuth>
+    ),
   },
   {
     path: '/counteragents',
-    element: <Counteragents />,
+    element: (
+      <RequireAuth>
+        <Counteragents />
+      </RequireAuth>
+    ),
   },
   {
     path: '/currency',
-    element: <Currencies />,
+    element: (
+      <RequireAuth>
+        <Currencies />
+      </RequireAuth>
+    ),
   },
   {
     path: '/users',
-    element: <Users />,
+    element: (
+      <RequireAuth>
+        <Users />
+      </RequireAuth>
+    ),
   },
 ]);
 

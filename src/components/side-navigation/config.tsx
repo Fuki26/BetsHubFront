@@ -1,5 +1,6 @@
 import { SvgIcon } from '@mui/material';
-import { CopyrightSharp, PeopleRounded, SearchRounded, SupportAgentRounded, EuroRounded, } from '@mui/icons-material';
+import { CopyrightSharp, PeopleRounded, SearchRounded, 
+  SupportAgentRounded, EuroRounded, VerifiedUserRounded, } from '@mui/icons-material';
 
 export const items = [
   {
@@ -9,7 +10,8 @@ export const items = [
       <SvgIcon fontSize='small'>
         <CopyrightSharp />
       </SvgIcon>
-    )
+    ),
+    requireAuthentication: true,
   },
   {
     title: 'Search',
@@ -18,7 +20,8 @@ export const items = [
       <SvgIcon fontSize='small'>
         <SearchRounded />
       </SvgIcon>
-    )
+    ),
+    requireAuthentication: true,
   },
   {
     title: 'Counteragents',
@@ -27,7 +30,8 @@ export const items = [
       <SvgIcon fontSize='small'>
         <SupportAgentRounded />
       </SvgIcon>
-    )
+    ),
+    requireAuthentication: true,
   },
   {
     title: 'Users',
@@ -36,7 +40,8 @@ export const items = [
       <SvgIcon fontSize='small'>
         <PeopleRounded />
       </SvgIcon>
-    )
+    ),
+    requireAuthentication: true,
   },
   {
     title: 'Currency',
@@ -45,6 +50,17 @@ export const items = [
       <SvgIcon fontSize='small'>
         <EuroRounded />
       </SvgIcon>
-    )
+    ),
+    requireAuthentication: true,
+  },
+  {
+    title: 'Authentication',
+    path: '/login',
+    icon: (
+      <SvgIcon fontSize='small'>
+        <VerifiedUserRounded />
+      </SvgIcon>
+    ),
+    requireAuthentication: false,
   },
 ];
