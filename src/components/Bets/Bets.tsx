@@ -376,7 +376,7 @@ export default function Bets(props: {
       field: 'dateCreated',
       headerName: 'Date created',
       type: 'date',
-      editable: true,
+      editable: false,
       width: 150,
     },
     {

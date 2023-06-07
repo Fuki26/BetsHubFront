@@ -10,7 +10,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
 import { CurrencyModel, EditToolbarProps, Enums, } from '../../models';
 import { ItemTypes } from '../../models/enums';
-import { getCurrencies, upsertCurrency, } from '../../api';
+import { deleteCurrency, getCurrencies, upsertCurrency, } from '../../api';
 import { Currency, } from '../../database-models';
 
 export default function Currencies() {
@@ -190,7 +190,7 @@ export default function Currencies() {
 
     setIsLoading(true);
 
-    //await deleteCurrency({ id: deleteRowId, });
+    await deleteCurrency({ id: deleteRowId, });
     setDeleteRowId(null);
     setOpenDeleteDialog(false);
 
@@ -335,12 +335,12 @@ export default function Currencies() {
                 onClick={handleEditClick(params.id)}
                 color='inherit'
               />,
-              // <GridActionsCellItem
-              //   icon={<DeleteIcon />}
-              //   label='Delete'
-              //   onClick={handleClickOpenOnDeleteDialog(params.id)}
-              //   color='inherit'
-              // />,
+              <GridActionsCellItem
+                icon={<DeleteIcon />}
+                label='Delete'
+                onClick={handleClickOpenOnDeleteDialog(params.id)}
+                color='inherit'
+              />,
             ]
       },
     }

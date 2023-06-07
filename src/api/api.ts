@@ -173,6 +173,23 @@ const deleteCounteragent = async (props: { id: number; }) => {
     }
 }
 
+const deleteCurrency = async (props: { id: number; }) => {
+    try {
+        const { id, } = props;
+        const deleteCurrencyResult = await axios.delete(`${domain}/DeleteCurrency`, {
+            data: id,
+            headers: {
+                'Accept': '*/*',
+                'Content-Type': 'application/json',
+            }
+        });
+
+        return deleteCurrencyResult.data;
+    } catch(e) {
+        alert(JSON.stringify(e));
+    }
+}
+
 const upsertBet = async (bet: BetModel) => {
     try {
         const obj = {
@@ -193,8 +210,8 @@ const upsertBet = async (bet: BetModel) => {
             AmountUSD: bet.amountUSD ? bet.amountUSD : 0,
             AmountGBP: bet.amountGBP ? bet.amountGBP : 0,
             Odd: bet.odd ? bet.odd : 0,
-            DateFinished: bet.dateFinished ? bet.dateFinished.toString() : null,
-            DateStaked: bet.dateStaked ? bet.dateStaked.toString() : null,
+            DateFinished: bet.dateFinished ? bet.dateFinished.toISOString().split('T')[0] : null,
+            DateStaked: bet.dateStaked ? bet.dateStaked.toISOString().split('T')[0] : null,
             Profits: bet.profits ? bet.profits : 0,
             Notes: bet.notes ? bet.notes : '',
         };
@@ -202,7 +219,7 @@ const upsertBet = async (bet: BetModel) => {
         const id = bet.isSavedInDatabase
             ? `Id=${obj.Id}&`
             : '';
-        await axios.post(`${domain}/UpsertBets?${id}BetStatus=${obj.BetStatus}&Stake=${obj.Stake}&CounteragentId=${obj.CounteragentId}&Sport=${obj.Sport}&LiveStatus=${obj.LiveStatus}&PSLimit=${obj.PSLimit}&Market=${obj.Market}&Tournament=${obj.Tournament}&Selection=${obj.Selection}&AmountBGN=${obj.AmountBGN}&AmountEUR=${obj.AmountEUR}&AmountUSD=${obj.AmountUSD}&AmountGBP=${obj.AmountGBP}&Odd=${obj.Odd}&Profits=${obj.Profits}&Notes=${obj.Notes}`);
+        await axios.post(`${domain}/UpsertBets?${id}BetStatus=${obj.BetStatus}&Stake=${obj.Stake}&CounteragentId=${obj.CounteragentId}&Sport=${obj.Sport}&LiveStatus=${obj.LiveStatus}&PSLimit=${obj.PSLimit}&Market=${obj.Market}&Tournament=${obj.Tournament}&Selection=${obj.Selection}&AmountBGN=${obj.AmountBGN}&AmountEUR=${obj.AmountEUR}&AmountUSD=${obj.AmountUSD}&AmountGBP=${obj.AmountGBP}&Odd=${obj.Odd}&DateStaked=${obj.DateStaked}&Notes=${obj.Notes}`);
     } catch(e) {
         alert(JSON.stringify(e));
     }
@@ -214,7 +231,7 @@ const upsertExpense = async (expense: ExpenseModel) => {
         const id = expense.isSavedInDatabase
             ? `Id=${expense.id}&`
             : '';
-        await axios.post(`${domain}/UpsertExpense?${id}CounteragentId=${expense.counteragentId}&Description=${expense.description}&Amount=${expense.amount}`);
+        await axios.post(`${domain}/UpsertExpense?${id}CounteragentId=${expense.counteragentId}&Description=${expense.description}&Amount=${expense.amount}&DateFrom=${expense.dateFrom.toISOString().split('T')[0]}&DateTo=${expense.dateTo.toISOString().split('T')[0]}`);
     } catch(e) {
         alert(JSON.stringify(e));
     }
@@ -225,7 +242,7 @@ const upsertCounteragent = async (counteragent: CounteragentModel) => {
         console.log(`UPSERT COUNTERAGENT - ${JSON.stringify(counteragent)}`);
         const id = counteragent.isSavedInDatabase
             ? `Id=${counteragent.id}&`
-            : 'Id=NULL&';
+            : 'Id=0&';
         await axios.post(`${domain}/UpsertCounteragent?${id}Name=${counteragent.name}&CounteragentCategoryId=${counteragent.counteragentCategoryId}&MaxRate=${counteragent.maxRate}&UserId=${counteragent.userId}`);
     } catch(e) {
         alert(JSON.stringify(e));
@@ -260,6 +277,7 @@ export {
     deleteBet,
     deleteExpense,
     deleteCounteragent,
+    deleteCurrency,
     upsertBet,
     upsertExpense,
     upsertCounteragent,
