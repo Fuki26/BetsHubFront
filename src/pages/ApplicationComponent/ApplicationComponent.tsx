@@ -12,6 +12,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Stack } from '@mui/material';
 import { SideNavItem } from '../../components/side-navigation/side-nav-item';
 import { items } from '../../components/side-navigation/config';
+import { useAuth } from '../../contexts/AuthContext';
 
 const drawerWidth = 240;
 
@@ -46,6 +47,11 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 export default function PersistentDrawerLeft() {
+  const {
+    auth,
+    logIn,
+    logout,
+  } = useAuth();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -123,24 +129,29 @@ export default function PersistentDrawerLeft() {
                 {
                     items.map(
                         (item: { 
-                            path: any;
-                            icon: any; 
-                            title: string; 
+                              path: any;
+                              icon: any; 
+                              title: string; 
+                              requireAuthentication: boolean;
                             }
                         ) => 
                         {
+                          if(!item.requireAuthentication 
+                              || (item.requireAuthentication && auth.user)) {
                             const isActive = window.location.pathname === item.path
-                            ? true
-                            : false;
+                              ? true
+                              : false;
                             return (
-                            <SideNavItem
-                                active={isActive}
-                                icon={item.icon}
-                                key={item.title}
-                                path={item.path}
-                                title={item.title!}
-                            />
+                              <SideNavItem
+                                  active={isActive}
+                                  icon={item.icon}
+                                  key={item.title}
+                                  path={item.path}
+                                  title={item.title!}
+                              />
                             );
+                          }
+                            
                         }
                     )
                 }
