@@ -13,7 +13,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
 import { BetModel, EditToolbarProps, Enums, ISelectionsResult, } from '../../models';
 import { deleteBet, upsertBet, } from '../../api';
-import { BetStatus, ItemTypes } from '../../models/enums';
+import { BetStatus, ItemTypes, LiveStatus } from '../../models/enums';
 
 function EditToolbar(props: EditToolbarProps) {
   const { setRows, setRowModesModel } = props;
@@ -394,7 +394,21 @@ export default function Bets(props: {
       headerName: 'Bet status',
       type: 'singleSelect',
       editable: true,
-      valueOptions: [ 0, 1 ],
+      valueOptions: Object.keys(BetStatus)
+        .filter((k) => !isNaN(Number(k)))
+        .map(
+          (key: any) => {
+            return { value: Number(key), label: BetStatus[key], }
+          },
+        ),
+      valueFormatter(params) {
+        const colDef = params.api.getColumn(params.field);
+        const option = (colDef as any).valueOptions.find(
+          (option: { value: number; label: string; }) => option.value === params.value
+        );
+
+        return option.label;
+      },
       width: 150,
     },
     {
@@ -600,7 +614,21 @@ export default function Bets(props: {
       headerName: 'Live status',
       type: 'singleSelect',
       editable: true,
-      valueOptions: [ 0, 1, 2, 3 ],
+      valueOptions: Object.keys(LiveStatus)
+        .filter((k) => !isNaN(Number(k)))
+        .map(
+          (key: any) => {
+            return { value: Number(key), label: LiveStatus[key], }
+          },
+        ),
+      valueFormatter(params) {
+        const colDef = params.api.getColumn(params.field);
+        const option = (colDef as any).valueOptions.find(
+          (option: { value: number; label: string; }) => option.value === params.value
+        );
+
+        return option.label;
+      },
       width: 150,
     },
     {
