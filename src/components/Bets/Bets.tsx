@@ -13,7 +13,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
 import { BetModel, EditToolbarProps, Enums, ISelectionsResult, } from '../../models';
 import { deleteBet, upsertBet, } from '../../api';
-import { ItemTypes } from '../../models/enums';
+import { BetStatus, ItemTypes } from '../../models/enums';
 
 function EditToolbar(props: EditToolbarProps) {
   const { setRows, setRowModesModel } = props;
@@ -266,12 +266,6 @@ export default function Bets(props: {
   const processRowUpdate = async (newRow: GridRowModel) => {
     const currentRow = rows?.find((row) => row.id === newRow.id);
     
-    toast(currentRow?.actionTypeApplied === Enums.ActionType.CANCELED 
-        ? 'Canceled' 
-        : `Saved bet with id ${currentRow!.id}`,
-      {
-        position: 'top-center',
-      });
     if(currentRow?.actionTypeApplied === Enums.ActionType.SAVED
         || currentRow?.actionTypeApplied === Enums.ActionType.EDITED) {
           const newRowData: BetModel = {
@@ -301,26 +295,42 @@ export default function Bets(props: {
 
           setIsLoading(true);
 
-          await upsertBet(newRowData);
+          const rowData = await upsertBet(newRowData);
+
           setRows((previousRowsModel) => {
             return previousRowsModel!.map((row) => {
               if(row.id === newRow.id) {
-                return newRowData;
+                return { 
+                  ...newRowData, 
+                  id: rowData?.data.id,
+                  totalAmount: rowData?.data.totalAmount,
+                };
               } else {
                 return row;
               }
             });
           });
 
+          setRowModesModel((previousRowModesModel) => {
+            return { ...previousRowModesModel, [rowData?.data.id]: { mode: GridRowModes.View } }
+          });
+
           setIsLoading(false);
+
+          newRow.id = rowData?.data.id;
     } else {
-
+      setRowModesModel((previousRowModesModel) => {
+        return { ...previousRowModesModel, [newRow.id]: { mode: GridRowModes.View } }
+      });
     }
-    
-    setRowModesModel((previousRowModesModel) => {
-      return { ...previousRowModesModel, [newRow.id]: { mode: GridRowModes.View } }
-    });
 
+    toast(currentRow?.actionTypeApplied === Enums.ActionType.CANCELED 
+      ? 'Canceled' 
+      : `Saved bet with id ${newRow!.id}`,
+    {
+      position: 'top-center',
+    });
+    
     return newRow;
   };
 
@@ -638,10 +648,10 @@ export default function Bets(props: {
               possibleMarkets
                 ? possibleMarkets.map((market) => {
                   return {
-                        rowId: params.id, 
-                        type: ItemTypes.MARKET, 
-                        value: market.value, 
-                        label: market.label + ' ', 
+                        rowId: params.id,
+                        type: ItemTypes.MARKET,
+                        value: market.value,
+                        label: market.label + ' ',
                       };
                   })
                 : []
@@ -715,7 +725,7 @@ export default function Bets(props: {
               label={ItemTypes.TOURNAMENT} />}
             onChange={onChange}
             value={
-              row.market
+              row.tournament
                 ? {
                     rowId: params.id,
                     type: ItemTypes.TOURNAMENT,
@@ -762,20 +772,6 @@ export default function Bets(props: {
       type: 'number',
       editable: false,
       width: 150,
-      valueSetter: (params: GridValueSetterParams) => {
-        const totalAmount = params.row.amountBGN 
-          + params.row.amountEUR 
-          + params.row.amountUSD 
-          + params.row.amountGBP;
-        return { ...params.row, totalAmount, };
-      },
-      valueGetter: (params: GridValueSetterParams) => {
-        const totalAmount = params.row.amountBGN 
-          + params.row.amountEUR 
-          + params.row.amountUSD 
-          + params.row.amountGBP;
-        return totalAmount;
-      },
     },
     {
       field: 'odd',
