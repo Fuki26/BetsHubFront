@@ -5,6 +5,7 @@ enum ItemTypes {
     MARKET = 'MARKET',
     TOURNAMENT = 'TOURNAMENT',
     USER = 'USER',
+    BET_STATUS = 'BET_STATUS',
 };
 
 export {

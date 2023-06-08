@@ -15,55 +15,6 @@ import { BetModel, EditToolbarProps, Enums, ISelectionsResult, } from '../../mod
 import { deleteBet, upsertBet, } from '../../api';
 import { BetStatus, ItemTypes, LiveStatus } from '../../models/enums';
 
-function EditToolbar(props: EditToolbarProps) {
-  const { setRows, setRowModesModel } = props;
-
-  const handleAddNewClick = () => {
-    const id = Math.round(Math.random() * 1000000);
-    setRows((oldRows) => [...oldRows, 
-      { 
-        id,
-        dateCreated: new Date(),
-        betStatus: 0,
-        stake: undefined,
-        counteragentId: undefined,
-        counteragent: undefined,
-        sport:	undefined,
-        liveStatus:	0,
-        psLimit: undefined,
-        market: undefined,
-        tournament: undefined,
-        selection: undefined,
-        amountBGN: undefined,
-        amountEUR: undefined,
-        amountUSD: undefined,
-        amountGBP: undefined,
-        totalAmount: undefined,
-        odd: undefined,
-        dateFinished: undefined,
-        dateStaked: new Date(),
-        profits: undefined,
-        notes: undefined,
-    
-        actionTypeApplied: undefined,
-        isSavedInDatabase: false,
-      } as BetModel
-    ]);
-    setRowModesModel((oldModel) => ({
-      ...oldModel,
-      [id]: { mode: GridRowModes.Edit, },
-    }));
-  };
-
-  return (
-    <GridToolbarContainer>
-      <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleAddNewClick}>
-        Create a bet
-      </Button>
-    </GridToolbarContainer>
-  );
-}
-
 export default function Bets(props: { 
   isRead: boolean;
   selectBetIdFn: (id: number) => void;
@@ -94,7 +45,64 @@ export default function Bets(props: {
     setRowModesModel(() => {
       return {};
     });
-  }, [ defaultRows, ])
+  }, [ defaultRows, ]);
+
+
+  function EditToolbar(props: EditToolbarProps) {
+    const { setRows, setRowModesModel } = props;
+  
+    const handleAddNewClick = () => {
+      const id = Math.round(Math.random() * 1000000);
+      setRows((oldRows) => [...oldRows, 
+        { 
+          id,
+          dateCreated: new Date(),
+          betStatus: 0,
+          stake: undefined,
+          counteragentId: undefined,
+          counteragent: undefined,
+          sport:	undefined,
+          liveStatus:	0,
+          psLimit: undefined,
+          market: undefined,
+          tournament: undefined,
+          selection: undefined,
+          amountBGN: undefined,
+          amountEUR: undefined,
+          amountUSD: undefined,
+          amountGBP: undefined,
+          totalAmount: undefined,
+          odd: undefined,
+          dateFinished: undefined,
+          dateStaked: new Date(),
+          profits: undefined,
+          notes: undefined,
+      
+          actionTypeApplied: undefined,
+          isSavedInDatabase: false,
+        } as BetModel
+      ]);
+      setRowModesModel((oldModel) => ({
+        ...oldModel,
+        [id]: { mode: GridRowModes.Edit, },
+      }));
+    };
+  
+    const isAnyRowInEditMode = rows?.some((r) => {
+      const rowModeData = rowModesModel[r.id];
+      return rowModeData && rowModeData.mode === GridRowModes.Edit;
+    });
+
+    return (
+      <GridToolbarContainer>
+        <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleAddNewClick}
+          disabled={isAnyRowInEditMode}
+        >
+          Create a bet
+        </Button>
+      </GridToolbarContainer>
+    );
+  }
 
 
   //#region Delete dialog
@@ -847,6 +855,19 @@ export default function Bets(props: {
         if(isRead) {
           return [];
         } else {
+          const isAnyOtherRowInEditMode = rows?.some((r) => {
+            if(r.id === params.id) {
+              return false;
+            }
+
+            const rowModeData = rowModesModel[r.id];
+            return rowModeData && rowModeData.mode === GridRowModes.Edit;
+          });
+
+          if(isAnyOtherRowInEditMode) {
+            return [];
+          }
+
           return isInEditMode 
           ? [
                 <GridActionsCellItem
@@ -911,6 +932,11 @@ export default function Bets(props: {
                   }}
                   onRowClick={onRowClick}
                   editMode='row'
+                  sx={
+                    { 
+                      height: 500,
+                    }
+                  }
                 />
                 <Dialog
                   open={deleteDialogIsOpened}

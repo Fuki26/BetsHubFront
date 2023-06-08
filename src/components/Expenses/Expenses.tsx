@@ -443,6 +443,11 @@ export default function Expenses(props: {
                     toolbar: { setRows, setRowModesModel },
                   }}
                   editMode='row'
+                  sx={
+                    { 
+                      height: 500,
+                    }
+                  }
                 />
                 <Dialog
                   open={deleteDialogIsOpened}
