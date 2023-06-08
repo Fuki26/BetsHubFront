@@ -219,7 +219,7 @@ const upsertBet = async (bet: BetModel) => {
         const id = bet.isSavedInDatabase
             ? `Id=${obj.Id}&`
             : '';
-        await axios.post(`${domain}/UpsertBets?${id}BetStatus=${obj.BetStatus}&Stake=${obj.Stake}&CounteragentId=${obj.CounteragentId}&Sport=${obj.Sport}&LiveStatus=${obj.LiveStatus}&PSLimit=${obj.PSLimit}&Market=${obj.Market}&Tournament=${obj.Tournament}&Selection=${obj.Selection}&AmountBGN=${obj.AmountBGN}&AmountEUR=${obj.AmountEUR}&AmountUSD=${obj.AmountUSD}&AmountGBP=${obj.AmountGBP}&Odd=${obj.Odd}&DateStaked=${obj.DateStaked}&Notes=${obj.Notes}`);
+        return await axios.post(`${domain}/UpsertBets?${id}BetStatus=${obj.BetStatus}&Stake=${obj.Stake}&CounteragentId=${obj.CounteragentId}&Sport=${obj.Sport}&LiveStatus=${obj.LiveStatus}&PSLimit=${obj.PSLimit}&Market=${obj.Market}&Tournament=${obj.Tournament}&Selection=${obj.Selection}&AmountBGN=${obj.AmountBGN}&AmountEUR=${obj.AmountEUR}&AmountUSD=${obj.AmountUSD}&AmountGBP=${obj.AmountGBP}&Odd=${obj.Odd}&DateStaked=${obj.DateStaked}&Notes=${obj.Notes}`);
     } catch(e) {
         alert(JSON.stringify(e));
     }
