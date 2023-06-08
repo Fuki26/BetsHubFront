@@ -46,21 +46,25 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-export default function PersistentDrawerLeft() {
+export default function PersistentDrawerLeft(
+  props: { openSidebarCb: React.Dispatch<React.SetStateAction<boolean | undefined>>}) {
   const {
     auth,
     logIn,
     logout,
   } = useAuth();
+  const { openSidebarCb, } = props;
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {
     setOpen(true);
+    openSidebarCb(true);
   };
 
   const handleDrawerClose = () => {
     setOpen(false);
+    openSidebarCb(false);
   };
 
   return (

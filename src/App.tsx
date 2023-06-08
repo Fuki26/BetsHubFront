@@ -11,23 +11,9 @@ import PersistentDrawerLeft from './pages/ApplicationComponent/ApplicationCompon
 import Search from './pages/search/Search';
 import Authentication from './pages/authentication/Authentication';
 import RequireAuth from './contexts/providers/RequireAuthProvider';
+import React from 'react';
 
-const SIDE_NAV_WIDTH = 280;
-const LayoutRoot = styled('div')(({ theme }) => ({
-  display: 'flex',
-  flex: '1 1 auto',
-  maxWidth: '100%',
-  [theme.breakpoints.up('lg')]: {
-    paddingLeft: SIDE_NAV_WIDTH
-  }
-}));
 
-const LayoutContainer = styled('div')({
-  display: 'flex',
-  flex: '1 1 auto',
-  flexDirection: 'column',
-  width: '100%'
-});
 
 const router = createBrowserRouter([
   {
@@ -77,27 +63,48 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  const [openNav, setOpenNav] = useState(false);
+  const [ isOpenSideBar, setIsOpenSideBar, ] = React.useState<boolean>();
 
-  const handlePathnameChange = useCallback(
-    () => {
-      if (openNav) {
-        setOpenNav(false);
-      }
-    },
-    [openNav]
-  );
+  const SIDE_NAV_WIDTH = 280;
+  let LayoutRoot = styled('div')(({ theme }) => ({
+    display: 'flex',
+    flex: '1 1 auto',
+    maxWidth: '100%',
+    [theme.breakpoints.up('lg')]: isOpenSideBar 
+      ? {
+          paddingLeft: SIDE_NAV_WIDTH
+        }
+      :
+       null
+  }));
+
+  const LayoutContainer = styled('div')({
+    display: 'flex',
+    flex: '1 1 auto',
+    flexDirection: 'column',
+    width: '100%'
+  });
 
   useEffect(
     () => {
-      handlePathnameChange();
+      LayoutRoot = styled('div')(({ theme }) => ({
+        display: 'flex',
+        flex: '1 1 auto',
+        maxWidth: '100%',
+        [theme.breakpoints.up('lg')]: isOpenSideBar 
+          ? {
+              paddingLeft: SIDE_NAV_WIDTH
+            }
+          :
+           null
+      }));
     },
-    [window.location.pathname]
+    [isOpenSideBar]
   );
 
   return (
     <>
-      <PersistentDrawerLeft/>
+      <PersistentDrawerLeft openSidebarCb={setIsOpenSideBar}/>
       <LayoutRoot>
         <LayoutContainer>
           <div>
