@@ -7,8 +7,6 @@ export type ExpenseModel = {
     amount: number;
     description: string;
     dateCreated: Date;
-    dateFrom: Date;
-    dateTo: Date;  
 
     actionTypeApplied?: ActionType;
     isSavedInDatabase: boolean;

@@ -55,8 +55,6 @@ export default function Expenses(props: {
           amount: 0,
           description: '',
           dateCreated: new Date(),
-          dateFrom: new Date(),
-          dateTo: new Date(),
       
           actionTypeApplied: undefined,
           isSavedInDatabase: false,
@@ -199,12 +197,6 @@ export default function Expenses(props: {
   const processRowUpdate = async (newRow: GridRowModel) => {
     const currentRow = rows?.find((row) => row.id === newRow.id);
     
-    toast(currentRow?.actionTypeApplied === Enums.ActionType.CANCELED 
-        ? 'Canceled' 
-        : `Saved expense with id ${currentRow!.id}`,
-      {
-        position: 'top-center',
-      });
     if(currentRow?.actionTypeApplied === Enums.ActionType.SAVED
         || currentRow?.actionTypeApplied === Enums.ActionType.EDITED) {
           const newRowData: ExpenseModel = {
@@ -214,31 +206,44 @@ export default function Expenses(props: {
             amount: newRow.amount,
             description: newRow.description,
             dateCreated: newRow.dateCreated,
-            dateFrom: newRow.dateFrom,
-            dateTo: newRow.dateTo,
           };
 
           setIsLoading(true);
           
-          await upsertExpense(newRowData);
+          const rowData = await upsertExpense(newRowData);
 
           setRows((previousRowsModel) => {
             return previousRowsModel!.map((row) => {
               if(row.id === newRow.id) {
-                return newRowData;
+                return { 
+                  ...newRowData, 
+                  id: rowData?.data.id,
+                  isSavedInDatabase: true,
+                };
               } else {
                 return row;
               }
             });
           });
 
-          setIsLoading(false);
-    } else {
+          setRowModesModel((previousRowModesModel) => {
+            return { ...previousRowModesModel, [rowData?.data.id]: { mode: GridRowModes.View } }
+          });
 
+          setIsLoading(false);
+
+          newRow.id = rowData?.data.id;
+    } else {
+      setRowModesModel((previousRowModesModel) => {
+        return { ...previousRowModesModel, [newRow.id]: { mode: GridRowModes.View } }
+      });
     }
     
-    setRowModesModel((previousRowModesModel) => {
-      return { ...previousRowModesModel, [newRow.id]: { mode: GridRowModes.View } }
+    toast(currentRow?.actionTypeApplied === Enums.ActionType.CANCELED 
+      ? 'Canceled' 
+      : `Saved expense with id ${newRow!.id}`,
+    {
+      position: 'top-center',
     });
 
     return newRow;
@@ -356,23 +361,9 @@ export default function Expenses(props: {
     },
     {
         field: 'dateCreated',
-        headerName: 'dateCreated',
+        headerName: 'Date created',
         type: 'date',
         editable: false,
-        width: 150,
-    },
-    {
-        field: 'dateFrom',
-        headerName: 'dateFrom',
-        type: 'date',
-        editable: true,
-        width: 150,
-    },
-    {
-        field: 'dateTo',
-        headerName: 'dateTo',
-        type: 'date',
-        editable: true,
         width: 150,
     },
     {

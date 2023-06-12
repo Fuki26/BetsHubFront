@@ -5,9 +5,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import Bets from '../../components/Bets/Bets';
 import { BetModel, ExpenseModel, ISelectionsResult, StatisticItemModel } from '../../models';
-import { getBetStatistics, getCompletedBets, getCounteragents, getExpenses, getMarkets, 
+import { getBetStatistics, getCompletedBets, getCounteragents, getCurrencies, getExpenses, getMarkets, 
   getPendingBets, getSports, getTournaments } from '../../api';
-import { Bet, Expense, Statistics } from '../../database-models';
+import { Bet, Currency, Expense, Statistics } from '../../database-models';
 import { StatisticType } from '../../models/enums';
 import { DataGridPro, GridColDef } from '@mui/x-data-grid-pro';
 import Expenses from '../../components/Expenses/Expenses';
@@ -18,6 +18,7 @@ const betToBetModelMapper = (bet: Bet) => {
     id: bet.id,
     dateCreated: new Date(bet.dateCreated),
     betStatus: bet.betStatus,
+    winStatus: bet.winStatus,
     stake: bet.stake,
     counteragentId: bet.counteragentId,
     counteragent: bet.counteragent
@@ -37,9 +38,6 @@ const betToBetModelMapper = (bet: Bet) => {
     dateFinished: bet.dateFinished
       ? new Date(bet.dateFinished)
       : null,
-    dateStaked: bet.dateStaked
-      ? new Date(bet.dateStaked)
-      : null,
     profits: bet.profits,
     notes: bet.notes,
 
@@ -57,6 +55,7 @@ export default function Hub() {
   
   const [ date, setDate] = React.useState<Date | undefined>(undefined);
 
+  const [ currencies, setCurrencies ] = React.useState<Array<Currency> | undefined>(undefined);
   const [ pendingRows, setPendingRows] = React.useState<Array<BetModel> | undefined>(undefined);
   const [ completedRows, setCompletedRows] = React.useState<Array<BetModel> | undefined>(undefined);
   const [ filteredPendingRows, setFilteredPendingRows] = React.useState<Array<BetModel> | undefined>(undefined);
@@ -76,6 +75,7 @@ export default function Hub() {
     (async () => {
       try {
         setIsLoading(true);
+        let currencies: Array<Currency> | undefined = await getCurrencies();
         let pendingBets: Array<BetModel> = (await getPendingBets())!.map(betToBetModelMapper);
         let completedBets: Array<BetModel> = (await getCompletedBets())!.map(betToBetModelMapper);
         const getCounteragentsResult = await getCounteragents();
@@ -117,6 +117,7 @@ export default function Hub() {
 
         setPendingRows(pendingBets);
         setCompletedRows(completedBets);
+        setCurrencies(currencies);
         setFilteredPendingRows(pendingBets.filter((b) => {
           const now = new Date();
           return b.dateFinished 
@@ -190,8 +191,6 @@ export default function Hub() {
                       amount: expense.amount,
                       description: expense.description,
                       dateCreated: new Date(expense.dateCreated),
-                      dateFrom: new Date(expense.dateFrom),
-                      dateTo: new Date(expense.dateTo), 
           
                       actionTypeApplied: undefined,
                       isSavedInDatabase: true,
@@ -282,7 +281,7 @@ export default function Hub() {
             yield: betStatistics.threeMonths.yield,
           },
           {
-            id: 2,
+            id: 3,
             periodType: '6mTillToday',
             profit: betStatistics.sixMonths.profit,
             turnOver: betStatistics.sixMonths.turnOver,
@@ -403,6 +402,7 @@ export default function Hub() {
                 selectBetIdFn={selectBetId}
                 setIsLoading={setIsLoading} 
                 defaultRows={filteredPendingRows}
+                currencies={currencies}
                 possibleCounteragents={possibleCounteragents}
                 possibleSports={possibleSports}
                 possibleTournaments={possibleTournaments}
@@ -422,6 +422,7 @@ export default function Hub() {
                 selectBetIdFn={selectBetId}
                 setIsLoading={setIsLoading}
                 defaultRows={filteredCompletedRows}
+                currencies={currencies}
                 possibleCounteragents={possibleCounteragents}
                 possibleSports={possibleSports}
                 possibleTournaments={possibleTournaments}

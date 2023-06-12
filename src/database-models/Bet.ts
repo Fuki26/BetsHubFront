@@ -1,9 +1,11 @@
+import { WinStatus } from '../models/enums';
 import { Counteragent, } from './Counteragent';
 
 export type Bet = {
     id: number;
     dateCreated: string;
     betStatus: number; //0,1
+    winStatus: number; //0,1,2,3,4,5
     stake?  : number;
     counteragentId?: number;
     counteragent?: Counteragent;
@@ -19,7 +21,6 @@ export type Bet = {
     amountGBP?: number;
     odd?: number;
     dateFinished?: string;
-    dateStaked?: string;
     profits?: number;
     notes?: string;
     totalAmount?: number;

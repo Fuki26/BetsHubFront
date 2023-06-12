@@ -5,8 +5,6 @@ export type Expense = {
     counteragentId?: number;
     counteragent?: Counteragent;
     description: string;
-    dateFrom: string;
-    dateTo: string;
     dateCreated: string;
     amount: number;
 };

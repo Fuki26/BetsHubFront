@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { Autocomplete, CircularProgress, FormControlLabel, Paper, Radio, RadioGroup, TextField, Typography} from '@mui/material';
 import Bets from '../../components/Bets/Bets';
 import { BetModel, ExpenseModel, ISelectionsResult, StatisticItemModel } from '../../models';
-import { getBetStatistics, getCounteragents, getExpenses, getMarkets, 
+import { getBetStatistics, getCounteragents, getCurrencies, getExpenses, getMarkets, 
   getPendingBets, getSports, getTournaments } from '../../api';
-import { Bet, Expense, Statistics } from '../../database-models';
+import { Bet, Currency, Expense, Statistics } from '../../database-models';
 import { StatisticType } from '../../models/enums';
 import { DataGridPro, GridColDef } from '@mui/x-data-grid-pro';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -18,6 +18,7 @@ const betToBetModelMapper = (bet: Bet) => {
     id: bet.id,
     dateCreated: new Date(bet.dateCreated),
     betStatus: bet.betStatus,
+    winStatus: bet.winStatus,
     stake: bet.stake,
     counteragentId: bet.counteragentId,
     counteragent: bet.counteragent
@@ -36,9 +37,6 @@ const betToBetModelMapper = (bet: Bet) => {
     odd: bet.odd,
     dateFinished: bet.dateFinished
       ? new Date(bet.dateFinished)
-      : null,
-    dateStaked: bet.dateStaked
-      ? new Date(bet.dateStaked)
       : null,
     profits: bet.profits,
     notes: bet.notes,
@@ -59,6 +57,7 @@ export default function Search() {
   const [ dateTo, setDateTo] = React.useState<Date | undefined>(undefined);
   const [ counteragentId, setCounteragentId ] = React.useState<number | undefined>(undefined);
 
+  const [ currencies, setCurrencies ] = React.useState<Array<Currency> | undefined>(undefined);
   const [ rows, setRows] = React.useState<Array<BetModel> | undefined>(undefined);
   const [ filteredRows, setFilteredRows] = React.useState<Array<BetModel> | undefined>(undefined);
   const [ possibleCounteragents, setCounteragents ] = 
@@ -77,6 +76,9 @@ export default function Search() {
     (async () => {
       try {
         setIsLoading(true);
+
+        let currencies: Array<Currency> | undefined = await getCurrencies();
+        setCurrencies(currencies);
 
         //#region Bets
 
@@ -213,8 +215,6 @@ export default function Search() {
                       amount: expense.amount,
                       description: expense.description,
                       dateCreated: new Date(expense.dateCreated),
-                      dateFrom: new Date(expense.dateFrom),
-                      dateTo: new Date(expense.dateTo), 
           
                       actionTypeApplied: undefined,
                       isSavedInDatabase: true,
@@ -344,7 +344,7 @@ export default function Search() {
             yield: betStatistics.threeMonths.yield,
           },
           {
-            id: 2,
+            id: 3,
             periodType: '6mTillToday',
             profit: betStatistics.sixMonths.profit,
             turnOver: betStatistics.sixMonths.turnOver,
@@ -485,6 +485,7 @@ export default function Search() {
                 selectBetIdFn={selectBetId}
                 setIsLoading={setIsLoading} 
                 defaultRows={filteredRows}
+                currencies={currencies}
                 possibleCounteragents={possibleCounteragents}
                 possibleSports={possibleSports}
                 possibleTournaments={possibleTournaments}

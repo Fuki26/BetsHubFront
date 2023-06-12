@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { toast } from 'react-toastify';
-import { DataGridPro, GridActionsCellItem, GridColDef,
+import { DataGridPro, GridActionsCellItem, GridCellEditStopParams, GridCellEditStopReasons, GridColDef,
   GridRenderCellParams,
   GridRenderEditCellParams,GridRowId, GridRowModel, GridRowModes, 
-  GridRowModesModel, GridRowParams, GridToolbarContainer, GridValueSetterParams, } from '@mui/x-data-grid-pro';
+  GridRowModesModel, GridRowParams, GridToolbarContainer, GridValueSetterParams, MuiEvent, } from '@mui/x-data-grid-pro';
 import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, 
   Paper, TextField, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -13,7 +13,8 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
 import { BetModel, EditToolbarProps, Enums, ISelectionsResult, } from '../../models';
 import { deleteBet, upsertBet, } from '../../api';
-import { BetStatus, ItemTypes, LiveStatus } from '../../models/enums';
+import { BetStatus, WinStatus, ItemTypes, LiveStatus } from '../../models/enums';
+import { Currency } from '../../database-models';
 
 export default function Bets(props: { 
   isRead: boolean;
@@ -21,6 +22,7 @@ export default function Bets(props: {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 
   defaultRows: Array<BetModel> | undefined;
+  currencies: Array<Currency> | undefined;
   possibleCounteragents: Array<{ value: string; label: string; }> | undefined;
   allSelections: ISelectionsResult;
   possibleSports: Array<{ value: string; label: string; }> | undefined;
@@ -28,7 +30,7 @@ export default function Bets(props: {
   possibleMarkets: Array<{ value: string; label: string; }> | undefined;
 }) {
   const { isRead, selectBetIdFn, setIsLoading, 
-    defaultRows, possibleCounteragents, allSelections, 
+    defaultRows, currencies, possibleCounteragents, allSelections, 
     possibleSports, possibleTournaments, possibleMarkets,
   } = props;
 
@@ -57,12 +59,13 @@ export default function Bets(props: {
         { 
           id,
           dateCreated: new Date(),
-          betStatus: 0,
+          betStatus: BetStatus.Pending,
+          winStatus: WinStatus.None,
           stake: undefined,
           counteragentId: undefined,
           counteragent: undefined,
           sport:	undefined,
-          liveStatus:	0,
+          liveStatus:	LiveStatus.PreLive,
           psLimit: undefined,
           market: undefined,
           tournament: undefined,
@@ -74,7 +77,6 @@ export default function Bets(props: {
           totalAmount: undefined,
           odd: undefined,
           dateFinished: undefined,
-          dateStaked: new Date(),
           profits: undefined,
           notes: undefined,
       
@@ -229,6 +231,7 @@ export default function Bets(props: {
           id: randomId,
           dateCreated: clickedRow?.dateCreated,
           betStatus: clickedRow?.betStatus,
+          winStatus: clickedRow?.winStatus,
           stake: clickedRow?.stake,
           counteragentId: clickedRow?.counteragentId,
           counteragent: clickedRow?.counteragent,
@@ -245,7 +248,6 @@ export default function Bets(props: {
           totalAmount: undefined,
           odd: undefined,
           dateFinished: undefined,
-          dateStaked: new Date(),
           profits: clickedRow?.profits,
           notes: clickedRow?.notes,
       
@@ -280,6 +282,7 @@ export default function Bets(props: {
             ...currentRow,
             dateCreated: newRow.dateCreated,
             betStatus: newRow.betStatus,
+            winStatus: newRow.winStatus,
             stake: newRow.stake,
             counteragentId: newRow.counteragentId,
             counteragent: currentRow.counteragent,
@@ -296,7 +299,6 @@ export default function Bets(props: {
             totalAmount: newRow.totalAmount,
             odd: newRow.odd,
             dateFinished: new Date(),
-            dateStaked: newRow.dateStaked,
             profits: newRow.profits,
             notes: newRow.notes,
           };
@@ -312,6 +314,7 @@ export default function Bets(props: {
                   ...newRowData, 
                   id: rowData?.data.id,
                   totalAmount: rowData?.data.totalAmount,
+                  isSavedInDatabase: true,
                 };
               } else {
                 return row;
@@ -407,6 +410,28 @@ export default function Bets(props: {
         .map(
           (key: any) => {
             return { value: Number(key), label: BetStatus[key], }
+          },
+        ),
+      valueFormatter(params) {
+        const colDef = params.api.getColumn(params.field);
+        const option = (colDef as any).valueOptions.find(
+          (option: { value: number; label: string; }) => option.value === params.value
+        );
+
+        return option.label;
+      },
+      width: 150,
+    },
+    {
+      field: 'winStatus',
+      headerName: 'Win status',
+      type: 'singleSelect',
+      editable: true,
+      valueOptions: Object.keys(WinStatus)
+        .filter((k) => !isNaN(Number(k)))
+        .map(
+          (key: any) => {
+            return { value: Number(key), label: WinStatus[key], }
           },
         ),
       valueFormatter(params) {
@@ -808,6 +833,40 @@ export default function Bets(props: {
       type: 'number',
       editable: false,
       width: 150,
+      valueGetter: (params) => {
+        if(!currencies || currencies.length === 0) {
+          return 0;
+        }
+
+        const eurCurrency = currencies.find((c) => c.abbreviation ==='EUR');
+        const usdCurrency = currencies.find((c) => c.abbreviation ==='USD');
+        const gbpCurrency = currencies.find((c) => c.abbreviation ==='GBP');
+
+        if(!eurCurrency || !usdCurrency || !gbpCurrency) {
+          return 0;
+        }
+
+        let totalAmount = 0;
+        totalAmount += !isNaN(params.row.amountBGN)
+          ? parseInt(params.row.amountBGN)
+          : 0;
+
+        totalAmount += !isNaN(params.row.amountEUR)
+          ? parseInt(params.row.amountEUR) * eurCurrency.conversionRateToBGN
+          : 0;
+
+        totalAmount += !isNaN(params.row.amountUSD)
+          ? parseInt(params.row.amountUSD) * usdCurrency.conversionRateToBGN
+          : 0;
+
+        totalAmount += !isNaN(params.row.amountGBP)
+          ? parseInt(params.row.amountGBP) * gbpCurrency.conversionRateToBGN
+          : 0;
+
+        return params.row && params.row.totalAmount
+          ? params.row.totalAmount
+          : totalAmount;
+      },
     },
     {
       field: 'odd',
@@ -819,13 +878,6 @@ export default function Bets(props: {
     {
       field: 'dateFinished',
       headerName: 'Date finished',
-      type: 'date',
-      editable: false,
-      width: 150,
-    },
-    {
-      field: 'dateStaked',
-      headerName: 'Date staked',
       type: 'date',
       editable: false,
       width: 150,
