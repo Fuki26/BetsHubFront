@@ -262,55 +262,61 @@ export default function Counteragents(props: {}) {
   const processRowUpdate = async (newRow: GridRowModel) => {
     const currentRow = rows?.find((row) => row.id === newRow.id);
     
-    toast(currentRow?.actionTypeApplied === Enums.ActionType.CANCELED 
-        ? 'Canceled' 
-        : `Saved counteragent with id ${currentRow!.id}`,
-      {
-        position: 'top-center',
-      });
     if(currentRow?.actionTypeApplied === Enums.ActionType.SAVED
         || currentRow?.actionTypeApplied === Enums.ActionType.EDITED) {
-          const newRowData: CounteragentModel = {
-            ...currentRow,
-            name: newRow.name,
-            counteragentCategoryId: newRow.counteragentCategoryId, 
-            counteragentCategory: currentRow.counteragentCategory,
-            maxRate: newRow.maxRate,
-            dateCreated: currentRow.actionTypeApplied === Enums.ActionType.SAVED
-              ? new Date()
-              : newRow.dateCreated,
-            dateChanged: currentRow.actionTypeApplied === Enums.ActionType.EDITED
-              ? new Date()
-              : newRow.dateChanged,
-            userId: newRow.userId, 
-            user: currentRow.user,
-          };
+        const newRowData: CounteragentModel = {
+          ...currentRow,
+          name: newRow.name,
+          counteragentCategoryId: newRow.counteragentCategoryId, 
+          counteragentCategory: currentRow.counteragentCategory,
+          maxRate: newRow.maxRate,
+          dateCreated: currentRow.actionTypeApplied === Enums.ActionType.SAVED
+            ? new Date()
+            : newRow.dateCreated,
+          dateChanged: currentRow.actionTypeApplied === Enums.ActionType.EDITED
+            ? new Date()
+            : newRow.dateChanged,
+          userId: newRow.userId, 
+          user: currentRow.user,
+        };
 
-          setIsLoading(true);
-          
-          await upsertCounteragent({ ...newRowData, 
-            id: currentRow.actionTypeApplied === Enums.ActionType.SAVED 
-              ? null
-              : currentRow.id
+        setIsLoading(true);
+        
+        const rowData = await upsertCounteragent(newRowData);
+
+        setRows((previousRowsModel) => {
+          return previousRowsModel!.map((row) => {
+            if(row.id === newRow.id) {
+              return { 
+                ...newRowData, 
+                id: rowData?.data.id,
+                isSavedInDatabase: true,
+              };
+            } else {
+              return row;
+            }
           });
+        });
 
-          setRows((previousRowsModel) => {
-            return previousRowsModel!.map((row) => {
-              if(row.id === newRow.id) {
-                return newRowData;
-              } else {
-                return row;
-              }
-            });
-          });
+        setRowModesModel((previousRowModesModel) => {
+          return { ...previousRowModesModel, [rowData?.data.id]: { mode: GridRowModes.View } }
+        });
 
-          setIsLoading(false);
+        setIsLoading(false);
+
+        newRow.id = rowData?.data.id;
     } else {
-
+      setRowModesModel((previousRowModesModel) => {
+        return { ...previousRowModesModel, [newRow.id]: { mode: GridRowModes.View } }
+      });
     }
     
-    setRowModesModel((previousRowModesModel) => {
-      return { ...previousRowModesModel, [newRow.id]: { mode: GridRowModes.View } }
+    
+    toast(currentRow?.actionTypeApplied === Enums.ActionType.CANCELED 
+      ? 'Canceled' 
+      : `Saved counteragent with id ${newRow!.id}`,
+    {
+      position: 'top-center',
     });
 
     return newRow;

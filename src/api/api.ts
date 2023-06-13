@@ -243,7 +243,7 @@ const upsertCounteragent = async (counteragent: CounteragentModel) => {
         const id = counteragent.isSavedInDatabase
             ? `Id=${counteragent.id}&`
             : 'Id=0&';
-        await axios.post(`${domain}/UpsertCounteragent?${id}Name=${counteragent.name}&CounteragentCategoryId=${counteragent.counteragentCategoryId}&MaxRate=${counteragent.maxRate}&UserId=${counteragent.userId}`);
+        return await axios.post(`${domain}/UpsertCounteragent?${id}Name=${counteragent.name}&CounteragentCategoryId=${counteragent.counteragentCategoryId}&MaxRate=${counteragent.maxRate}&UserId=${counteragent.userId}`);
     } catch(e) {
         alert(JSON.stringify(e));
     }

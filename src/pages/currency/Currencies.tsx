@@ -53,41 +53,6 @@ export default function Currencies() {
     })();
   }, []);
 
-  const editToolbar = (props: EditToolbarProps) => {
-    const { setRows, setRowModesModel } = props;
-
-    const handleAddNewClick = () => {
-      const id = Math.round(Math.random() * 1000000);
-      setRows((oldRows) => [...oldRows, 
-        { 
-          id,
-          name: '',
-          abbreviation: '',
-          conversionRateToBGN: 0,
-          dateCreated: new Date(),
-          dateChanged: new Date(),
-      
-          actionTypeApplied: undefined,
-          isSavedInDatabase: false,
-        } as CurrencyModel
-      ]);
-
-      setRowModesModel((oldModel) => ({
-        ...oldModel,
-        [id]: { mode: GridRowModes.Edit, },
-      }));
-    };
-  
-    return (
-      <GridToolbarContainer>
-        <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleAddNewClick}>
-          Create a currency
-        </Button>
-      </GridToolbarContainer>
-    );
-  }
-
-
   //#region Delete dialog
 
   const handleClickOpenOnDeleteDialog = (id: GridRowId) => () => {
@@ -335,12 +300,6 @@ export default function Currencies() {
                 onClick={handleEditClick(params.id)}
                 color='inherit'
               />,
-              <GridActionsCellItem
-                icon={<DeleteIcon />}
-                label='Delete'
-                onClick={handleClickOpenOnDeleteDialog(params.id)}
-                color='inherit'
-              />,
             ]
       },
     }
@@ -378,10 +337,7 @@ export default function Currencies() {
                   columns={columns}
                   columnBuffer={2} 
                   columnThreshold={2}
-                  rows={rows}   
-                  slots={{
-                    toolbar: editToolbar,
-                  }}
+                  rows={rows}
                   rowModesModel={rowModesModel}
                   processRowUpdate={processRowUpdate}
                   slotProps={{
