@@ -8,13 +8,16 @@ import { Autocomplete, Button, Dialog, DialogActions, DialogTitle,
   Paper, TextField, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
+import HistoryIcon from '@mui/icons-material/History';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
 import { BetModel, EditToolbarProps, Enums, ISelectionsResult, } from '../../models';
-import { deleteBet, upsertBet, } from '../../api';
+import { deleteBet, upsertBet, getBetHistory } from '../../api';
 import { BetStatus, WinStatus, ItemTypes, LiveStatus } from '../../models/enums';
 import { Currency } from '../../database-models';
+import { slideAnimationDuration } from '@mui/x-date-pickers/DateCalendar/PickersSlideTransition';
+import Modal from '../UI/Modal';
 
 export default function Bets(props: { 
   isRead: boolean;
@@ -38,6 +41,8 @@ export default function Bets(props: {
   const [ rowModesModel, setRowModesModel, ] = React.useState<GridRowModesModel>({});
   const [ deleteRowId, setDeleteRowId, ] = React.useState<number | undefined>(undefined);
   const [ deleteDialogIsOpened, setOpenDeleteDialog, ] = React.useState(false);
+  const [showHistoryModal, setShowHistoryModal] = React.useState(false);
+  const [history, setHistory] = React.useState(null);
 
   React.useEffect(() => {
     setRows((oldRows) => {
@@ -201,6 +206,19 @@ export default function Bets(props: {
       return newRowsModel;
     });
   };
+
+  const handleHistoryClick = async (params: GridRowParams) => {
+    const row = rows!.find((row) => row.id === params.id);
+
+    if(!row) {
+      return;
+    }
+    // const betId = await selectBetIdFn(row.id);
+    const history = await getBetHistory(row.id);
+    
+    setShowHistoryModal(true);
+    setHistory(history);
+  }
 
   const handleDeleteClick = async () => {
     if(!deleteRowId) {
@@ -944,6 +962,13 @@ export default function Bets(props: {
                 color='inherit'
               />,
               <GridActionsCellItem
+                icon={<HistoryIcon />}
+                label='Bet History'
+                className='textPrimary'
+                onClick={() => handleHistoryClick(params) as any}
+                color='inherit'
+              />,
+              <GridActionsCellItem
                 icon={<DeleteIcon />}
                 label='Delete'
                 onClick={handleClickOpenOnDeleteDialog(params.id)}
@@ -960,6 +985,11 @@ export default function Bets(props: {
       },
     }
   ];
+
+  const handleModalClose = () => setShowHistoryModal(false);
+  if (showHistoryModal && history) {
+    return <Modal open={showHistoryModal} handleClose={handleModalClose} betsHistory={history} />
+  }
 
   return (
     <Paper sx={{ padding: '5%'}}>

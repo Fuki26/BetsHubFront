@@ -1,5 +1,5 @@
 import { WinStatus } from '../models/enums';
-import { Counteragent, } from './Counteragent';
+import { Counteragent, } from './CounterAgent';
 
 export type Bet = {
     id: number;

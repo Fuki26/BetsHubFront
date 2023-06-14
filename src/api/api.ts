@@ -261,10 +261,20 @@ const upsertCurrency = async (currency: CurrencyModel) => {
     }
 };
 
+const getBetHistory = async (betId: number) => {
+    try {
+        const response = await axios.get(`${domain}/GetBetHistory?betId=${betId}`);
+        return response.data;
+    } catch(e) {
+        alert(JSON.stringify(e));
+    }
+};
+
 export {
     getPendingBets,
     getCompletedBets,
     getBetStatistics,
+    getBetHistory,
     getExpenses,
     getCounteragents,
     getCounteragentsCategories,
