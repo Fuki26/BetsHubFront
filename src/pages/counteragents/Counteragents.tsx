@@ -11,7 +11,7 @@ import CancelIcon from '@mui/icons-material/Close';
 import { CounteragentModel, EditToolbarProps, Enums, } from '../../models';
 import { ItemTypes } from '../../models/enums';
 import { deleteCounteragent, getCounteragents, getCounteragentsCategories, getUsers, upsertCounteragent, } from '../../api';
-import { Counteragent, CounteragentCategory, User } from '../../database-models';
+import { Counteragent, CounterAgentCategory, User } from '../../database-models';
 
 export default function Counteragents(props: {}) {
   const [ isLoading, setIsLoading, ] = React.useState<boolean>(false);
@@ -59,7 +59,7 @@ export default function Counteragents(props: {}) {
 
         const counteragentsCategories: Array<{ value: string; label: string; }> | undefined = 
           getCounteragentsCategoriesResult
-            ? getCounteragentsCategoriesResult.map((counteragentCategory: CounteragentCategory) => {
+            ? getCounteragentsCategoriesResult.map((counteragentCategory: CounterAgentCategory) => {
                 return {
                   value: counteragentCategory.id.toString(),
                   label: counteragentCategory.name
