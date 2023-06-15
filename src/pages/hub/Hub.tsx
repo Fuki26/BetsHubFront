@@ -303,6 +303,7 @@ export default function Hub() {
 
   const selectBetId = async (id: number) => {
     setSelectedBetId(id);
+    return id;
   };
 
   const statisticsColumns: Array<GridColDef<any>> = [
