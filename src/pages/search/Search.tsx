@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Autocomplete, Checkbox, CircularProgress, FormControlLabel, 
+import { Autocomplete, Checkbox, CircularProgress, FormControl, FormControlLabel, 
   Paper, Radio, RadioGroup, TextField, Typography} from '@mui/material';
   import { DataGridPro, GridColDef } from '@mui/x-data-grid-pro';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -161,6 +161,7 @@ export default function Search() {
   const [ isLoading, setIsLoading, ] = React.useState<boolean>(false);
   
   const [ selectedBetId, setSelectedBetId, ] = React.useState<number | undefined>(undefined);
+  const [ areExpensesShown, setAreExpensesShown, ] = React.useState<boolean>(false);
   const [ statisticsType, setStatisticsType, ] = React.useState<StatisticType>(StatisticType.Flat);
   const [ currentStatistcs, setCurrentStatistcs, ] = React.useState<Array<StatisticItemModel> | undefined>(undefined);
   
@@ -783,6 +784,17 @@ export default function Search() {
             )
           : null
       }
+      <FormControl component="fieldset">
+        <FormControlLabel
+          value="end"
+          control={<Checkbox />}
+          label="Are expenses shown"
+          labelPlacement="end"
+          onChange={(e, checked) => {
+            setAreExpensesShown(checked);
+          }}
+        />
+      </FormControl>
       {
         currentStatistcs
           ? (
@@ -928,6 +940,7 @@ export default function Search() {
       <Typography variant='h4'>Expenses</Typography>
       {
         filteredExpenseRowsRows && allCounteragents && allCounteragents.length > 0
+          && areExpensesShown
           ? (
               <Expenses 
                 isRead={false}
