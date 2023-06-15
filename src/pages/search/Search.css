@@ -1,0 +1,9 @@
+.search-filters-container {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.search-filters-container .search-filters-autocomplete {
+    margin-right: 2%;
+    max-width: 15%;
+}

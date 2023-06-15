@@ -7,6 +7,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import dayjs from 'dayjs';
+import './Search.css';
 import Bets from '../../components/Bets/Bets';
 import { BetModel, ExpenseModel, ISelectionsResult, StatisticItemModel } from '../../models';
 import { getBetStatistics, getCounteragents, getCurrencies, getExpenses, getMarkets, 
@@ -15,6 +16,45 @@ import { Bet, Currency, Expense, Statistics } from '../../database-models';
 import { StatisticType } from '../../models/enums';
 import Expenses from '../../components/Expenses/Expenses';
 
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
+const statisticsColumns: Array<GridColDef<any>> = [
+  {
+    field: 'id',
+    type: 'number',
+  },
+  {
+    field: 'periodType',
+    headerName: 'Period',
+    type: 'string',
+    width: 150,
+  },
+  {
+    field: 'profit',
+    headerName: 'Profit',
+    type: 'number',
+    width: 150,
+  },
+  {
+    field: 'turnOver',
+    headerName: 'Turnover',
+    type: 'number',
+    width: 150,
+  },
+  {
+    field: 'winRate',
+    headerName: 'Win Rate',
+    type: 'number',
+    width: 150,
+  },
+  {
+    field: 'yield',
+    headerName: 'Yield',
+    type: 'number',
+    width: 150,
+  },
+];
 
 const betToBetModelMapper = (bet: Bet) => {
   return {
@@ -49,8 +89,73 @@ const betToBetModelMapper = (bet: Bet) => {
   } as BetModel;
 };
 
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
+const AutocompleteComponent = (props: { 
+  id: string;
+  label: string;
+  options: Array<{ value: string; label: string; }>;
+  selectedOptions: Array<string>;
+  setStateFn: React.Dispatch<React.SetStateAction<string[]>>;
+}) => {
+  const { id, label, options, selectedOptions, setStateFn, } = props;
+  return (
+    <Autocomplete
+      className='search-filters-autocomplete'
+      multiple
+      id={id}
+      options={options}
+      disableCloseOnSelect
+      getOptionLabel={(option) => option.label}
+      renderOption={(props, option) => {
+        let isSelected = false;
+
+        if(selectedOptions) {
+          isSelected = selectedOptions.some((c) => c === option.value);
+        }
+        
+        return (
+          <li {...props}>
+            <Checkbox
+              icon={icon}
+              checkedIcon={checkedIcon}
+              style={{ marginRight: 8 }}
+              checked={isSelected}
+            />
+            {option.label}
+          </li>
+        )
+      }}
+      style={{ width: 500 }}
+      renderInput={(params) => {
+        return (
+          <TextField {...params} label={label} placeholder={label} />
+        );
+      }}
+      onChange={(e: any, values: Array<{ value: string; label: string; }>) => {
+        const finalValues: Array<{ value: string; label: string; }> = [];
+
+        for(var i = 0; i <= values.length - 1; i++) {
+          const shouldRemove = 
+            values.filter((v) => v.value === values[i].value).length % 2 === 0;
+          if(!shouldRemove) {
+            finalValues.push(values[i]);
+          }
+        }
+
+        const ids: Array<string> = finalValues.map((v) => v.value);
+        
+        const uniqueIds = ids.filter((elem, pos) => {
+          return ids.indexOf(elem) == pos;
+        });
+
+        setStateFn((previousModel: Array<string>) => {
+          return uniqueIds;
+        });
+      }}
+      value={options
+        .filter((v) => selectedOptions.some((c) => c === v.value))}
+    />
+  );
+}
 
 export default function Search() {
   const [ isLoading, setIsLoading, ] = React.useState<boolean>(false);
@@ -70,12 +175,12 @@ export default function Search() {
   const [ psLimitFrom, setPsLimitFrom] = React.useState<number | undefined>(undefined);
   const [ psLimitTo, setPsLimitTo] = React.useState<number | undefined>(undefined);
 
-  const [ counteragentCategoriesIds, setCounteragentCategoriesIds ] = React.useState<Array<number> | undefined>(undefined);
-  const [ counteragentIds, setCounteragentIds ] = React.useState<Array<number> | undefined>(undefined);
-  const [ sportIds, setSportIds ] = React.useState<Array<string> | undefined>(undefined);
-  const [ marketIds, setMarketIds ] = React.useState<Array<string> | undefined>(undefined);
-  const [ tournamentIds, setTournamentIds ] = React.useState<Array<string> | undefined>(undefined);
-  const [ liveStatusIds, setLiveStatusIds ] = React.useState<Array<number> | undefined>(undefined);
+  const [ counteragentCategoriesIds, setCounteragentCategoriesIds ] = React.useState<Array<string>>([]);
+  const [ counteragentIds, setCounteragentIds ] = React.useState<Array<string>>([]);
+  const [ sportIds, setSportIds ] = React.useState<Array<string>>([]);
+  const [ marketIds, setMarketIds ] = React.useState<Array<string>>([]);
+  const [ tournamentIds, setTournamentIds ] = React.useState<Array<string>>([]);
+  const [ liveStatusIds, setLiveStatusIds ] = React.useState<Array<string>>([]);
 
   //#endregion Filters
 
@@ -277,13 +382,59 @@ export default function Search() {
         const bets: Array<BetModel> = [];
         for(var i = 0; i <= rows?.length - 1; i++) {
           const currentRow = rows[i];
-          if(counteragentIds) {
-            const matchCounteragents = !!currentRow.counteragentId && counteragentIds?.indexOf(currentRow.counteragentId) !== -1;
+
+          //#region Counteragent filter
+
+          if(counteragentIds.length > 0) {
+            const matchCounteragents = !!currentRow.counteragentId && 
+            counteragentIds.indexOf(currentRow.counteragentId.toString()) !== -1;
 
             if(!matchCounteragents) {
               continue;
             }
           }
+
+          //#endregion Counteragent filter
+
+          //#region Sport filter
+
+          if(sportIds.length > 0) {
+            const matchSports = !!currentRow.sport && 
+            sportIds.indexOf(currentRow.sport) !== -1;
+
+            if(!matchSports) {
+              continue;
+            }
+          }
+
+          //#endregion Sport filter
+
+          //#region Market filter
+
+          if(marketIds.length > 0) {
+            const matchMarkets = !!currentRow.market && 
+              marketIds.indexOf(currentRow.market) !== -1;
+
+            if(!matchMarkets) {
+              continue;
+            }
+          }
+
+          //#endregion Market filter
+
+          //#region Tournament filter
+
+          if(tournamentIds.length > 0) {
+            const matchTournaments = !!currentRow.tournament && 
+              tournamentIds.indexOf(currentRow.tournament) !== -1;
+
+            if(!matchTournaments) {
+              continue;
+            }
+          }
+
+          //#endregion Tournament filter
+
           if(currentRow.dateFinished) {
             if(dateFrom && dateTo) {
               if(currentRow.dateFinished?.getTime() > dateFrom.getTime() 
@@ -400,45 +551,8 @@ export default function Search() {
     setSelectedBetId(id);
   };
 
-  const statisticsColumns: Array<GridColDef<any>> = [
-    {
-      field: 'id',
-      type: 'number',
-    },
-    {
-      field: 'periodType',
-      headerName: 'Period',
-      type: 'string',
-      width: 150,
-    },
-    {
-      field: 'profit',
-      headerName: 'Profit',
-      type: 'number',
-      width: 150,
-    },
-    {
-      field: 'turnOver',
-      headerName: 'Turnover',
-      type: 'number',
-      width: 150,
-    },
-    {
-      field: 'winRate',
-      headerName: 'Win Rate',
-      type: 'number',
-      width: 150,
-    },
-    {
-      field: 'yield',
-      headerName: 'Yield',
-      type: 'number',
-      width: 150,
-    },
-  ];
-
-  const distinctCounteragents: Array<{ value: number; label: string; }> = rows
-    ? rows.filter((value: BetModel, index: number, array: Array<BetModel>) => {
+  const distinctCounteragents: Array<{ value: string; label: string; }> = filteredRows
+    ? filteredRows.filter((value: BetModel, index: number, array: Array<BetModel>) => {
         if(!value.counteragentId || !value.counteragent) {
           return false;
         }
@@ -448,8 +562,59 @@ export default function Search() {
           .indexOf(value.counteragentId) === index;
       }).map((betModel) => {
         return {
-          value: betModel.counteragentId!,
+          value: betModel.counteragentId!.toString(),
           label: betModel.counteragent!,
+        }
+      })
+    : [];
+
+  const distinctSports: Array<{ value: string; label: string; }> = filteredRows
+    ? filteredRows.filter((value: BetModel, index: number, array: Array<BetModel>) => {
+        if(!value.sport) {
+          return false;
+        }
+
+        return array
+          .map((betModel: BetModel) => betModel.sport)
+          .indexOf(value.sport) === index;
+      }).map((betModel) => {
+        return {
+          value: betModel.sport!,
+          label: betModel.sport!,
+        }
+      })
+    : [];
+
+  const distinctMarkets: Array<{ value: string; label: string; }> = filteredRows
+    ? filteredRows.filter((value: BetModel, index: number, array: Array<BetModel>) => {
+        if(!value.market) {
+          return false;
+        }
+
+        return array
+          .map((betModel: BetModel) => betModel.market)
+          .indexOf(value.market) === index;
+      }).map((betModel) => {
+        return {
+          value: betModel.market!,
+          label: betModel.market!,
+        }
+      })
+    : [];
+
+  const distinctTournaments: Array<{ value: string; label: string; }> = filteredRows
+    ? filteredRows.filter((value: BetModel, index: number, array: Array<BetModel>) => {
+        if(!value.tournament) {
+          return false;
+        }
+
+        return array
+          .map((betModel: BetModel) => betModel.tournament)
+          .indexOf(value.tournament) === index;
+      }).map((betModel) => {
+        return {
+          value: betModel.tournament!,
+          label: betModel.tournament!,
         }
       })
     : [];
@@ -477,28 +642,30 @@ export default function Search() {
             )
           : null
       }
-      <RadioGroup
-        aria-labelledby="demo-controlled-radio-buttons-group"
-        name="controlled-radio-buttons-group"
-        value={statisticsType}
-        onChange={(event) => {
-          const value: string = (event.target as HTMLInputElement).value;
-          setStatisticsType(value === 'Flat' 
-            ? StatisticType.Flat
-            : StatisticType.Real);
-        }}
-      >
-        <FormControlLabel value="Flat" control={<Radio />} label="Flat" />
-        <FormControlLabel value="Real" control={<Radio />} label="Real" />
-      </RadioGroup>
-      <Typography variant='h4'>Statistics</Typography>
       {
         currentStatistcs
           ? (
-              <DataGridPro
-                columns={statisticsColumns}
-                rows={currentStatistcs}
-              />
+              <Paper>
+                <Typography variant='h4'>Statistics</Typography>
+                <RadioGroup
+                  aria-labelledby="demo-controlled-radio-buttons-group"
+                  name="controlled-radio-buttons-group"
+                  value={statisticsType}
+                  onChange={(event) => {
+                    const value: string = (event.target as HTMLInputElement).value;
+                    setStatisticsType(value === 'Flat' 
+                      ? StatisticType.Flat
+                      : StatisticType.Real);
+                  }}
+                >
+                  <FormControlLabel value="Flat" control={<Radio />} label="Flat" />
+                  <FormControlLabel value="Real" control={<Radio />} label="Real" />
+                </RadioGroup>
+                <DataGridPro
+                  columns={statisticsColumns}
+                  rows={currentStatistcs}
+                />
+              </Paper>
             )
           : null
       }
@@ -510,67 +677,32 @@ export default function Search() {
           setDateTo(newValue ? new Date(newValue?.toISOString()) : undefined);
         }}/>
       </LocalizationProvider>
-      <Autocomplete
-        multiple
-        id="checkboxes-tags-demo"
-        options={distinctCounteragents}
-        disableCloseOnSelect
-        getOptionLabel={(option) => option.label}
-        renderOption={(props, option) => {
-          let isSelected = false;
-
-          if(counteragentIds) {
-            isSelected = counteragentIds.some((c) => c === option.value);
-          }
-          
-          return (
-            <li {...props}>
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                style={{ marginRight: 8 }}
-                checked={isSelected}
-              />
-              {option.label}
-            </li>
-          )
-        }}
-        style={{ width: 500 }}
-        renderInput={(params) => {
-          return (
-            <TextField {...params} label="Counteragent" placeholder="Counteragent" />
-          );
-        }}
-        onChange={(e: any, values: Array<{ value: number; label: string; }>) => {
-          const finalValues: Array<{ value: number; label: string; }> = [];
-
-          for(var i = 0; i <= values.length - 1; i++) {
-            const shouldRemove = 
-              values.filter((v) => v.value === values[i].value).length % 2 === 0;
-            if(!shouldRemove) {
-              finalValues.push(values[i]);
-            }
-          }
-
-          const ids: Array<number> = finalValues.map((v) => v.value);
-          
-          const uniqueIds = ids.filter((elem, pos) => {
-            return ids.indexOf(elem) == pos;
-          });
-
-          console.log(JSON.stringify(uniqueIds));
-          setCounteragentIds((previousModel: Array<number> | undefined) => {
-            return uniqueIds;
-          });
-        }}
-        value={[ 
-          { value: 1, label: 'Counteragent 1', }, 
-          { value: 2, label: 'Counteragent 2', },
-          { value: 3, label: 'Counteragent 3', },
-          { value: 4, label: 'Counteragent 4', },
-          { value: 5, label: 'Counteragent 5', },
-        ].filter((v) => counteragentIds?.some((c) => c === v.value))}
-      />
+      <Paper className='search-filters-container'>
+        <AutocompleteComponent 
+          id='counteragents-autocomplete'
+          label='Counteragent'
+          options={distinctCounteragents} 
+          selectedOptions={counteragentIds}
+          setStateFn={setCounteragentIds}/>
+        <AutocompleteComponent 
+          id='sports-autocomplete'
+          label='Sport'
+          options={distinctSports} 
+          selectedOptions={sportIds}
+          setStateFn={setSportIds}/>
+        <AutocompleteComponent 
+          id='markets-autocomplete'
+          label='Market'
+          options={distinctMarkets} 
+          selectedOptions={marketIds}
+          setStateFn={setMarketIds}/>
+        <AutocompleteComponent 
+          id='tournaments-autocomplete'
+          label='Tournament'
+          options={distinctTournaments} 
+          selectedOptions={tournamentIds}
+          setStateFn={setTournamentIds}/>
+      </Paper>
       <Typography variant='h4'>Bets</Typography>
       {
         filteredRows
