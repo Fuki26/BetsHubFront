@@ -184,12 +184,8 @@ export default function Search() {
 
   //#endregion Filters
 
-
   const [ rows, setRows] = React.useState<Array<BetModel> | undefined>(undefined);
   const [ filteredRows, setFilteredRows] = React.useState<Array<BetModel> | undefined>(undefined);
-  const [ expensesRows, setExpensesRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
-  const [ filteredExpensesRows, setFilteredExpensesRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
-
 
   const [ allCounteragents, setAllCounteragents ] = React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
   const [ allSelections, setAllSelections ] = React.useState<ISelectionsResult | undefined>(undefined);
@@ -204,13 +200,21 @@ export default function Search() {
       try {
         setIsLoading(true);
 
+        //#region Filters
+
+        const dateFrom: Date = new Date();
+        dateFrom.setMonth(dateFrom.getMonth() - 1);
+        const now = new Date();
+
+        setDateFrom(dateFrom);
+        setDateTo(new Date());
+
+        //#endregion Filters
+
         //#region Bets
 
         let bets: Array<BetModel> = (await getPendingBets())!.map(betToBetModelMapper);
         setRows(bets);
-        const dateFrom: Date = new Date();
-        dateFrom.setMonth(dateFrom.getMonth() - 1);
-        const now = new Date();
         setFilteredRows(bets.filter((b) => {
           if(b.dateFinished) {
             return b.dateFinished.getTime() > dateFrom.getTime()
@@ -221,37 +225,6 @@ export default function Search() {
         }));
 
         //#endregion Bets
-
-        //#region Expenses
-
-        const getExpensesResult: Array<Expense> | undefined  = await getExpenses();
-        const expenses: Array<ExpenseModel> | undefined = getExpensesResult
-                ? getExpensesResult.map((expense) => {
-                    return {
-                      id: expense.id,
-                      counteragentId: expense.counteragentId
-                        ? expense.counteragentId
-                        : undefined,
-                      counteragent: expense.counteragent
-                        ? expense.counteragent.name
-                        : undefined,
-                      amount: expense.amount,
-                      description: expense.description,
-                      dateCreated: new Date(expense.dateCreated),
-          
-                      actionTypeApplied: undefined,
-                      isSavedInDatabase: true,
-                    };
-                  })
-                : [];
-        setExpensesRows(expenses);
-        setFilteredExpensesRows(expenses.filter((e) => {
-          return e.dateCreated.getTime() > dateFrom.getTime()
-            && e.dateCreated.getTime() < now.getTime();
-        }));
-
-
-        //#endregion
 
         //#region Counteragents
 
@@ -358,16 +331,6 @@ export default function Search() {
         setAllCurrencies(currencies);
 
         //#endregion
-
-
-        //#region Filters
-
-        
-
-        setDateFrom(dateFrom);
-        setDateTo(new Date());
-
-        //#endregion Filters
       
         setIsLoading(false);
       } catch (e) {
@@ -382,6 +345,20 @@ export default function Search() {
         const bets: Array<BetModel> = [];
         for(var i = 0; i <= rows?.length - 1; i++) {
           const currentRow = rows[i];
+
+          //#region Counteragent category filter
+
+          // if(counteragentCategoriesIds.length > 0) {
+          //   const matchCounteragentCategoriess = !!currentRow.counteragent 
+          //     && currentRow.counteragent.counteragent
+          //     counteragentCategoriesIds.indexOf(currentRow.counteragentId.toString()) !== -1;
+
+          //   if(!matchCounteragents) {
+          //     continue;
+          //   }
+          // }
+
+          //#endregion Counteragent category filter
 
           //#region Counteragent filter
 
@@ -448,24 +425,102 @@ export default function Search() {
 
           //#endregion Live status filter
 
+
+          //#region DateFrom - DateTo filter
+
+          let matchDateFinished = false;
           if(currentRow.dateFinished) {
             if(dateFrom && dateTo) {
               if(currentRow.dateFinished?.getTime() > dateFrom.getTime() 
                 && currentRow.dateFinished?.getTime() < dateTo.getTime()) {
-                  bets.push(currentRow);
+                matchDateFinished = true;
               }
             } else if(dateFrom && !dateTo) {
               if(currentRow.dateFinished?.getTime() > dateFrom.getTime()) {
-                  bets.push(currentRow);
+                matchDateFinished = true;
               }
             } else if(!dateFrom && dateTo) {
               if(currentRow.dateFinished?.getTime() < dateTo.getTime()) {
-                  bets.push(currentRow);
+                matchDateFinished = true;
               }
             } else {
-              bets.push(currentRow); 
+                matchDateFinished = true;
             }
           }
+
+          if(!matchDateFinished) {
+            continue;
+          }
+
+          //#endregion DateFrom - DateTo filter
+
+          //#region StakeFrom - StakeTo filter
+
+          let matchStake = true;
+          if(typeof currentRow.stake !== 'undefined') {
+            if(typeof stakeFrom !== 'undefined' && typeof stakeTo !== 'undefined'
+                && (currentRow.stake < stakeFrom || currentRow.stake > stakeTo)) {
+              matchStake = false;
+            } else if(typeof stakeFrom !== 'undefined' && typeof stakeTo === 'undefined' 
+              && currentRow.stake < stakeFrom) {
+              matchStake = false;
+            } else if(typeof stakeFrom === 'undefined' && typeof stakeTo !== 'undefined' 
+              && currentRow.stake > stakeTo) {
+              matchStake = false;
+            }
+          }
+
+          if(!matchStake) {
+            continue;
+          }
+
+          //#endregion StakeFrom - StakeTo filter
+
+          //#region OddFrom - OddTo filter
+
+          let matchOdd = true;
+          if(typeof currentRow.odd !== 'undefined') {
+            if(typeof oddFrom !== 'undefined' && typeof oddTo !== 'undefined'
+                && (currentRow.odd < oddFrom || currentRow.odd > oddTo)) {
+                  matchOdd = false;
+            } else if(typeof oddFrom !== 'undefined' && typeof oddTo === 'undefined' 
+              && currentRow.odd < oddFrom) {
+              matchOdd = false;
+            } else if(typeof oddFrom === 'undefined' && typeof oddTo !== 'undefined' 
+              && currentRow.odd > oddTo) {
+              matchOdd = false;
+            }
+          }
+
+          if(!matchOdd) {
+            continue;
+          }
+
+          //#endregion OddFrom - OddTo filter
+
+          //#region PsLimitFrom - PsLimitTo filter
+
+          let matchPsLimit = true;
+          if(typeof currentRow.psLimit !== 'undefined') {
+            if(typeof psLimitFrom !== 'undefined' && typeof psLimitTo !== 'undefined'
+                && (currentRow.psLimit < psLimitFrom || currentRow.psLimit > psLimitTo)) {
+                  matchPsLimit = false;
+            } else if(typeof psLimitFrom !== 'undefined' && typeof psLimitTo === 'undefined' 
+              && currentRow.psLimit < psLimitFrom) {
+              matchPsLimit = false;
+            } else if(typeof psLimitFrom === 'undefined' && typeof psLimitTo !== 'undefined' 
+              && currentRow.psLimit > psLimitTo) {
+              matchPsLimit = false;
+            }
+          }
+
+          if(!matchPsLimit) {
+            continue;
+          }
+
+          //#endregion PsLimitFrom - PsLimitTo filter
+
+          bets.push(currentRow);
         }
 
         return bets;
@@ -473,39 +528,6 @@ export default function Search() {
         return [];
       }
     });
-
-    // setFilteredExpensesRows((previousRowsModel: Array<ExpenseModel> | undefined) => {
-    //   if(expensesRows) {
-    //     const expenses: Array<ExpenseModel> = [];
-    //     for(var i = 0; i <= expensesRows.length - 1; i++) {
-    //       const currentRow = expensesRows[i];
-    //       if(counteragentId && counteragentId !== currentRow.counteragentId) {
-    //         continue;
-    //       }
-
-    //       if(dateFrom && dateTo) {
-    //         if(currentRow.dateCreated.getTime() > dateFrom.getTime() 
-    //           && currentRow.dateCreated.getTime() < dateTo.getTime()) {
-    //             expenses.push(currentRow);
-    //         }
-    //       } else if(dateFrom && !dateTo) {
-    //         if(currentRow.dateCreated.getTime() > dateFrom.getTime()) {
-    //             expenses.push(currentRow);
-    //         }
-    //       } else if(!dateFrom && dateTo) {
-    //         if(currentRow.dateCreated.getTime() < dateTo.getTime()) {
-    //           expenses.push(currentRow);
-    //         }
-    //       } else {
-    //         expenses.push(currentRow); 
-    //       }
-    //     }
-
-    //     return expenses;
-    //   } else {
-    //     return [];
-    //   }
-    // });
   }, [ dateFrom, dateTo, stakeFrom, stakeTo, oddFrom, oddTo, psLimitFrom, psLimitTo, 
     counteragentCategoriesIds, counteragentIds, sportIds, marketIds, tournamentIds, liveStatusIds,]);
 
@@ -707,6 +729,60 @@ export default function Search() {
               setDateTo(newValue ? new Date(newValue?.toISOString()) : undefined);
             }}/>
         </LocalizationProvider>
+        <Paper>
+          <TextField id="stake-from" label="Stake from" variant="outlined" type="number" onChange={(e) => {
+              const stakeFrom = parseInt(e.target.value);
+              if(!isNaN(stakeFrom)) {
+                setStakeFrom(stakeFrom);
+              } else {
+                setStakeFrom(undefined);
+              }
+          }} />
+          <TextField id="stake-to" label="Stake to" variant="outlined" type="number" onChange={(e) => {
+              const stakeTo = parseInt(e.target.value);
+              if(!isNaN(stakeTo)) {
+                setStakeTo(stakeTo);
+              } else {
+                setStakeTo(undefined);
+              }
+          }} />
+        </Paper>
+        <Paper>
+          <TextField id="odd-from" label="Odd from" variant="outlined" type="number" onChange={(e) => {
+              const oddFrom = parseInt(e.target.value);
+              if(!isNaN(oddFrom)) {
+                setOddFrom(oddFrom);
+              } else {
+                setOddFrom(undefined);
+              }
+          }} />
+          <TextField id="odd-to" label="Odd to" variant="outlined" type="number" onChange={(e) => {
+              const oddTo = parseInt(e.target.value);
+              if(!isNaN(oddTo)) {
+                setOddTo(oddTo);
+              } else {
+                setOddTo(undefined);
+              }
+          }} />
+        </Paper>
+        <Paper>
+          <TextField id="psLimit-from" label="PsLimit from" variant="outlined" type="number" onChange={(e) => {
+              const psLimitFrom = parseInt(e.target.value);
+              if(!isNaN(psLimitFrom)) {
+                setPsLimitFrom(psLimitFrom);
+              } else {
+                setPsLimitFrom(undefined);
+              }
+          }} />
+          <TextField id="psLimit-to" label="PsLimit to" variant="outlined" type="number" onChange={(e) => {
+              const psLimitTo = parseInt(e.target.value);
+              if(!isNaN(psLimitTo)) {
+                setPsLimitTo(psLimitTo);
+              } else {
+                setPsLimitTo(undefined);
+              }
+          }} />
+        </Paper>
         <Paper className='search-filters-container'>
           <AutocompleteComponent 
             id='counteragents-autocomplete'
@@ -755,19 +831,6 @@ export default function Search() {
                 possibleMarkets={allMarkets}
                 allSelections={allSelections ? allSelections : {}}
                 currencies={allCurrencies}
-              />
-            )
-          : null
-      }
-      <Typography variant='h4'>Expenses</Typography>
-      {
-        filteredExpensesRows
-          ? (
-              <Expenses 
-                isRead={true}
-                setIsLoading={setIsLoading}
-                defaultRows={filteredExpensesRows}
-                possibleCounteragents={allCounteragents}
               />
             )
           : null
