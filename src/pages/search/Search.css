@@ -1,0 +1,27 @@
+.typography {
+    margin-bottom: 5%;
+}
+
+.search-filters-container {
+    display: flex;
+    flex-wrap: nowrap;
+    margin-top: 2%;
+    margin-bottom: 5%;
+}
+
+.search-filters-container .search-filters-autocomplete {
+    margin-right: 2%;
+    max-width: 15%;
+}
+
+.margin-top-1 {
+    margin-top: 1%; 
+}
+
+.margin-top-2 {
+    margin-top: 2%; 
+}
+
+.margin-top-5 {
+   margin-top: 5%; 
+}
