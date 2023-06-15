@@ -1,6 +1,6 @@
 export * from './Bet';
 export * from './CounterAgent';
-export * from './CounterAgentCategory';
+export * from './CounteragentCategory';
 export * from './Currency';
 export * from './Expense';
 export * from './Market';
