@@ -13,7 +13,7 @@ import { BetModel, ExpenseModel, ISelectionsResult, StatisticItemModel } from '.
 import { getBetStatistics, getCounteragents, getCurrencies, getExpenses, getMarkets, 
   getPendingBets, getSports, getTournaments } from '../../api';
 import { Bet, Currency, Expense, Statistics } from '../../database-models';
-import { StatisticType } from '../../models/enums';
+import { LiveStatus, StatisticType } from '../../models/enums';
 import Expenses from '../../components/Expenses/Expenses';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -435,6 +435,19 @@ export default function Search() {
 
           //#endregion Tournament filter
 
+          //#region Live status filter
+
+          if(liveStatusIds.length > 0) {
+            const matchLiveStatuses = !!currentRow.liveStatus && 
+              liveStatusIds.indexOf(currentRow.liveStatus.toString()) !== -1;
+
+            if(!matchLiveStatuses) {
+              continue;
+            }
+          }
+
+          //#endregion Live status filter
+
           if(currentRow.dateFinished) {
             if(dateFrom && dateTo) {
               if(currentRow.dateFinished?.getTime() > dateFrom.getTime() 
@@ -619,8 +632,24 @@ export default function Search() {
       })
     : [];
 
+  const distinctLiveStatuses: Array<{ value: string; label: string; }> = filteredRows
+    ? filteredRows.filter((value: BetModel, index: number, array: Array<BetModel>) => {
+        return array
+          .map((betModel: BetModel) => betModel.liveStatus)
+          .indexOf(value.liveStatus) === index;
+      }).map((betModel) => {
+        return {
+          value: betModel.liveStatus.toString(),
+          label: LiveStatus[betModel.liveStatus],
+        }
+      })
+    : [];
+
   return (
     <Paper sx={{ padding: '5%', }}>
+      <Typography variant='h1' className='typography'>
+        Search
+      </Typography>
       {
         isLoading
           ? (
@@ -668,40 +697,48 @@ export default function Search() {
               </Paper>
             )
           : null
-      }
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker label="From" value={dayjs(dateFrom)} onChange={(newValue) => {
-          setDateFrom(newValue ? new Date(newValue?.toISOString()) : undefined);
-        }} />
-        <DatePicker label="To" value={dayjs(dateTo)} onChange={(newValue) => {
-          setDateTo(newValue ? new Date(newValue?.toISOString()) : undefined);
-        }}/>
-      </LocalizationProvider>
-      <Paper className='search-filters-container'>
-        <AutocompleteComponent 
-          id='counteragents-autocomplete'
-          label='Counteragent'
-          options={distinctCounteragents} 
-          selectedOptions={counteragentIds}
-          setStateFn={setCounteragentIds}/>
-        <AutocompleteComponent 
-          id='sports-autocomplete'
-          label='Sport'
-          options={distinctSports} 
-          selectedOptions={sportIds}
-          setStateFn={setSportIds}/>
-        <AutocompleteComponent 
-          id='markets-autocomplete'
-          label='Market'
-          options={distinctMarkets} 
-          selectedOptions={marketIds}
-          setStateFn={setMarketIds}/>
-        <AutocompleteComponent 
-          id='tournaments-autocomplete'
-          label='Tournament'
-          options={distinctTournaments} 
-          selectedOptions={tournamentIds}
-          setStateFn={setTournamentIds}/>
+      } 
+      <Paper className='margin-top-5'> 
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker label="From" value={dayjs(dateFrom)} onChange={(newValue) => {
+              setDateFrom(newValue ? new Date(newValue?.toISOString()) : undefined);
+            }} />
+            <DatePicker label="To" value={dayjs(dateTo)} onChange={(newValue) => {
+              setDateTo(newValue ? new Date(newValue?.toISOString()) : undefined);
+            }}/>
+        </LocalizationProvider>
+        <Paper className='search-filters-container'>
+          <AutocompleteComponent 
+            id='counteragents-autocomplete'
+            label='Counteragent'
+            options={distinctCounteragents} 
+            selectedOptions={counteragentIds}
+            setStateFn={setCounteragentIds}/>
+          <AutocompleteComponent 
+            id='sports-autocomplete'
+            label='Sport'
+            options={distinctSports} 
+            selectedOptions={sportIds}
+            setStateFn={setSportIds}/>
+          <AutocompleteComponent 
+            id='markets-autocomplete'
+            label='Market'
+            options={distinctMarkets} 
+            selectedOptions={marketIds}
+            setStateFn={setMarketIds}/>
+          <AutocompleteComponent 
+            id='tournaments-autocomplete'
+            label='Tournament'
+            options={distinctTournaments} 
+            selectedOptions={tournamentIds}
+            setStateFn={setTournamentIds}/>
+          <AutocompleteComponent 
+            id='liveStatuses-autocomplete'
+            label='LiveStatus'
+            options={distinctLiveStatuses} 
+            selectedOptions={liveStatusIds}
+            setStateFn={setLiveStatusIds}/>
+        </Paper>
       </Paper>
       <Typography variant='h4'>Bets</Typography>
       {
