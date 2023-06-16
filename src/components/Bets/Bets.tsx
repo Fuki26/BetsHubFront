@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { toast } from 'react-toastify';
-import { DataGridPro, GridActionsCellItem, GridCellEditStopParams, GridCellEditStopReasons, GridColDef,
+import { DataGridPro, GridActionsCellItem, GridColDef,
   GridRenderCellParams,
   GridRenderEditCellParams,GridRowId, GridRowModel, GridRowModes, 
   GridRowModesModel, GridRowParams, GridToolbarContainer, GridValueSetterParams, MuiEvent, } from '@mui/x-data-grid-pro';
 import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, 
-  Paper, TextField, } from '@mui/material';
+  Paper, TextField, Tooltip, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import HistoryIcon from '@mui/icons-material/History';
@@ -53,7 +53,6 @@ export default function Bets(props: {
       return {};
     });
   }, [ defaultRows, ]);
-
 
   function EditToolbar(props: EditToolbarProps) {
     const { setRows, setRowModesModel } = props;
@@ -417,6 +416,19 @@ export default function Bets(props: {
       type: 'date',
       editable: false,
       width: 150,
+      renderCell: (params) => {
+        const row = rows 
+          ? rows.find((r) => r.id === params.id)
+          : undefined;
+
+        if(!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return <Tooltip title={`${row.dateCreated.toLocaleDateString()} - ${row.dateCreated.toLocaleTimeString()}`}>
+          <span>{row.dateCreated.toLocaleDateString()}</span>
+        </Tooltip>
+      }
     },
     {
       field: 'betStatus',
