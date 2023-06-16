@@ -9,12 +9,13 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import dayjs from 'dayjs';
 import './Search.css';
 import Bets from '../../components/Bets/Bets';
-import { BetModel, ExpenseModel, ISelectionsResult, StatisticItemModel } from '../../models';
+import { BetModel, ExpenseModel, IDropdownValue, ISelectionsResult, StatisticItemModel } from '../../models';
 import { getBetStatistics, getCounteragents, getCurrencies, getExpenses, getMarkets, 
   getPendingBets, getSports, getTournaments } from '../../api';
 import { Bet, Currency, Expense, Statistics } from '../../database-models';
 import { LiveStatus, StatisticType } from '../../models/enums';
 import Expenses from '../../components/Expenses/Expenses';
+import { betToBetModelMapper } from '../../utils';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -56,43 +57,10 @@ const statisticsColumns: Array<GridColDef<any>> = [
   },
 ];
 
-const betToBetModelMapper = (bet: Bet) => {
-  return {
-    id: bet.id,
-    dateCreated: new Date(bet.dateCreated),
-    betStatus: bet.betStatus,
-    winStatus: bet.winStatus,
-    stake: bet.stake,
-    counteragentId: bet.counteragentId,
-    counteragent: bet.counteragent
-      ? bet.counteragent.name
-      : '',
-    sport:	bet.sport,
-    liveStatus:	bet.liveStatus, 
-    psLimit: bet.psLimit,
-    market: bet.market,
-    tournament: bet.tournament,
-    selection: bet.selection,
-    amountBGN: bet.amountBGN,
-    amountEUR: bet.amountEUR,
-    amountUSD: bet.amountUSD,
-    amountGBP: bet.amountGBP,
-    odd: bet.odd,
-    dateFinished: bet.dateFinished
-      ? new Date(bet.dateFinished)
-      : null,
-    profits: bet.profits,
-    notes: bet.notes,
-
-    actionTypeApplied: undefined,
-    isSavedInDatabase: true,
-  } as BetModel;
-};
-
 const AutocompleteComponent = (props: { 
   id: string;
   label: string;
-  options: Array<{ value: string; label: string; }>;
+  options: Array<IDropdownValue>;
   selectedOptions: Array<string>;
   setStateFn: React.Dispatch<React.SetStateAction<string[]>>;
 }) => {
@@ -109,7 +77,7 @@ const AutocompleteComponent = (props: {
         let isSelected = false;
 
         if(selectedOptions) {
-          isSelected = selectedOptions.some((c) => c === option.value);
+          isSelected = selectedOptions.some((c) => c === option.id);
         }
         
         return (
@@ -130,18 +98,18 @@ const AutocompleteComponent = (props: {
           <TextField {...params} label={label} placeholder={label} />
         );
       }}
-      onChange={(e: any, values: Array<{ value: string; label: string; }>) => {
-        const finalValues: Array<{ value: string; label: string; }> = [];
+      onChange={(e: any, values: Array<IDropdownValue>) => {
+        const finalValues: Array<IDropdownValue> = [];
 
         for(var i = 0; i <= values.length - 1; i++) {
           const shouldRemove = 
-            values.filter((v) => v.value === values[i].value).length % 2 === 0;
+            values.filter((v) => v.id === values[i].id).length % 2 === 0;
           if(!shouldRemove) {
             finalValues.push(values[i]);
           }
         }
 
-        const ids: Array<string> = finalValues.map((v) => v.value);
+        const ids: Array<string> = finalValues.map((v) => v.id);
         
         const uniqueIds = ids.filter((elem, pos) => {
           return ids.indexOf(elem) == pos;
@@ -152,7 +120,7 @@ const AutocompleteComponent = (props: {
         });
       }}
       value={options
-        .filter((v) => selectedOptions.some((c) => c === v.value))}
+        .filter((v) => selectedOptions.some((c) => c === v.id))}
     />
   );
 }
@@ -397,8 +365,8 @@ export default function Search() {
           //#region Counteragent filter
 
           if(counteragentIds.length > 0) {
-            const matchCounteragents = !!currentRow.counteragentId && 
-            counteragentIds.indexOf(currentRow.counteragentId.toString()) !== -1;
+            const matchCounteragents = !!currentRow.counterAgent && 
+            counteragentIds.indexOf(currentRow.counterAgent.id) !== -1;
 
             if(!matchCounteragents) {
               continue;
@@ -411,7 +379,7 @@ export default function Search() {
 
           if(sportIds.length > 0) {
             const matchSports = !!currentRow.sport && 
-            sportIds.indexOf(currentRow.sport) !== -1;
+            sportIds.indexOf(currentRow.sport.id) !== -1;
 
             if(!matchSports) {
               continue;
@@ -424,7 +392,7 @@ export default function Search() {
 
           if(marketIds.length > 0) {
             const matchMarkets = !!currentRow.market && 
-              marketIds.indexOf(currentRow.market) !== -1;
+              marketIds.indexOf(currentRow.market.id) !== -1;
 
             if(!matchMarkets) {
               continue;
@@ -437,7 +405,7 @@ export default function Search() {
 
           if(tournamentIds.length > 0) {
             const matchTournaments = !!currentRow.tournament && 
-              tournamentIds.indexOf(currentRow.tournament) !== -1;
+              tournamentIds.indexOf(currentRow.tournament.id) !== -1;
 
             if(!matchTournaments) {
               continue;
@@ -677,24 +645,21 @@ export default function Search() {
     setSelectedBetId(id);
   };
 
-  const distinctCounteragents: Array<{ value: string; label: string; }> = filteredRows
+  const distinctCounteragents: Array<IDropdownValue> = filteredRows
     ? filteredRows.filter((value: BetModel, index: number, array: Array<BetModel>) => {
-        if(!value.counteragentId || !value.counteragent) {
+        if(!value.counterAgent) {
           return false;
         }
 
         return array
-          .map((betModel: BetModel) => betModel.counteragentId)
-          .indexOf(value.counteragentId) === index;
+          .map((betModel: BetModel) => betModel.counterAgent!.id)
+          .indexOf(value.counterAgent.id) === index;
       }).map((betModel) => {
-        return {
-          value: betModel.counteragentId!.toString(),
-          label: betModel.counteragent!,
-        }
+        return betModel.counterAgent!;
       })
     : [];
 
-  const distinctSports: Array<{ value: string; label: string; }> = filteredRows
+  const distinctSports: Array<IDropdownValue> = filteredRows
     ? filteredRows.filter((value: BetModel, index: number, array: Array<BetModel>) => {
         if(!value.sport) {
           return false;
@@ -704,14 +669,11 @@ export default function Search() {
           .map((betModel: BetModel) => betModel.sport)
           .indexOf(value.sport) === index;
       }).map((betModel) => {
-        return {
-          value: betModel.sport!,
-          label: betModel.sport!,
-        }
+        return betModel.sport!;
       })
     : [];
 
-  const distinctMarkets: Array<{ value: string; label: string; }> = filteredRows
+  const distinctMarkets: Array<IDropdownValue> = filteredRows
     ? filteredRows.filter((value: BetModel, index: number, array: Array<BetModel>) => {
         if(!value.market) {
           return false;
@@ -721,14 +683,11 @@ export default function Search() {
           .map((betModel: BetModel) => betModel.market)
           .indexOf(value.market) === index;
       }).map((betModel) => {
-        return {
-          value: betModel.market!,
-          label: betModel.market!,
-        }
+        return betModel.market!;
       })
     : [];
 
-  const distinctTournaments: Array<{ value: string; label: string; }> = filteredRows
+  const distinctTournaments: Array<IDropdownValue> = filteredRows
     ? filteredRows.filter((value: BetModel, index: number, array: Array<BetModel>) => {
         if(!value.tournament) {
           return false;
@@ -738,23 +697,21 @@ export default function Search() {
           .map((betModel: BetModel) => betModel.tournament)
           .indexOf(value.tournament) === index;
       }).map((betModel) => {
-        return {
-          value: betModel.tournament!,
-          label: betModel.tournament!,
-        }
+        return betModel.tournament!;
       })
     : [];
 
-  const distinctLiveStatuses: Array<{ value: string; label: string; }> = filteredRows
+  const distinctLiveStatuses: Array<IDropdownValue> = filteredRows
     ? filteredRows.filter((value: BetModel, index: number, array: Array<BetModel>) => {
+        if(!value.liveStatus) {
+          return false;
+        }
+
         return array
           .map((betModel: BetModel) => betModel.liveStatus)
           .indexOf(value.liveStatus) === index;
       }).map((betModel) => {
-        return {
-          value: betModel.liveStatus.toString(),
-          label: LiveStatus[betModel.liveStatus],
-        }
+        return betModel.liveStatus!;
       })
     : [];
 

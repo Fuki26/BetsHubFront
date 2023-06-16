@@ -8,43 +8,10 @@ import { BetModel, ExpenseModel, ISelectionsResult, StatisticItemModel } from '.
 import { getBetStatistics, getCompletedBets, getCounteragents, getCurrencies, getExpenses, getMarkets, 
   getPendingBets, getSports, getTournaments } from '../../api';
 import { Bet, Currency, Expense, Statistics } from '../../database-models';
-import { StatisticType } from '../../models/enums';
+import { BetStatus, LiveStatus, StatisticType, WinStatus } from '../../models/enums';
 import { DataGridPro, GridColDef } from '@mui/x-data-grid-pro';
 import Expenses from '../../components/Expenses/Expenses';
-
-
-const betToBetModelMapper = (bet: Bet) => {
-  return {
-    id: bet.id,
-    dateCreated: new Date(bet.dateCreated),
-    betStatus: bet.betStatus,
-    winStatus: bet.winStatus,
-    stake: bet.stake,
-    counteragentId: bet.counteragentId,
-    counteragent: bet.counteragent
-      ? bet.counteragent.name
-      : '',
-    sport:	bet.sport,
-    liveStatus:	bet.liveStatus, 
-    psLimit: bet.psLimit,
-    market: bet.market,
-    tournament: bet.tournament,
-    selection: bet.selection,
-    amountBGN: bet.amountBGN,
-    amountEUR: bet.amountEUR,
-    amountUSD: bet.amountUSD,
-    amountGBP: bet.amountGBP,
-    odd: bet.odd,
-    dateFinished: bet.dateFinished
-      ? new Date(bet.dateFinished)
-      : null,
-    profits: bet.profits,
-    notes: bet.notes,
-
-    actionTypeApplied: undefined,
-    isSavedInDatabase: true,
-  } as BetModel;
-};
+import { betToBetModelMapper } from '../../utils';
 
 export default function Hub() {
   const [ isLoading, setIsLoading, ] = React.useState<boolean>(false);

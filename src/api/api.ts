@@ -199,7 +199,7 @@ const upsertBet = async (bet: BetModel) => {
             BetStatus: bet.betStatus,
             WinStatus: bet.winStatus,
             Stake: bet.stake ? bet.stake : 0,
-            CounteragentId: bet.counteragentId,
+            CounteragentId: bet.counterAgent?.id,
             Sport: bet.sport ? bet.sport : '',
             LiveStatus: bet.liveStatus,
             PSLimit: bet.psLimit ? bet.psLimit : 0,
