@@ -337,28 +337,30 @@ export default function Hub() {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DateCalendar onChange={selectedDateFn}/>
       </LocalizationProvider>
-      <RadioGroup
-        aria-labelledby="demo-controlled-radio-buttons-group"
-        name="controlled-radio-buttons-group"
-        value={statisticsType}
-        onChange={(event) => {
-          const value: string = (event.target as HTMLInputElement).value;
-          setStatisticsType(value === 'Flat' 
-            ? StatisticType.Flat
-            : StatisticType.Real);
-        }}
-      >
-        <FormControlLabel value="Flat" control={<Radio />} label="Flat" />
-        <FormControlLabel value="Real" control={<Radio />} label="Real" />
-      </RadioGroup>
-      <Typography variant='h4'>Statistics</Typography>
       {
         currentStatistcs
           ? (
-              <DataGridPro
-                columns={statisticsColumns}
-                rows={currentStatistcs}
-              />
+              <Paper>
+                <Typography variant='h4'>Statistics</Typography>
+                <RadioGroup
+                  aria-labelledby="demo-controlled-radio-buttons-group"
+                  name="controlled-radio-buttons-group"
+                  value={statisticsType}
+                  onChange={(event) => {
+                    const value: string = (event.target as HTMLInputElement).value;
+                    setStatisticsType(value === 'Flat' 
+                      ? StatisticType.Flat
+                      : StatisticType.Real);
+                  }}
+                >
+                  <FormControlLabel value="Flat" control={<Radio />} label="Flat" />
+                  <FormControlLabel value="Real" control={<Radio />} label="Real" />
+                </RadioGroup>
+                <DataGridPro
+                  columns={statisticsColumns}
+                  rows={currentStatistcs}
+                />
+              </Paper>
             )
           : null
       }

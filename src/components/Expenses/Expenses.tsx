@@ -278,6 +278,16 @@ export default function Expenses(props: {
     {
         field: 'id',
         type: 'number',
+        valueGetter: (params) => {
+          const row = rows?.find(r => r.id === params.id);
+          if (!row) {
+            return null;
+          }
+          if (!row.isSavedInDatabase) {
+            return null;
+          }
+          return params.id;
+        }
     },
     {
       field: 'counterAgent',
