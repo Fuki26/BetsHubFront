@@ -12,9 +12,9 @@ import HistoryIcon from '@mui/icons-material/History';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
-import { BetModel, EditToolbarProps, Enums, ISelectionsResult, } from '../../models';
+import { BetModel, EditToolbarProps, Enums, IDropdownValue, ISelectionsResult, } from '../../models';
 import { deleteBet, upsertBet, getBetHistory } from '../../api';
-import { BetStatus, WinStatus, ItemTypes, LiveStatus } from '../../models/enums';
+import { BetStatus, WinStatus, LiveStatus } from '../../models/enums';
 import { Currency } from '../../database-models';
 import Modal from '../UI/Modal';
 
@@ -25,11 +25,12 @@ export default function Bets(props: {
 
   defaultRows: Array<BetModel> | undefined;
   currencies: Array<Currency> | undefined;
-  possibleCounteragents: Array<{ value: string; label: string; }> | undefined;
+
+  possibleCounteragents: Array<IDropdownValue> | undefined;
   allSelections: ISelectionsResult;
-  possibleSports: Array<{ value: string; label: string; }> | undefined;
-  possibleTournaments: Array<{ value: string; label: string; }> | undefined;
-  possibleMarkets: Array<{ value: string; label: string; }> | undefined;
+  possibleSports: Array<IDropdownValue> | undefined;
+  possibleTournaments: Array<IDropdownValue> | undefined;
+  possibleMarkets: Array<IDropdownValue> | undefined;
 }) {
   const { isRead, selectBetIdFn, setIsLoading, defaultRows, 
     currencies, possibleCounteragents, allSelections, 
@@ -305,80 +306,79 @@ export default function Bets(props: {
       return newRow;
     }
 
-    console.log(`betStatus: ${JSON.stringify(currentRow.betStatus)}`);
-    console.log(`winStatus: ${JSON.stringify(currentRow.winStatus)}`);
-    
-    // if(currentRow.actionTypeApplied === Enums.ActionType.SAVED
-    //     || currentRow.actionTypeApplied === Enums.ActionType.EDITED) {
-    //       const newRowData: BetModel = {
-    //         ...currentRow,
-    //         dateCreated: newRow.dateCreated,
-    //         betStatus: newRow.betStatus,
-    //         winStatus: newRow.winStatus,
-    //         stake: newRow.stake,
-    //         counterAgent: newRow.counterAgent,
-    //         sport:	newRow.sport,
-    //         liveStatus:	newRow.liveStatus,
-    //         psLimit: newRow.psLimit,
-    //         market: newRow.market,
-    //         tournament: newRow.tournament,
-    //         selection: newRow.selection,
-    //         amountBGN: newRow.amountBGN,
-    //         amountEUR: newRow.amountEUR,
-    //         amountUSD: newRow.amountUSD,
-    //         amountGBP: newRow.amountGBP,
-    //         totalAmount: newRow.totalAmount,
-    //         odd: newRow.odd,
-    //         dateFinished: new Date(),
-    //         profits: newRow.profits,
-    //         notes: newRow.notes,
-    //       };
+    if(currentRow.actionTypeApplied === Enums.ActionType.SAVED
+        || currentRow.actionTypeApplied === Enums.ActionType.EDITED) {
+          const newRowData: BetModel = {
+            ...currentRow,
+            dateCreated: newRow.dateCreated,
+            betStatus: currentRow.betStatus,
+            winStatus: currentRow.winStatus,
+            liveStatus:	currentRow.liveStatus,
+            counterAgent: currentRow.counterAgent,
+            sport:	currentRow.sport,
+            tournament: currentRow.tournament,
+            market: currentRow.market,
 
-    //       setIsLoading(true);
+            stake: newRow.stake,
+            psLimit: newRow.psLimit,     
+            amountBGN: newRow.amountBGN,
+            amountEUR: newRow.amountEUR,
+            amountUSD: newRow.amountUSD,
+            amountGBP: newRow.amountGBP,
+            totalAmount: newRow.totalAmount,
+            odd: newRow.odd,
+            dateFinished: new Date(),
+            profits: newRow.profits,
+            notes: newRow.notes,
 
-    //       const rowData = await upsertBet(newRowData);
-    //       if(!rowData || !rowData.data) {
-    //         return newRow;
-    //       }
+            selection: newRow.selection,
+          };
 
-    //       setRows((previousRowsModel) => {
-    //         return previousRowsModel.map((row) => {
-    //           if(row.id === newRow.id) {
-    //             return { 
-    //               ...newRowData, 
-    //               id: rowData.data.id,
-    //               totalAmount: rowData.data.totalAmount,
+          setIsLoading(true);
 
-    //               actionTypeApplied: undefined,
-    //               isSavedInDatabase: true,
-    //             };
-    //           } else {
-    //             return row;
-    //           }
-    //         });
-    //       });
+          const rowData = await upsertBet(newRowData);
+          if(!rowData || !rowData.data) {
+            return newRow;
+          }
 
-    //       setRowModesModel((previousRowModesModel) => {
-    //         return { ...previousRowModesModel, 
-    //           [rowData.data.id]: { mode: GridRowModes.View } 
-    //         }
-    //       });
+          setRows((previousRowsModel) => {
+            return previousRowsModel.map((row) => {
+              if(row.id === newRow.id) {
+                return { 
+                  ...newRowData, 
+                  id: rowData.data.id,
+                  totalAmount: rowData.data.totalAmount,
 
-    //       setIsLoading(false);
+                  actionTypeApplied: undefined,
+                  isSavedInDatabase: true,
+                };
+              } else {
+                return row;
+              }
+            });
+          });
 
-    //       newRow.id = rowData?.data.id;
-    // } else {
-    //   setRowModesModel((previousRowModesModel) => {
-    //     return { ...previousRowModesModel, [newRow.id]: { mode: GridRowModes.View } }
-    //   });
-    // }
+          setRowModesModel((previousRowModesModel) => {
+            return { ...previousRowModesModel, 
+              [rowData.data.id]: { mode: GridRowModes.View } 
+            }
+          });
 
-    // toast(currentRow.actionTypeApplied === Enums.ActionType.CANCELED 
-    //   ? 'Canceled' 
-    //   : `Saved bet with id ${newRow!.id}`,
-    // {
-    //   position: 'top-center',
-    // });
+          setIsLoading(false);
+
+          newRow.id = rowData?.data.id;
+    } else {
+      setRowModesModel((previousRowModesModel) => {
+        return { ...previousRowModesModel, [newRow.id]: { mode: GridRowModes.View } }
+      });
+    }
+
+    toast(currentRow.actionTypeApplied === Enums.ActionType.CANCELED 
+      ? 'Canceled' 
+      : `Saved bet with id ${newRow!.id}`,
+    {
+      position: 'top-center',
+    });
     
     return newRow;
   };
@@ -637,6 +637,300 @@ export default function Bets(props: {
         }
 
         return row.liveStatus;
+      },
+    },
+    {
+      field: 'counterAgent',
+      headerName: 'Counteragent',
+      editable: true,
+      width: 300,
+      renderCell: (params: GridRenderCellParams<BetModel>) => {
+        const row = rows.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return (
+          <>
+            {
+              row.counterAgent 
+                ? row.counterAgent.label
+                : ''
+            }
+          </>
+        );
+      },
+      renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
+        const row = rows.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return (
+          <Autocomplete
+            // freeSolo
+            options={
+              possibleCounteragents
+                ? possibleCounteragents
+                : []
+            }
+            renderInput={(params) => 
+              <TextField {...params}/>
+            }
+            onChange={(e, value: any) => {
+              setRows((previousRowsModel) => {
+                return previousRowsModel.map((row: BetModel) => {
+                  if(row.id === params.row.id) {
+                    return {
+                      ...row, 
+                      counterAgent: value
+                        ? typeof value === 'string'
+                          ? { id: value, label: value }
+                          : value
+                        : undefined
+                    };
+                  } else {
+                    return row;
+                  }
+                });
+              });
+            }}
+            value={row.counterAgent}
+            sx={{
+              width: 300,
+            }}
+          />
+        );
+      },
+      valueGetter: (params: GridValueGetterParams<BetModel>) => {
+        const row = rows.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return row.counterAgent;
+      },
+    },
+    {
+      field: 'sport',
+      headerName: 'Sport',
+      editable: true,
+      width: 300,
+      renderCell: (params: GridRenderCellParams<BetModel>) => {
+        const row = rows.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return (
+          <>
+            {
+              row.sport 
+                ? row.sport.label
+                : ''
+            }
+          </>
+        );
+      },
+      renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
+        const row = rows.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return (
+          <Autocomplete
+            freeSolo
+            options={
+              possibleSports
+                ? possibleSports
+                : []
+            }
+            renderInput={(params) => 
+              <TextField {...params}/>
+            }
+            onChange={(e, value: any) => {
+              setRows((previousRowsModel) => {
+                return previousRowsModel.map((row: BetModel) => {
+                  if(row.id === params.row.id) {
+                    const sport = value
+                      ? typeof value === 'string'
+                        ? { id: value, label: value }
+                        : value
+                      : undefined;
+
+                    return {
+                      ...row,
+                      sport,
+                    };
+                  } else {
+                    return row;
+                  }
+                });
+              });
+            }}
+            value={row.sport}
+            sx={{
+              width: 300,
+            }}
+          />
+        );
+      },
+      valueGetter: (params: GridValueGetterParams<BetModel>) => {
+        const row = rows.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return row.sport;
+      },
+    },
+    {
+      field: 'tournament',
+      headerName: 'Tournament',
+      editable: true,
+      width: 300,
+      renderCell: (params: GridRenderCellParams<BetModel>) => {
+        const row = rows.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return (
+          <>
+            {
+              row.tournament 
+                ? row.tournament.label
+                : ''
+            }
+          </>
+        );
+      },
+      renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
+        const row = rows.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return (
+          <Autocomplete
+            freeSolo
+            options={
+              possibleTournaments
+                ? possibleTournaments
+                : []
+            }
+            renderInput={(params) => 
+              <TextField {...params}/>
+            }
+            onChange={(e, value: any) => {
+              setRows((previousRowsModel) => {
+                return previousRowsModel.map((row: BetModel) => {
+                  if(row.id === params.row.id) {
+                    const tournament = value
+                      ? typeof value === 'string'
+                        ? { id: value, label: value }
+                        : value
+                      : undefined;
+
+                    return {
+                      ...row,
+                      tournament,
+                    };
+                  } else {
+                    return row;
+                  }
+                });
+              });
+            }}
+            value={row.tournament}
+            sx={{
+              width: 300,
+            }}
+          />
+        );
+      },
+      valueGetter: (params: GridValueGetterParams<BetModel>) => {
+        const row = rows.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return row.tournament;
+      },
+    },
+    {
+      field: 'market',
+      headerName: 'Market',
+      editable: true,
+      width: 300,
+      renderCell: (params: GridRenderCellParams<BetModel>) => {
+        const row = rows.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return (
+          <>
+            {
+              row.market 
+                ? row.market.label
+                : ''
+            }
+          </>
+        );
+      },
+      renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
+        const row = rows.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return (
+          <Autocomplete
+            freeSolo
+            options={
+              possibleMarkets
+                ? possibleMarkets
+                : []
+            }
+            renderInput={(params) => 
+              <TextField {...params}/>
+            }
+            onChange={(e, value: any) => {
+              setRows((previousRowsModel) => {
+                return previousRowsModel.map((row: BetModel) => {
+                  if(row.id === params.row.id) {
+                    const market = value
+                      ? typeof value === 'string'
+                        ? { id: value, label: value }
+                        : value
+                      : undefined;
+
+                    return {
+                      ...row,
+                      market,
+                    };
+                  } else {
+                    return row;
+                  }
+                });
+              });
+            }}
+            value={row.market}
+            sx={{
+              width: 300,
+            }}
+          />
+        );
+      },
+      valueGetter: (params: GridValueGetterParams<BetModel>) => {
+        const row = rows.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return row.market;
       },
     },
     {

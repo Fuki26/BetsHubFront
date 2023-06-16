@@ -8,7 +8,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
-import { EditToolbarProps, Enums, ExpenseModel, } from '../../models';
+import { EditToolbarProps, Enums, ExpenseModel, IDropdownValue, } from '../../models';
 // import { deleteExpense, } from '../../api';
 import { ItemTypes } from '../../models/enums';
 import { deleteExpense, upsertExpense } from '../../api';
@@ -17,9 +17,9 @@ export default function Expenses(props: {
   isRead: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   defaultRows: Array<ExpenseModel> | null;
-  possibleCounteragents: Array<{ value: string; label: string; }> | undefined;
+  possibleCounterAgents: Array<IDropdownValue> | undefined;
 }) {
-  const { isRead, setIsLoading, defaultRows, possibleCounteragents, } = props;
+  const { isRead, setIsLoading, defaultRows, possibleCounterAgents, } = props;
 
   const [ rows, setRows, ] = React.useState<Array<ExpenseModel> | null>(defaultRows);
   const [ rowModesModel, setRowModesModel, ] = React.useState<GridRowModesModel>({});
@@ -39,18 +39,18 @@ export default function Expenses(props: {
   const editToolbar = (props: EditToolbarProps) => {
     const { setRows, setRowModesModel } = props;
   
-    if(!possibleCounteragents || possibleCounteragents.length === 0) {
+    if(!possibleCounterAgents || possibleCounterAgents.length === 0) {
       alert('There are not any possible contraagents in the system. You cannot create an expsense.');
       return null;
     }
 
-    const contraagent = possibleCounteragents[0];
+    const contraagent = possibleCounterAgents[0];
     const handleAddNewClick = () => {
       const id = Math.round(Math.random() * 1000000);
       setRows((oldRows) => [...oldRows, 
         { 
           id,
-          counteragentId: parseInt(contraagent.value),
+          counteragentId: parseInt(contraagent.id),
           counteragent: contraagent.label,
           amount: 0,
           description: '',
@@ -314,12 +314,12 @@ export default function Expenses(props: {
           return (
             <Autocomplete
               options={
-                possibleCounteragents
-                  ? possibleCounteragents.map((counteragent) => {
+                possibleCounterAgents
+                  ? possibleCounterAgents.map((counterAgent) => {
                     return {
                           rowId: params.id,
-                          value: counteragent.value, 
-                          label: counteragent.label, 
+                          value: counterAgent.id, 
+                          label: counterAgent.label, 
                         };
                     })
                   : []

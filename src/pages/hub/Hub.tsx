@@ -4,7 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import Bets from '../../components/Bets/Bets';
-import { BetModel, ExpenseModel, ISelectionsResult, StatisticItemModel } from '../../models';
+import { BetModel, ExpenseModel, IDropdownValue, ISelectionsResult, StatisticItemModel } from '../../models';
 import { getBetStatistics, getCompletedBets, getCounteragents, getCurrencies, getExpenses, getMarkets, 
   getPendingBets, getSports, getTournaments } from '../../api';
 import { Bet, Currency, Expense, Statistics } from '../../database-models';
@@ -27,15 +27,16 @@ export default function Hub() {
   const [ completedRows, setCompletedRows] = React.useState<Array<BetModel> | undefined>(undefined);
   const [ filteredPendingRows, setFilteredPendingRows] = React.useState<Array<BetModel> | undefined>(undefined);
   const [ filteredCompletedRows, setFilteredCompletedRows] = React.useState<Array<BetModel> | undefined>(undefined);
-  const [ possibleCounteragents, setCounteragents ] = 
-    React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
+  const [ possibleCounterAgents, setCounterAgents ] = 
+    React.useState<Array<IDropdownValue> | undefined>(undefined);
   const [ possibleSports, setSports ] = 
-    React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
+    React.useState<Array<IDropdownValue> | undefined>(undefined);
   const [ possibleTournaments, setTournaments ] = 
-    React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
+    React.useState<Array<IDropdownValue> | undefined>(undefined);
   const [ possibleMarkets, setMarkets ] =
-    React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
-  const [ possibleSelections, setSelections ] = React.useState<ISelectionsResult | undefined>(undefined);
+    React.useState<Array<IDropdownValue> | undefined>(undefined);
+  const [ possibleSelections, setSelections ] = 
+    React.useState<ISelectionsResult | undefined>(undefined);
   const [ expensesRows, setExpensesRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
 
   useEffect(() => {
@@ -100,45 +101,45 @@ export default function Hub() {
             && b.dateFinished.getDate() === now.getDate()
         }));
 
-        const counterAgents: Array<{ value: string; label: string; }> | undefined = 
+        const counterAgents: Array<IDropdownValue> | undefined = 
           getCounteragentsResult
             ? getCounteragentsResult.map((counteragent) => {
                 return {
-                  value: counteragent.id.toString(),
+                  id: counteragent.id.toString(),
                   label: counteragent.name,
                 };
               })
             : [];
 
-        setCounteragents(counterAgents);
+        setCounterAgents(counterAgents);
 
-        const sports: Array<{ value: string; label: string; }> | undefined =
+        const sports: Array<IDropdownValue> | undefined =
           getSportsResult
               ? getSportsResult.map((sport) => {
                   return {
-                    value: sport,
+                    id: sport,
                     label: sport,
                   };
                 })
               : [];
         setSports(sports);
 
-        const markets: Array<{ value: string; label: string; }> | undefined =
+        const markets: Array<IDropdownValue> | undefined =
           getMarketsResult
               ? getMarketsResult.map((market) => {
                   return {
-                    value: market,
+                    id: market,
                     label: market,
                   };
                 })
               : [];
         setMarkets(markets);
 
-        const tournaments: Array<{ value: string; label: string; }> | undefined =
+        const tournaments: Array<IDropdownValue> | undefined =
           getTournamentsResult
               ? getTournamentsResult.map((tournament) => {
                   return {
-                    value: tournament,
+                    id: tournament,
                     label: tournament,
                   };
                 })
@@ -371,7 +372,7 @@ export default function Hub() {
                 setIsLoading={setIsLoading} 
                 defaultRows={filteredPendingRows}
                 currencies={currencies}
-                possibleCounteragents={possibleCounteragents}
+                possibleCounteragents={possibleCounterAgents}
                 possibleSports={possibleSports}
                 possibleTournaments={possibleTournaments}
                 possibleMarkets={possibleMarkets}
@@ -391,7 +392,7 @@ export default function Hub() {
                 setIsLoading={setIsLoading}
                 defaultRows={filteredCompletedRows}
                 currencies={currencies}
-                possibleCounteragents={possibleCounteragents}
+                possibleCounteragents={possibleCounterAgents}
                 possibleSports={possibleSports}
                 possibleTournaments={possibleTournaments}
                 possibleMarkets={possibleMarkets}
@@ -409,7 +410,7 @@ export default function Hub() {
                 isRead={false}
                 setIsLoading={setIsLoading}
                 defaultRows={expensesRows}
-                possibleCounteragents={possibleCounteragents}
+                possibleCounterAgents={possibleCounterAgents}
               />
             )
           : null

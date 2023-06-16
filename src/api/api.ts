@@ -191,21 +191,20 @@ const deleteCurrency = async (props: { id: number; }) => {
 }
 
 const upsertBet = async (bet: BetModel) => {
-    try {
+    try {        
         const obj = {
             Id: bet.isSavedInDatabase
                 ? bet.id
                 : null,
-            BetStatus: bet.betStatus,
-            WinStatus: bet.winStatus,
+            BetStatus: bet.betStatus ? bet.betStatus.id : 0,
+            WinStatus: bet.winStatus ? bet.winStatus.id : 0,
+            LiveStatus: bet.liveStatus ? bet.liveStatus.id : 0,
+            CounteragentId: bet.counterAgent ? bet.counterAgent.id : '',
+            Sport: bet.sport ? bet.sport.id : '',
+            Tournament: bet.tournament ? bet.tournament.id : '',
+            Market: bet.market ? bet.market.id : '',
             Stake: bet.stake ? bet.stake : 0,
-            CounteragentId: bet.counterAgent?.id,
-            Sport: bet.sport ? bet.sport : '',
-            LiveStatus: bet.liveStatus,
-            PSLimit: bet.psLimit ? bet.psLimit : 0,
-            Market: bet.market ? bet.market : '',
-            Tournament: bet.tournament ? bet.tournament : '',
-            Selection: bet.selection ? bet.selection : '',
+            PSLimit: bet.psLimit ? bet.psLimit : 0, 
             AmountBGN: bet.amountBGN ? bet.amountBGN : 0,
             AmountEUR: bet.amountEUR ? bet.amountEUR : 0,
             AmountUSD: bet.amountUSD ? bet.amountUSD : 0,
@@ -214,8 +213,9 @@ const upsertBet = async (bet: BetModel) => {
             DateFinished: bet.dateFinished ? bet.dateFinished.toISOString().split('T')[0] : null,
             Profits: bet.profits ? bet.profits : 0,
             Notes: bet.notes ? bet.notes : '',
+
+            Selection: bet.selection ? bet.selection : '',
         };
-        console.log(`UPSERT BET - ${JSON.stringify(obj)}`);
         const id = bet.isSavedInDatabase
             ? `Id=${obj.Id}&`
             : '';
