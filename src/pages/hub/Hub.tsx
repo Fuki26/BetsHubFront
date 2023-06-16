@@ -5,10 +5,10 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import Bets from '../../components/Bets/Bets';
 import { BetModel, ExpenseModel, IDropdownValue, ISelectionsResult, StatisticItemModel } from '../../models';
-import { getBetStatistics, getCompletedBets, getCounteragents, getCurrencies, getExpenses, getMarkets, 
+import { getBetStatistics, getCompletedBets, getCounterAgents, getCurrencies, getExpenses, getMarkets, 
   getPendingBets, getSports, getTournaments } from '../../api';
-import { Bet, Currency, Expense, Statistics } from '../../database-models';
-import { BetStatus, LiveStatus, StatisticType, WinStatus } from '../../models/enums';
+import { Currency, Expense, Statistics } from '../../database-models';
+import { StatisticType, } from '../../models/enums';
 import { DataGridPro, GridColDef } from '@mui/x-data-grid-pro';
 import Expenses from '../../components/Expenses/Expenses';
 import { betToBetModelMapper } from '../../utils';
@@ -46,7 +46,7 @@ export default function Hub() {
         let currencies: Array<Currency> | undefined = await getCurrencies();
         let pendingBets: Array<BetModel> = (await getPendingBets())!.map(betToBetModelMapper);
         let completedBets: Array<BetModel> = (await getCompletedBets())!.map(betToBetModelMapper);
-        const getCounteragentsResult = await getCounteragents();
+        const getCounteragentsResult = await getCounterAgents();
         // const getSelectionsResult = await getSelections();
         const getSelectionsResult = {
           '1': [
@@ -103,10 +103,10 @@ export default function Hub() {
 
         const counterAgents: Array<IDropdownValue> | undefined = 
           getCounteragentsResult
-            ? getCounteragentsResult.map((counteragent) => {
+            ? getCounteragentsResult.map((counterAgent: any) => {
                 return {
-                  id: counteragent.id.toString(),
-                  label: counteragent.name,
+                  id: counterAgent.id.toString(),
+                  label: counterAgent.name,
                 };
               })
             : [];
@@ -150,11 +150,11 @@ export default function Hub() {
                 ? getAllExpenses.map((expense) => {
                     return {
                       id: expense.id,
-                      counteragentId: expense.counteragentId
-                        ? expense.counteragentId
-                        : undefined,
-                      counteragent: expense.counteragent
-                        ? expense.counteragent.name
+                      counterAgent: expense.counteragent
+                        ? {
+                            id: expense.counteragent.id.toString(),
+                            label: expense.counteragent.name
+                          }
                         : undefined,
                       amount: expense.amount,
                       description: expense.description,

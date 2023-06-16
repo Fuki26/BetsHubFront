@@ -50,19 +50,19 @@ const getExpenses = async (): Promise<Array<Expense> | undefined> => {
     }
 }
 
-const getCounteragents = async (): Promise<Array<Counteragent> | undefined> => {
+const getCounterAgents = async (): Promise<Array<Counteragent> | undefined> => {
     try {
-        const getCountaagentsResult = await axios.get(`${domain}/GetAllCounteragents`);
-        return getCountaagentsResult.data;
+        const getCounterAgentsResult = await axios.get(`${domain}/GetAllCounteragents`);
+        return getCounterAgentsResult.data;
     } catch(e) {
         alert(JSON.stringify(e));
     }
 };
 
-const getCounteragentsCategories = async (): Promise<Array<CounterAgentCategory> | undefined> => {
+const getCounterAgentsCategories = async (): Promise<Array<CounterAgentCategory> | undefined> => {
     try {
-        const getCounteragentsCategoriesResult = await axios.get(`${domain}/GetAllCounteragentsCategories`);
-        return getCounteragentsCategoriesResult.data;
+        const getCounterAgentsCategoriesResult = await axios.get(`${domain}/GetAllCounteragentsCategories`);
+        return getCounterAgentsCategoriesResult.data;
     } catch(e) {
         alert(JSON.stringify(e));
     }
@@ -231,7 +231,7 @@ const upsertExpense = async (expense: ExpenseModel) => {
         const id = expense.isSavedInDatabase
             ? `Id=${expense.id}&`
             : '';
-        return await axios.post(`${domain}/UpsertExpense?${id}CounteragentId=${expense.counteragentId}&Description=${expense.description}&Amount=${expense.amount}`);
+        return await axios.post(`${domain}/UpsertExpense?${id}CounteragentId=${expense.counterAgent?.id}&Description=${expense.description}&Amount=${expense.amount}`);
     } catch(e) {
         alert(JSON.stringify(e));
     }
@@ -276,8 +276,8 @@ export {
     getBetStatistics,
     getBetHistory,
     getExpenses,
-    getCounteragents,
-    getCounteragentsCategories,
+    getCounterAgents,
+    getCounterAgentsCategories,
     getUsers,
     getCurrencies,
     getSports,

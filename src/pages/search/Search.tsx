@@ -10,7 +10,8 @@ import dayjs from 'dayjs';
 import './Search.css';
 import Bets from '../../components/Bets/Bets';
 import { BetModel, ExpenseModel, IDropdownValue, ISelectionsResult, StatisticItemModel } from '../../models';
-import { getBetStatistics, getCounteragents, getCurrencies, getExpenses, getMarkets, 
+import { getBetStatistics, getCounterAgentsCategories, getCounterAgents, 
+  getCurrencies, getExpenses, getMarkets, 
   getPendingBets, getSports, getTournaments } from '../../api';
 import { Bet, Currency, Expense, Statistics } from '../../database-models';
 import { LiveStatus, StatisticType } from '../../models/enums';
@@ -159,12 +160,18 @@ export default function Search() {
   const [ expenseRows, setExpenseRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
   const [ filteredExpenseRowsRows, setFilteredExpenseRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
 
-  const [ allCounteragents, setAllCounteragents ] = React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
-  const [ allSelections, setAllSelections ] = React.useState<ISelectionsResult | undefined>(undefined);
-  const [ allSports, setAllSports ] = React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
-  const [ allTournaments, setAllTournaments ] = React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
-  const [ allMarkets, setAllMarkets ] = React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
-  const [ allCurrencies, setAllCurrencies ] = React.useState<Array<Currency> | undefined>(undefined);
+  const [ allCounterAgents, setAllCounterAgents ] = 
+    React.useState<Array<IDropdownValue> | undefined>(undefined);
+  const [ allSports, setAllSports ] = 
+  React.useState<Array<IDropdownValue> | undefined>(undefined);
+  const [ allTournaments, setAllTournaments ] = 
+    React.useState<Array<IDropdownValue> | undefined>(undefined);
+  const [ allMarkets, setAllMarkets ] = 
+    React.useState<Array<IDropdownValue> | undefined>(undefined);
+  const [ allSelections, setAllSelections ] = 
+    React.useState<ISelectionsResult | undefined>(undefined);
+  const [ allCurrencies, setAllCurrencies ] = 
+    React.useState<Array<Currency> | undefined>(undefined);
   
 
   useEffect(() => {
@@ -200,21 +207,24 @@ export default function Search() {
 
         //#region Expenses
 
-        let expenses: Array<ExpenseModel> = (await getExpenses())!.map((expense: Expense) => {
-          return {
-            id: expense.id,
-            amount: expense.amount,
-            dateCreated: new Date(expense.dateCreated),
-            description: expense.description,
-            counteragentId: expense.counteragentId,
-            counteragent: expense.counteragent
-              ? expense.counteragent.name
-              : undefined,
-            
-            actionTypeApplied: undefined,
-            isSavedInDatabase: true,
-          };
-        });
+        let expenses: Array<ExpenseModel> = (await getExpenses())!
+          .map((expense: Expense): ExpenseModel => {
+            return {
+              id: expense.id,
+              amount: expense.amount,
+              dateCreated: new Date(expense.dateCreated),
+              description: expense.description,
+              counterAgent: expense.counteragent
+                ? {
+                    id: expense.counteragent.id.toString(),
+                    label: expense.counteragent.name,
+                  }
+                : undefined,
+              
+              actionTypeApplied: undefined,
+              isSavedInDatabase: true,
+            };
+          });
 
         setExpenseRows(expenses);
         setFilteredExpenseRows(expenses.filter((expense) => {
@@ -230,17 +240,17 @@ export default function Search() {
 
         //#region Counteragents
 
-        const getCounteragentsResult = await getCounteragents();
-        const counterAgents: Array<{ value: string; label: string; }> | undefined = 
-          getCounteragentsResult
-            ? getCounteragentsResult.map((counteragent) => {
+        const getCounterAgentsResult = await getCounterAgents();
+        const counterAgents: Array<IDropdownValue> = 
+          getCounterAgentsResult
+            ? getCounterAgentsResult.map((couterAgent) => {
                 return {
-                  value: counteragent.id.toString(),
-                  label: counteragent.name,
+                  id: couterAgent.id.toString(),
+                  label: couterAgent.name,
                 };
               })
             : [];
-        setAllCounteragents(counterAgents);
+        setAllCounterAgents(counterAgents);
 
         //#endregion Counteragents
 
@@ -282,11 +292,11 @@ export default function Search() {
         //#region Sports
 
         const getSportsResult = await getSports();
-        const sports: Array<{ value: string; label: string; }> | undefined =
-        getSportsResult
+        const sports: Array<IDropdownValue> =
+          getSportsResult
             ? getSportsResult.map((sport) => {
                 return {
-                  value: sport,
+                  id: sport,
                   label: sport,
                 };
               })
@@ -298,11 +308,11 @@ export default function Search() {
         //#region Tournaments
 
         const getTournamentsResult = await getTournaments();
-        const tournaments: Array<{ value: string; label: string; }> | undefined =
+        const tournaments: Array<IDropdownValue> =
         getTournamentsResult
             ? getTournamentsResult.map((tournament) => {
                 return {
-                  value: tournament,
+                  id: tournament,
                   label: tournament,
                 };
               })
@@ -314,11 +324,11 @@ export default function Search() {
         //#region Markets
 
         const getMarketsResult = await getMarkets();
-        const markets: Array<{ value: string; label: string; }> | undefined =
+        const markets: Array<IDropdownValue> =
           getMarketsResult
               ? getMarketsResult.map((market) => {
                   return {
-                    value: market,
+                    id: market,
                     label: market,
                   };
                 })
@@ -366,7 +376,7 @@ export default function Search() {
 
           if(counteragentIds.length > 0) {
             const matchCounteragents = !!currentRow.counterAgent && 
-            counteragentIds.indexOf(currentRow.counterAgent.id) !== -1;
+              counteragentIds.indexOf(currentRow.counterAgent.id) !== -1;
 
             if(!matchCounteragents) {
               continue;
@@ -379,7 +389,7 @@ export default function Search() {
 
           if(sportIds.length > 0) {
             const matchSports = !!currentRow.sport && 
-            sportIds.indexOf(currentRow.sport.id) !== -1;
+              sportIds.indexOf(currentRow.sport.id) !== -1;
 
             if(!matchSports) {
               continue;
@@ -418,7 +428,7 @@ export default function Search() {
 
           if(liveStatusIds.length > 0) {
             const matchLiveStatuses = !!currentRow.liveStatus && 
-              liveStatusIds.indexOf(currentRow.liveStatus.toString()) !== -1;
+              liveStatusIds.indexOf(currentRow.liveStatus.id) !== -1;
 
             if(!matchLiveStatuses) {
               continue;
@@ -543,8 +553,8 @@ export default function Search() {
           //#region Counteragent filter
 
           if(counteragentIds.length > 0) {
-            const matchCounteragents = !!currentRow.counteragentId && 
-              counteragentIds.indexOf(currentRow.counteragentId.toString()) !== -1;
+            const matchCounteragents = !!currentRow.counterAgent && 
+              counteragentIds.indexOf(currentRow.counterAgent.id) !== -1;
 
             if(!matchCounteragents) {
               continue;
@@ -645,75 +655,60 @@ export default function Search() {
     setSelectedBetId(id);
   };
 
-  const distinctCounteragents: Array<IDropdownValue> = filteredRows
-    ? filteredRows.filter((value: BetModel, index: number, array: Array<BetModel>) => {
-        if(!value.counterAgent) {
-          return false;
-        }
+  const distinctCounteragents: Array<IDropdownValue> = (filteredRows
+    ? [
+        ...new Set(
+          filteredRows
+            .filter((b: BetModel) => !!b.counterAgent)
+            .map((b: BetModel) => b.counterAgent!.id)
+        )
+      ]
+    : [])
+  .map((b) => { return { id: b, label: b } as IDropdownValue; } );
 
-        return array
-          .map((betModel: BetModel) => betModel.counterAgent!.id)
-          .indexOf(value.counterAgent.id) === index;
-      }).map((betModel) => {
-        return betModel.counterAgent!;
-      })
-    : [];
+  const distinctSports: Array<IDropdownValue> = (filteredRows
+    ? [
+        ...new Set(
+          filteredRows
+            .filter((b: BetModel) => !!b.sport)
+            .map((b: BetModel) => b.sport!.id)
+        )
+      ]
+    : [])
+  .map((b) => { return { id: b, label: b } as IDropdownValue; } );
 
-  const distinctSports: Array<IDropdownValue> = filteredRows
-    ? filteredRows.filter((value: BetModel, index: number, array: Array<BetModel>) => {
-        if(!value.sport) {
-          return false;
-        }
+  const distinctMarkets: Array<IDropdownValue> = (filteredRows
+    ? [
+        ...new Set(
+          filteredRows
+            .filter((b: BetModel) => !!b.market)
+            .map((b: BetModel) => b.market!.id)
+        )
+      ]
+    : [])
+  .map((b) => { return { id: b, label: b } as IDropdownValue; } );
 
-        return array
-          .map((betModel: BetModel) => betModel.sport)
-          .indexOf(value.sport) === index;
-      }).map((betModel) => {
-        return betModel.sport!;
-      })
-    : [];
+  const distinctTournaments: Array<IDropdownValue> = (filteredRows
+    ? [
+        ...new Set(
+          filteredRows
+            .filter((b: BetModel) => !!b.tournament)
+            .map((b: BetModel) => b.tournament!.id)
+        )
+      ]
+    : [])
+  .map((b) => { return { id: b, label: b } as IDropdownValue; } );
 
-  const distinctMarkets: Array<IDropdownValue> = filteredRows
-    ? filteredRows.filter((value: BetModel, index: number, array: Array<BetModel>) => {
-        if(!value.market) {
-          return false;
-        }
-
-        return array
-          .map((betModel: BetModel) => betModel.market)
-          .indexOf(value.market) === index;
-      }).map((betModel) => {
-        return betModel.market!;
-      })
-    : [];
-
-  const distinctTournaments: Array<IDropdownValue> = filteredRows
-    ? filteredRows.filter((value: BetModel, index: number, array: Array<BetModel>) => {
-        if(!value.tournament) {
-          return false;
-        }
-
-        return array
-          .map((betModel: BetModel) => betModel.tournament)
-          .indexOf(value.tournament) === index;
-      }).map((betModel) => {
-        return betModel.tournament!;
-      })
-    : [];
-
-  const distinctLiveStatuses: Array<IDropdownValue> = filteredRows
-    ? filteredRows.filter((value: BetModel, index: number, array: Array<BetModel>) => {
-        if(!value.liveStatus) {
-          return false;
-        }
-
-        return array
-          .map((betModel: BetModel) => betModel.liveStatus)
-          .indexOf(value.liveStatus) === index;
-      }).map((betModel) => {
-        return betModel.liveStatus!;
-      })
-    : [];
+  const distinctLiveStatuses: Array<IDropdownValue> = (filteredRows
+    ? [
+        ...new Set(
+          filteredRows
+            .filter((b: BetModel) => !!b.liveStatus)
+            .map((b: BetModel) => b.liveStatus!.id)
+        )
+      ]
+    : [])
+  .map((b) => { return { id: b, label: b } as IDropdownValue; } );
 
   return (
     <Paper sx={{ padding: '5%', }}>
@@ -884,7 +879,7 @@ export default function Search() {
                 selectBetIdFn={selectBetId}
                 setIsLoading={setIsLoading} 
                 defaultRows={filteredRows}
-                possibleCounteragents={allCounteragents}
+                possibleCounteragents={allCounterAgents}
                 possibleSports={allSports}
                 possibleTournaments={allTournaments}
                 possibleMarkets={allMarkets}
@@ -896,14 +891,14 @@ export default function Search() {
       }
       <Typography variant='h4'>Expenses</Typography>
       {
-        filteredExpenseRowsRows && allCounteragents && allCounteragents.length > 0
+        filteredExpenseRowsRows && allCounterAgents && allCounterAgents.length > 0
           && areExpensesShown
           ? (
               <Expenses 
                 isRead={false}
                 setIsLoading={setIsLoading}
                 defaultRows={filteredExpenseRowsRows}
-                possibleCounteragents={allCounteragents}
+                possibleCounterAgents={allCounterAgents}
               />
             )
           : null

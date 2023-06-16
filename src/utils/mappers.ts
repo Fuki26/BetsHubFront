@@ -9,7 +9,7 @@ export const betToBetModelMapper = (bet: Bet) => {
       betStatus: { id: bet.betStatus.toString(), label: BetStatus[bet.betStatus] },
       winStatus: { id: bet.winStatus.toString(), label: WinStatus[bet.winStatus] },
       stake: bet.stake,
-      counteragent: bet.counteragent
+      counterAgent: bet.counteragent
         ? { id: bet.counteragent.id.toString(), label: bet.counteragent.name, }
         : undefined,
       sport:	bet.sport

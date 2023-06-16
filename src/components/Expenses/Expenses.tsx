@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { toast } from 'react-toastify';
 import { DataGridPro, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
-  GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer , } from '@mui/x-data-grid-pro';
+  GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams , } from '@mui/x-data-grid-pro';
 import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, Paper, TextField, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
@@ -44,21 +44,20 @@ export default function Expenses(props: {
       return null;
     }
 
-    const contraagent = possibleCounterAgents[0];
+    const counterAgent = possibleCounterAgents[0];
     const handleAddNewClick = () => {
       const id = Math.round(Math.random() * 1000000);
       setRows((oldRows) => [...oldRows, 
         { 
           id,
-          counteragentId: parseInt(contraagent.id),
-          counteragent: contraagent.label,
+          counterAgent: { id: counterAgent.id, label: counterAgent.label, },
           amount: 0,
           description: '',
           dateCreated: new Date(),
       
           actionTypeApplied: undefined,
           isSavedInDatabase: false,
-        } as ExpenseModel
+        }
       ]);
       setRowModesModel((oldModel) => ({
         ...oldModel,
@@ -201,8 +200,7 @@ export default function Expenses(props: {
         || currentRow?.actionTypeApplied === Enums.ActionType.EDITED) {
           const newRowData: ExpenseModel = {
             ...currentRow,
-            counteragentId: newRow.counteragentId,
-            counteragent: currentRow.counteragent,
+            counterAgent: currentRow.counterAgent,
             amount: newRow.amount,
             description: newRow.description,
             dateCreated: newRow.dateCreated,
@@ -282,68 +280,84 @@ export default function Expenses(props: {
         type: 'number',
     },
     {
-        field: 'counteragent',
-        headerName: 'counteragent',
-        type: 'singleSelect',
-        editable: true,
-        width: 300,
-        renderCell: (params: GridRenderCellParams) => {
-          const row = rows 
-            ? rows?.find((r) => r.id === params.id)
-            : undefined;
-  
-          if(!row) {
-            throw Error(`Row did not found.`);
-          }
-  
-          return (
-            <>
-              {row.counteragent}
-            </>
-          )
-        },
-        renderEditCell: (params: GridRenderEditCellParams) => {
-          const row = rows 
-            ? rows?.find((r) => r.id === params.id)
-            : undefined;
-  
-          if(!row) {
-            throw Error(`Row did not found.`);
-          }
-  
-          return (
-            <Autocomplete
-              options={
-                possibleCounterAgents
-                  ? possibleCounterAgents.map((counterAgent) => {
-                    return {
-                          rowId: params.id,
-                          value: counterAgent.id, 
-                          label: counterAgent.label, 
-                        };
-                    })
-                  : []
-              }       
-              sx={{ width: 300 }}
-              renderInput={(params: any) => <TextField {...params} 
-                label={ItemTypes.COUNTERAGENT} />}
-              onChange={onChange}
-              value={
-                row.counteragentId && row.counteragent
-                  ? {
-                      rowId: params.id,
-                      value: row.counteragentId.toString(),
-                      label: row.counteragent,
-                    }
-                  : {
-                      rowId: params.id,
-                      value: '',
-                      label: '',
-                    }
-              }
-            />
-          )
+      field: 'counterAgent',
+      headerName: 'Counteragent',
+      editable: true,
+      width: 300,
+      renderCell: (params: GridRenderCellParams<ExpenseModel>) => {
+        const row = rows?.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
         }
+
+        return (
+          <>
+            {
+              row.counterAgent 
+                ? row.counterAgent.label
+                : ''
+            }
+          </>
+        );
+      },
+      renderEditCell: (params: GridRenderEditCellParams<ExpenseModel>) => {
+        const row = rows?.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return (
+          <Autocomplete
+            // freeSolo
+            options={
+              possibleCounterAgents
+                ? possibleCounterAgents
+                : []
+            }
+            renderInput={(params) => 
+              <TextField {...params}/>
+            }
+            onChange={(e, value: any) => {
+              setRows((previousRowsModel) => {
+                if(!previousRowsModel) {
+                  return [];
+                }
+
+                return previousRowsModel.map((row: ExpenseModel) => {
+                  if(row.id === params.row.id) {
+                    return {
+                      ...row, 
+                      counterAgent: value
+                        ? typeof value === 'string'
+                          ? { id: value, label: value }
+                          : value
+                        : undefined
+                    };
+                  } else {
+                    return row;
+                  }
+                });
+              });
+            }}
+            value={row.counterAgent}
+            sx={{
+              width: 300,
+            }}
+          />
+        );
+      },
+      valueGetter: (params: GridValueGetterParams<ExpenseModel>) => {
+        if(!rows) {
+          return;
+        }
+
+        const row = rows.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return row.counterAgent;
+      },
     },
     {
         field: 'amount',
