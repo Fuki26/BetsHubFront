@@ -20,6 +20,7 @@ import Modal from '../UI/Modal';
 
 export default function Bets(props: { 
   isRead: boolean;
+  arePengindBets: boolean;
   selectBetIdFn: (id: number) => void;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 
@@ -40,7 +41,7 @@ export default function Bets(props: {
   const [ rows, setRows, ] = 
     React.useState<Array<BetModel>>(defaultRows ? defaultRows : []);
   const [ rowModesModel, setRowModesModel, ] = React.useState<GridRowModesModel>({});
-
+  const [copiedRowIds, setCopiedRowIds] = React.useState<[number, number] | null>(null);
   const [ deleteRowId, setDeleteRowId, ] = React.useState<number | undefined>(undefined);
   const [ deleteDialogIsOpened, setOpenDeleteDialog, ] = React.useState(false);
   const [showHistoryModal, setShowHistoryModal] = React.useState(false);
@@ -61,7 +62,7 @@ export default function Bets(props: {
   
     const handleAddNewClick = () => {
       const id = Math.round(Math.random() * 1000000);
-      setRows((oldRows) => [...oldRows, 
+      setRows((oldRows) => [
         { 
           id,
           dateCreated: new Date(),
@@ -87,12 +88,13 @@ export default function Bets(props: {
       
           actionTypeApplied: undefined,
           isSavedInDatabase: false,
-        } as BetModel
+        } as BetModel,
+        ...oldRows
       ]);
 
       setRowModesModel((oldModel) => ({
         ...oldModel,
-        [id]: { mode: GridRowModes.Edit, },
+        [id]: { mode: GridRowModes.Edit, className: `super-app-theme--edit` },
       }));
     };
   
@@ -130,6 +132,7 @@ export default function Bets(props: {
   //#region Actions handlers
 
   const handleSaveClick = (id: GridRowId) => () => {
+    setCopiedRowIds(null);
     setRows((previousRowsModel) => {
       return previousRowsModel.map((row: BetModel) => {
         if(row.id === id) {
@@ -150,6 +153,7 @@ export default function Bets(props: {
   };
 
   const handleCancelClick = (id: GridRowId) => () => {
+    setCopiedRowIds(null);
     const canceledRow = rows.find((r) => r.id === id);
     if(!canceledRow) {
       return;
@@ -254,7 +258,6 @@ export default function Bets(props: {
     const randomId: number = Math.round(Math.random() * 1000000);
     setRows((oldRows) => {
       return [
-        ...oldRows!,
         { 
           id: randomId,
           dateCreated: clickedRow.dateCreated,
@@ -280,13 +283,15 @@ export default function Bets(props: {
       
           actionTypeApplied: undefined,
           isSavedInDatabase: false,
-        } as BetModel
+        },
+        ...oldRows
       ]
     });
     setRowModesModel((oldModel) => ({
       ...oldModel,
       [randomId]: { mode: GridRowModes.Edit, },
     }));
+    setCopiedRowIds([randomId, clickedRow.id]);
   };
 
   const onRowClick = (params: GridRowParams) => {
@@ -385,7 +390,7 @@ export default function Bets(props: {
 
   //#endregion Rows update handler
 
-  const columns: Array<GridColDef> = [
+  let columns: Array<GridColDef> = [
     {
       field: 'id',
       type: 'number',
@@ -434,7 +439,7 @@ export default function Bets(props: {
         return (
           <>
             {
-              row.betStatus 
+              row.betStatus
                 ? row.betStatus.label
                 : ''
             }
@@ -1121,6 +1126,10 @@ export default function Bets(props: {
     return <Modal open={showHistoryModal} handleClose={handleModalClose} betsHistory={history} />
   }
 
+  if (props.arePengindBets) {
+    columns = columns.filter(c => c.headerName !== 'Profits');
+  }
+
   return (
     <Paper sx={{ padding: '5%'}}>
       {
@@ -1129,6 +1138,13 @@ export default function Bets(props: {
               <>
                 <DataGridPro
                   columns={columns}
+                  getRowClassName={(params) => {
+                    if (!copiedRowIds) return '';
+                    if (copiedRowIds.includes(params.row.id)) {
+                      return `super-app-theme--edit`;
+                    } 
+                    return '';
+                  }}
                   columnBuffer={2} 
                   columnThreshold={2}
                   rows={rows}   
