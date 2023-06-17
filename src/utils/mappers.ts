@@ -12,6 +12,12 @@ export const betToBetModelMapper = (bet: Bet) => {
       counterAgent: bet.counteragent
         ? { id: bet.counteragent.id.toString(), label: bet.counteragent.name, }
         : undefined,
+      counterAgentCategory: bet.counteragent && bet.counteragent.counteragentCategory
+        ? { 
+            id: bet.counteragent.counteragentCategory.id.toString(), 
+            label: bet.counteragent.counteragentCategory.name, 
+          }
+        : undefined,
       sport:	bet.sport
         ? { id: bet.sport, label: bet.sport, }
         : undefined,

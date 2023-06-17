@@ -176,7 +176,7 @@ export default function Currencies() {
     
     toast(currentRow?.actionTypeApplied === Enums.ActionType.CANCELED 
         ? 'Canceled' 
-        : `Saved expense with id ${currentRow!.id}`,
+        : `Saved currency with id ${currentRow!.id}`,
       {
         position: 'top-center',
       });

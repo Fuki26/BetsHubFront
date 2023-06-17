@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { toast } from 'react-toastify';
 import { DataGridPro, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
-  GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer , } from '@mui/x-data-grid-pro';
+  GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams , } from '@mui/x-data-grid-pro';
 import { Autocomplete, Button, CircularProgress, Dialog, DialogActions, DialogTitle, Paper, TextField, Typography, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
-import { CounteragentModel, EditToolbarProps, Enums, } from '../../models';
+import { CounteragentModel, EditToolbarProps, Enums, IDropdownValue, } from '../../models';
 import { ItemTypes } from '../../models/enums';
 import { deleteCounteragent, getCounterAgents, getCounterAgentsCategories, getUsers, upsertCounteragent, } from '../../api';
 import { Counteragent, CounterAgentCategory, User } from '../../database-models';
@@ -17,18 +17,22 @@ export default function Counteragents(props: {}) {
   const [ isLoading, setIsLoading, ] = React.useState<boolean>(false);
 
   const [ rows, setRows] = React.useState<Array<CounteragentModel> | undefined>(undefined);
-  const [ possibleCounteragentsCategories, setPossibleCounteragentsCategories ] = 
-    React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
-  const [ possibleUsers, setPossibleUsers ] = 
-    React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
   const [ rowModesModel, setRowModesModel, ] = React.useState<GridRowModesModel>({});
   const [ deleteRowId, setDeleteRowId, ] = React.useState<number | null>(null);
   const [ deleteDialogIsOpened, setOpenDeleteDialog, ] = React.useState(false);
 
+  const [ possibleCounteragentsCategories, setPossibleCounteragentsCategories ] = 
+    React.useState<Array<IDropdownValue>>([]);
+  const [ possibleUsers, setPossibleUsers ] = 
+    React.useState<Array<IDropdownValue>>([]);
+  
   React.useEffect(() => {
     (async () => {
       try {
         setIsLoading(true);
+
+        //#region Counteragents
+
         const counteragentsDatabaseModels: Array<Counteragent> | undefined 
           = await getCounterAgents();
         let counteragents: Array<CounteragentModel> = counteragentsDatabaseModels
@@ -36,54 +40,60 @@ export default function Counteragents(props: {}) {
               return {
                 id: c.id,
                 name: c.name,
-                counteragentCategoryId: c.counteragentCategoryId,
-                counteragentCategory: c.counteragentCategory && c.counteragentCategory.name
-                  ? c.counteragentCategory.name
-                  : '',
+                counteragentCategory: c.counteragentCategory
+                  ? { id: c.counteragentCategory.id.toString(), label: c.counteragentCategory.name! }
+                  : undefined,
+                user: c.user
+                  ? { id: c.user.id, label: c.user.userName! }
+                  : undefined,
                 maxRate: c.maxRate,
                 dateCreated: new Date(c.dateCreated),
                 dateChanged: new Date(c.dateChanged),
-                userId: c.userId,
-                user: c.user && c.user.userName
-                  ? c.user.userName
-                  : '',
-
+                
                 actionTypeApplied: undefined,
                 isSavedInDatabase: true,
               };
             })
           : [];
+        
+        setRows(counteragents);
+
+        //#endregion Counteragents
+
+        //#region Counteragent categories
 
         const getCounteragentsCategoriesResult = await getCounterAgentsCategories();
-        const getUsersResult = await getUsers();
-
-        const counteragentsCategories: Array<{ value: string; label: string; }> | undefined = 
+        const counteragentsCategories: Array<IDropdownValue> = 
           getCounteragentsCategoriesResult
             ? getCounteragentsCategoriesResult.map((counteragentCategory: CounterAgentCategory) => {
                 return {
-                  value: counteragentCategory.id.toString(),
-                  label: counteragentCategory.name
-                    ? counteragentCategory.name
-                    : '',
-                };
-              })
-            : [];
-        
-        const users: Array<{ value: string; label: string; }> | undefined = 
-          getUsersResult
-            ? getUsersResult.map((user: User) => {
-                return {
-                  value: user.id.toString(),
-                  label: user.userName
-                    ? user.userName
-                    : '',
+                  id: counteragentCategory.id.toString(),
+                  label: counteragentCategory.name!
                 };
               })
             : [];
 
-        setRows(counteragents);
         setPossibleCounteragentsCategories(counteragentsCategories);
+
+        //#endregion Counteragent categories
+        
+        //#region Users
+
+        const getUsersResult = await getUsers();
+        const users: Array<IDropdownValue> = 
+          getUsersResult
+            ? getUsersResult.map((user: User) => {
+                return {
+                  id: user.id,
+                  label: user.userName!,
+                };
+              })
+            : [];
+
+        
         setPossibleUsers(users);
+
+        //#endregion Users
 
         setIsLoading(false);
       } catch (e) {
@@ -95,34 +105,22 @@ export default function Counteragents(props: {}) {
   const editToolbar = (props: EditToolbarProps) => {
     const { setRows, setRowModesModel } = props;
 
-    const counteragentCategory = !possibleCounteragentsCategories || possibleCounteragentsCategories.length === 0
-      ? {
-          value: '',
-          label: ''
-        } 
-      : possibleCounteragentsCategories[0];
-
-    const user = !possibleUsers || possibleUsers.length === 0
-      ? {
-          value: '',
-          label: ''
-        } 
-      : possibleUsers[0];
     const handleAddNewClick = () => {
       const id = Math.round(Math.random() * 1000000);
-      setRows((oldRows) => [...oldRows, 
+      setRows((oldRows) => [
         { 
           id,
           name: '',
-          counteragentCategory: counteragentCategory.label,
+          counteragentCategory: undefined,
+          user: undefined,
           maxRate: 0,
           dateCreated: new Date(),
           dateChanged: new Date(),
-          user: user.label,
-      
+          
           actionTypeApplied: undefined,
           isSavedInDatabase: false,
-        } as CounteragentModel
+        } as CounteragentModel,
+        ...oldRows
       ]);
 
       setRowModesModel((oldModel) => ({
@@ -267,8 +265,8 @@ export default function Counteragents(props: {}) {
         const newRowData: CounteragentModel = {
           ...currentRow,
           name: newRow.name,
-          counteragentCategoryId: newRow.counteragentCategoryId, 
           counteragentCategory: currentRow.counteragentCategory,
+          user: currentRow.user,
           maxRate: newRow.maxRate,
           dateCreated: currentRow.actionTypeApplied === Enums.ActionType.SAVED
             ? new Date()
@@ -276,9 +274,22 @@ export default function Counteragents(props: {}) {
           dateChanged: currentRow.actionTypeApplied === Enums.ActionType.EDITED
             ? new Date()
             : newRow.dateChanged,
-          userId: newRow.userId, 
-          user: currentRow.user,
+         
         };
+
+        if(!newRowData.name
+          || !newRowData.counteragentCategory
+          || !newRowData.user
+          || !newRowData.maxRate) {
+        setRowModesModel((previousRowModesModel) => {
+          return { ...previousRowModesModel, [currentRow.id!.toString()]: { mode: GridRowModes.Edit } }
+        });
+        toast(`Name, counteragent category, max rate and user should be specified!`, {
+          position: 'top-center',
+        });
+        
+        return;
+      }
 
         setIsLoading(true);
         
@@ -323,73 +334,6 @@ export default function Counteragents(props: {}) {
   };
 
   //#endregion Rows update handler
-  
-  //#region Dropdown handlers
-
-  const onCounterAgentCategoryChange = (event: any, value: {
-    rowId: GridRowId | undefined;
-    value?: string;
-    label?: string,
-  } | null): void => {
-    if(!value || !value.value || !value.label) {
-      alert(`Provided value from dropdown is ${JSON.stringify(value)}. The dropdown value cannot be set.`);
-      return;
-    }
-
-    setRows((previousRowsModel) => {
-      if(!previousRowsModel) {
-        return [];
-      }
-
-      return previousRowsModel.map((row) => {
-        const isValidId = !value.value || isNaN(parseInt(value.value))
-          ? false
-          : true;
-        if(!isValidId) {
-          alert(`Provided value from dropdown is ${JSON.stringify(value)}. The dropdown value cannot be set.`);
-          return row;
-        }
-
-        if(row.id === value.rowId) {
-          return {
-            ...row, 
-            counteragentCategoryId: parseInt(value.value!),
-            counteragentCategory: value.label!,
-          };
-        } else {
-          return row;
-        }
-      });
-    });
-  }
-
-  const onUserChange = (event: any, value: {
-    rowId: GridRowId | undefined;
-    value?: string;
-    label?: string,
-  } | null): void => {
-    if(!value || !value.value || !value.label) {
-      alert(`Provided value from dropdown is ${JSON.stringify(value)}. The dropdown value cannot be set.`);
-      return;
-    }
-
-    setRows((previousRowsModel) => {
-      return previousRowsModel!.map((row) => {
-        if(row.id === value.rowId) {
-          return {
-            ...row, 
-            userId: value.value!,
-            user: value.label!,
-          };
-        } else {
-          return row;
-        }
-      });
-    });
-  }
-
-
-  //#endreigon Dropdown handlers
 
   const columns: Array<GridColDef> = [
     {
@@ -416,66 +360,146 @@ export default function Counteragents(props: {}) {
     {
       field: 'counteragentCategory',
       headerName: 'Counteragent category',
-      type: 'singleSelect',
       editable: true,
       width: 300,
-      renderCell: (params: GridRenderCellParams) => {
-        const row = rows 
-          ? rows.find((r) => r.id === params.id)
-          : undefined;
-
+      renderCell: (params: GridRenderCellParams<CounteragentModel>) => {
+        const row = rows?.find((r) => r.id === params.row.id);
         if(!row) {
-          throw Error(`Row did not found.`);
+          return;
         }
 
         return (
           <>
-            {row.counteragentCategory}
+            {
+              row.counteragentCategory 
+                ? row.counteragentCategory.label
+                : ''
+            }
           </>
-        )
+        );
       },
-      renderEditCell: (params: GridRenderEditCellParams) => {
-        const row = rows 
-          ? rows.find((r) => r.id === params.id)
-          : undefined;
-
+      renderEditCell: (params: GridRenderEditCellParams<CounteragentModel>) => {
+        const row = rows?.find((r) => r.id === params.row.id);
         if(!row) {
-          throw Error(`Row did not found.`);
+          return;
         }
 
         return (
           <Autocomplete
+            // freeSolo
             options={
               possibleCounteragentsCategories
-                ? possibleCounteragentsCategories.map((counteragentCategory) => {
-                  return {
-                        rowId: params.id,
-                        value: counteragentCategory.value, 
-                        label: counteragentCategory.label, 
-                      };
-                  })
+                ? possibleCounteragentsCategories
                 : []
-            }       
-            sx={{ width: 300 }}
-            renderInput={(params: any) => <TextField {...params} 
-              label={ItemTypes.COUNTERAGENT} />}
-            onChange={onCounterAgentCategoryChange}
-            value={
-              row.counteragentCategoryId && row.counteragentCategory
-                ? {
-                    rowId: params.id,
-                    value: row.counteragentCategoryId.toString(),
-                    label: row.counteragentCategory,
-                  }
-                : {
-                    rowId: params.id,
-                    value: '',
-                    label: '',
-                  }
             }
+            renderInput={(params) => 
+              <TextField {...params}/>
+            }
+            onChange={(e, value: any) => {
+              setRows((previousRowsModel) => {
+                return previousRowsModel?.map((row: CounteragentModel) => {
+                  if(row.id === params.row.id) {
+                    return {
+                      ...row, 
+                      counteragentCategory: value
+                        ? typeof value === 'string'
+                          ? { id: value, label: value }
+                          : value
+                        : undefined
+                    };
+                  } else {
+                    return row;
+                  }
+                });
+              });
+            }}
+            value={row.counteragentCategory}
+            sx={{
+              width: 300,
+            }}
           />
-        )
-      }
+        );
+      },
+      valueGetter: (params: GridValueGetterParams<CounteragentModel>) => {
+        const row = rows?.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return row.counteragentCategory;
+      },
+    },
+    {
+      field: 'user',
+      headerName: 'User',
+      editable: true,
+      width: 300,
+      renderCell: (params: GridRenderCellParams<CounteragentModel>) => {
+        const row = rows?.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return (
+          <>
+            {
+              row.user 
+                ? row.user.label
+                : ''
+            }
+          </>
+        );
+      },
+      renderEditCell: (params: GridRenderEditCellParams<CounteragentModel>) => {
+        const row = rows?.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return (
+          <Autocomplete
+            // freeSolo
+            options={
+              possibleUsers
+                ? possibleUsers
+                : []
+            }
+            renderInput={(params) => 
+              <TextField {...params}/>
+            }
+            onChange={(e, value: any) => {
+              setRows((previousRowsModel) => {
+                return previousRowsModel?.map((row: CounteragentModel) => {
+                  if(row.id === params.row.id) {
+                    return {
+                      ...row, 
+                      user: value
+                        ? typeof value === 'string'
+                          ? { id: value, label: value }
+                          : value
+                        : undefined
+                    };
+                  } else {
+                    return row;
+                  }
+                });
+              });
+            }}
+            value={row.user}
+            sx={{
+              width: 300,
+            }}
+          />
+        );
+      },
+      valueGetter: (params: GridValueGetterParams<CounteragentModel>) => {
+        const row = rows?.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return row.user;
+      },
     },
     {
       field: 'maxRate',
@@ -497,70 +521,6 @@ export default function Counteragents(props: {}) {
       type: 'date',
       editable: false,
       width: 150,
-    },
-    {
-      field: 'user',
-      headerName: 'User',
-      type: 'singleSelect',
-      editable: true,
-      width: 300,
-      renderCell: (params: GridRenderCellParams) => {
-        const row = rows 
-          ? rows.find((r) => r.id === params.id)
-          : undefined;
-
-        if(!row) {
-          throw Error(`Row did not found.`);
-        }
-
-        return (
-          <>
-            {row.user}
-          </>
-        )
-      },
-      renderEditCell: (params: GridRenderEditCellParams) => {
-        const row = rows 
-          ? rows.find((r) => r.id === params.id)
-          : undefined;
-
-        if(!row) {
-          throw Error(`Row did not found.`);
-        }
-
-        return (
-          <Autocomplete
-            options={
-              possibleUsers
-                ? possibleUsers.map((user) => {
-                  return {
-                        rowId: params.id,
-                        value: user.value, 
-                        label: user.label, 
-                      };
-                  })
-                : []
-            }       
-            sx={{ width: 300 }}
-            renderInput={(params: any) => <TextField {...params} 
-              label={ItemTypes.USER} />}
-            onChange={onUserChange}
-            value={
-              row.userId && row.user
-                ? {
-                    rowId: params.id,
-                    value: row.userId.toString(),
-                    label: row.user,
-                  }
-                : {
-                    rowId: params.id,
-                    value: '',
-                    label: '',
-                  }
-            }
-          />
-        )
-      }
     },
     {
       field: 'actions',

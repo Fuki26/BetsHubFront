@@ -10,11 +10,11 @@ import dayjs from 'dayjs';
 import './Search.css';
 import Bets from '../../components/Bets/Bets';
 import { BetModel, ExpenseModel, IDropdownValue, ISelectionsResult, StatisticItemModel } from '../../models';
-import { getBetStatistics, getCounterAgentsCategories, getCounterAgents, 
+import { getBetStatistics, getCounterAgents, 
   getCurrencies, getExpenses, getMarkets, 
   getPendingBets, getSports, getTournaments } from '../../api';
-import { Bet, Currency, Expense, Statistics } from '../../database-models';
-import { LiveStatus, StatisticType } from '../../models/enums';
+import { Currency, Expense, Statistics } from '../../database-models';
+import { StatisticType } from '../../models/enums';
 import Expenses from '../../components/Expenses/Expenses';
 import { betToBetModelMapper } from '../../utils';
 
@@ -220,7 +220,13 @@ export default function Search() {
                     label: expense.counteragent.name,
                   }
                 : undefined,
-              
+              counterAgentCategory: expense.counteragent && expense.counteragent.counteragentCategory
+                  ? { 
+                      id: expense.counteragent.counteragentCategory.id.toString(), 
+                      label: expense.counteragent.counteragentCategory.name! 
+                    }
+                  : undefined,
+
               actionTypeApplied: undefined,
               isSavedInDatabase: true,
             };
@@ -360,15 +366,14 @@ export default function Search() {
 
           //#region Counteragent category filter
 
-          // if(counteragentCategoriesIds.length > 0) {
-          //   const matchCounteragentCategoriess = !!currentRow.counteragent 
-          //     && currentRow.counteragent.counteragent
-          //     counteragentCategoriesIds.indexOf(currentRow.counteragentId.toString()) !== -1;
+          if(counteragentCategoriesIds.length > 0) {
+            const matchCounteragentCategories = !!currentRow.counterAgentCategory && 
+              counteragentCategoriesIds.indexOf(currentRow.counterAgentCategory.id) !== -1;
 
-          //   if(!matchCounteragents) {
-          //     continue;
-          //   }
-          // }
+            if(!matchCounteragentCategories) {
+              continue;
+            }
+          }
 
           //#endregion Counteragent category filter
 
@@ -550,6 +555,19 @@ export default function Search() {
         for(var i = 0; i <= expenseRows.length - 1; i++) {
           const currentRow = expenseRows[i];
 
+          //#region Counteragent Category filter
+
+          if(counteragentCategoriesIds.length > 0) {
+            const matchCounteragentCategories = !!currentRow.counterAgentCategory && 
+              counteragentCategoriesIds.indexOf(currentRow.counterAgentCategory.id) !== -1;
+
+            if(!matchCounteragentCategories) {
+              continue;
+            }
+          }
+
+          //#endregion Counteragent Category filter
+
           //#region Counteragent filter
 
           if(counteragentIds.length > 0) {
@@ -599,7 +617,7 @@ export default function Search() {
         return [];
       }
     });
-  }, [ dateFrom, dateTo, counteragentIds,]);
+  }, [ dateFrom, dateTo, counteragentCategoriesIds, counteragentIds,]);
   
   useEffect(() => {
     (async () => {
@@ -655,16 +673,45 @@ export default function Search() {
     setSelectedBetId(id);
   };
 
+  const distinctCounteragentCategories: Array<IDropdownValue> = 
+    (
+        filteredRows
+          ? [
+              ...new Set(
+                filteredRows
+                  .filter((b: BetModel) => !!b.counterAgentCategory)
+                  .map((b) => b.counterAgentCategory!.id)
+              )
+            ]
+          : []
+    ).map((counterAgentCategoryId: string) => { 
+            const model = 
+              filteredRows!.find((r) => r.counterAgentCategory
+                && r.counterAgentCategory.id === counterAgentCategoryId)
+
+            return { 
+              id: model?.counterAgentCategory?.id, 
+              label: model?.counterAgentCategory?.label,
+            } as IDropdownValue; 
+          });
+
   const distinctCounteragents: Array<IDropdownValue> = (filteredRows
     ? [
         ...new Set(
           filteredRows
             .filter((b: BetModel) => !!b.counterAgent)
-            .map((b: BetModel) => b.counterAgent!.id)
+            .map((b) => b.counterAgent!.id)
         )
       ]
-    : [])
-  .map((b) => { return { id: b, label: b } as IDropdownValue; } );
+    : []).map((counterAgentId: string) => { 
+            const model = 
+              filteredRows!.find((r) => r.counterAgent && r.counterAgent.id === counterAgentId)
+
+            return { 
+              id: model?.counterAgent?.id, 
+              label: model?.counterAgent?.label,
+            } as IDropdownValue; 
+          });
 
   const distinctSports: Array<IDropdownValue> = (filteredRows
     ? [
@@ -704,11 +751,18 @@ export default function Search() {
         ...new Set(
           filteredRows
             .filter((b: BetModel) => !!b.liveStatus)
-            .map((b: BetModel) => b.liveStatus!.id)
+            .map((b) => b.liveStatus!.id)
         )
       ]
-    : [])
-  .map((b) => { return { id: b, label: b } as IDropdownValue; } );
+    : []).map((liveStatusId) => { 
+            const model = 
+              filteredRows!.find((r) => r.liveStatus && r.liveStatus.id === liveStatusId)
+
+            return { 
+              id: model?.liveStatus?.id, 
+              label: model?.liveStatus?.label,
+            } as IDropdownValue; 
+          });
 
   return (
     <Paper sx={{ padding: '5%', }}>
@@ -838,6 +892,12 @@ export default function Search() {
           }} />
         </Paper>
         <Paper className='search-filters-container'>
+          <AutocompleteComponent 
+            id='counteragentCategories-autocomplete'
+            label='CounteragentCategory'
+            options={distinctCounteragentCategories} 
+            selectedOptions={counteragentCategoriesIds}
+            setStateFn={setCounteragentCategoriesIds}/>
           <AutocompleteComponent 
             id='counteragents-autocomplete'
             label='Counteragent'

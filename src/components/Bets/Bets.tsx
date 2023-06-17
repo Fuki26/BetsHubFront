@@ -69,7 +69,7 @@ export default function Bets(props: {
           betStatus: { id: BetStatus.Pending.toString(), label: BetStatus[BetStatus.Pending] },
           winStatus: { id: WinStatus.None.toString(), label: WinStatus[WinStatus.None] },
           stake: undefined,
-          counteragent: undefined,
+          counterAgent: undefined,
           sport:	undefined,
           liveStatus:	{ id: LiveStatus.PreLive.toString(), label: LiveStatus[LiveStatus.PreLive] },
           psLimit: undefined,
@@ -88,7 +88,7 @@ export default function Bets(props: {
       
           actionTypeApplied: undefined,
           isSavedInDatabase: false,
-        },
+        } as BetModel,
         ...oldRows
       ]);
 
@@ -264,7 +264,7 @@ export default function Bets(props: {
           betStatus: clickedRow.betStatus,
           winStatus: clickedRow.winStatus,
           stake: clickedRow.stake,
-          counteragent: clickedRow.counterAgent,
+          counterAgent: clickedRow.counterAgent,
           sport:	clickedRow.sport,
           liveStatus:	clickedRow.liveStatus,
           psLimit: clickedRow.psLimit,
@@ -283,7 +283,7 @@ export default function Bets(props: {
       
           actionTypeApplied: undefined,
           isSavedInDatabase: false,
-        },
+        } as BetModel,
         ...oldRows
       ]
     });

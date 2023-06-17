@@ -227,7 +227,6 @@ const upsertBet = async (bet: BetModel) => {
 
 const upsertExpense = async (expense: ExpenseModel) => {
     try {
-        console.log(`UPSERT EXPENSE - ${JSON.stringify(expense)}`);
         const id = expense.isSavedInDatabase
             ? `Id=${expense.id}&`
             : '';
@@ -243,7 +242,7 @@ const upsertCounteragent = async (counteragent: CounteragentModel) => {
         const id = counteragent.isSavedInDatabase
             ? `Id=${counteragent.id}&`
             : 'Id=0&';
-        return await axios.post(`${domain}/UpsertCounteragent?${id}Name=${counteragent.name}&CounteragentCategoryId=${counteragent.counteragentCategoryId}&MaxRate=${counteragent.maxRate}&UserId=${counteragent.userId}`);
+        return await axios.post(`${domain}/UpsertCounteragent?${id}Name=${counteragent.name}&CounteragentCategoryId=${counteragent.counteragentCategory?.id}&MaxRate=${counteragent.maxRate}&UserId=${counteragent.user?.id}`);
     } catch(e) {
         alert(JSON.stringify(e));
     }

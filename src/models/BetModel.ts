@@ -9,6 +9,7 @@ export type BetModel = {
     liveStatus?: IDropdownValue; //0,1,2,3
     stake?: number;
     counterAgent?: IDropdownValue;
+    counterAgentCategory?: IDropdownValue;
     sport?:	IDropdownValue;
     psLimit?: number;
     market?: IDropdownValue;
