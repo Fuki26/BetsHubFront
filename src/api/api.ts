@@ -227,7 +227,6 @@ const upsertBet = async (bet: BetModel) => {
 
 const upsertExpense = async (expense: ExpenseModel) => {
     try {
-        console.log(`UPSERT EXPENSE - ${JSON.stringify(expense)}`);
         const id = expense.isSavedInDatabase
             ? `Id=${expense.id}&`
             : '';

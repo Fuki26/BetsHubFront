@@ -280,6 +280,20 @@ export default function Counteragents(props: {}) {
           user: currentRow.user,
         };
 
+        if(!newRowData.name
+          || !newRowData.counteragentCategoryId
+          || !newRowData.maxRate
+          || !newRowData.userId) {
+        setRowModesModel((previousRowModesModel) => {
+          return { ...previousRowModesModel, [currentRow.id!.toString()]: { mode: GridRowModes.Edit } }
+        });
+        toast(`Name, counteragent category, max rate and user should be specified!`, {
+          position: 'top-center',
+        });
+        
+        return;
+      }
+
         setIsLoading(true);
         
         const rowData = await upsertCounteragent(newRowData);

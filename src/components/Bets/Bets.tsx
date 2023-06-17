@@ -283,7 +283,7 @@ export default function Bets(props: {
       
           actionTypeApplied: undefined,
           isSavedInDatabase: false,
-        },
+        } as BetModel,
         ...oldRows
       ]
     });

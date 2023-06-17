@@ -220,7 +220,13 @@ export default function Search() {
                     label: expense.counteragent.name,
                   }
                 : undefined,
-              
+              counterAgentCategory: expense.counteragent && expense.counteragent.counteragentCategory
+                  ? { 
+                      id: expense.counteragent.counteragentCategory.id.toString(), 
+                      label: expense.counteragent.counteragentCategory.name! 
+                    }
+                  : undefined,
+
               actionTypeApplied: undefined,
               isSavedInDatabase: true,
             };
@@ -360,15 +366,14 @@ export default function Search() {
 
           //#region Counteragent category filter
 
-          // if(counteragentCategoriesIds.length > 0) {
-          //   const matchCounteragentCategoriess = !!currentRow.counteragent 
-          //     && currentRow.counteragent.counteragent
-          //     counteragentCategoriesIds.indexOf(currentRow.counteragentId.toString()) !== -1;
+          if(counteragentCategoriesIds.length > 0) {
+            const matchCounteragentCategories = !!currentRow.counterAgentCategory && 
+              counteragentCategoriesIds.indexOf(currentRow.counterAgentCategory.id) !== -1;
 
-          //   if(!matchCounteragents) {
-          //     continue;
-          //   }
-          // }
+            if(!matchCounteragentCategories) {
+              continue;
+            }
+          }
 
           //#endregion Counteragent category filter
 
@@ -550,6 +555,19 @@ export default function Search() {
         for(var i = 0; i <= expenseRows.length - 1; i++) {
           const currentRow = expenseRows[i];
 
+          //#region Counteragent Category filter
+
+          if(counteragentCategoriesIds.length > 0) {
+            const matchCounteragentCategories = !!currentRow.counterAgentCategory && 
+              counteragentCategoriesIds.indexOf(currentRow.counterAgentCategory.id) !== -1;
+
+            if(!matchCounteragentCategories) {
+              continue;
+            }
+          }
+
+          //#endregion Counteragent Category filter
+
           //#region Counteragent filter
 
           if(counteragentIds.length > 0) {
@@ -599,7 +617,7 @@ export default function Search() {
         return [];
       }
     });
-  }, [ dateFrom, dateTo, counteragentIds,]);
+  }, [ dateFrom, dateTo, counteragentCategoriesIds, counteragentIds,]);
   
   useEffect(() => {
     (async () => {
@@ -654,6 +672,28 @@ export default function Search() {
   const selectBetId = async (id: number) => {
     setSelectedBetId(id);
   };
+
+  const distinctCounteragentCategories: Array<IDropdownValue> = 
+    (
+        filteredRows
+          ? [
+              ...new Set(
+                filteredRows
+                  .filter((b: BetModel) => !!b.counterAgentCategory)
+                  .map((b) => b.counterAgentCategory!.id)
+              )
+            ]
+          : []
+    ).map((counterAgentCategoryId: string) => { 
+            const model = 
+              filteredRows!.find((r) => r.counterAgentCategory
+                && r.counterAgentCategory.id === counterAgentCategoryId)
+
+            return { 
+              id: model?.counterAgentCategory?.id, 
+              label: model?.counterAgentCategory?.label,
+            } as IDropdownValue; 
+          });
 
   const distinctCounteragents: Array<IDropdownValue> = (filteredRows
     ? [
@@ -852,6 +892,12 @@ export default function Search() {
           }} />
         </Paper>
         <Paper className='search-filters-container'>
+          <AutocompleteComponent 
+            id='counteragentCategories-autocomplete'
+            label='CounteragentCategory'
+            options={distinctCounteragentCategories} 
+            selectedOptions={counteragentCategoriesIds}
+            setStateFn={setCounteragentCategoriesIds}/>
           <AutocompleteComponent 
             id='counteragents-autocomplete'
             label='Counteragent'

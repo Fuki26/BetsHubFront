@@ -108,7 +108,7 @@ export default function Expenses(props: {
     });
     setRowModesModel((previousRowModesModel) => {
       return { ...previousRowModesModel, [id]: { mode: GridRowModes.View } }
-    })
+    });
   };
 
   const handleCancelClick = (id: GridRowId) => () => {
@@ -205,6 +205,18 @@ export default function Expenses(props: {
             description: newRow.description,
             dateCreated: newRow.dateCreated,
           };
+
+          if(!newRowData.counterAgent
+              || !newRowData.amount
+              || !newRowData.description) {
+            setRowModesModel((previousRowModesModel) => {
+              return { ...previousRowModesModel, [currentRow.id]: { mode: GridRowModes.Edit } }
+            });
+            toast(`Counteragent, amount and description should be specified!`, {
+              position: 'top-center',
+            });
+            return;
+          }
 
           setIsLoading(true);
           
