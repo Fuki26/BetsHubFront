@@ -366,13 +366,14 @@ export default function Hub() {
       }
       <Typography variant='h4'>PENDING</Typography>
       {
-        filteredPendingRows
+        pendingRows
           ? (
-              <Bets 
+              <Bets
+                arePengindBets={true}
                 isRead={false}
                 selectBetIdFn={selectBetId}
                 setIsLoading={setIsLoading} 
-                defaultRows={filteredPendingRows}
+                defaultRows={pendingRows}
                 currencies={currencies}
                 possibleCounteragents={possibleCounterAgents}
                 possibleSports={possibleSports}
@@ -389,6 +390,7 @@ export default function Hub() {
         filteredCompletedRows
           ? (
               <Bets
+                arePengindBets={false}
                 isRead={true} 
                 selectBetIdFn={selectBetId}
                 setIsLoading={setIsLoading}
