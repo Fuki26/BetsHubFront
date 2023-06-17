@@ -10,7 +10,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
 import { CounteragentModel, EditToolbarProps, Enums, } from '../../models';
 import { ItemTypes } from '../../models/enums';
-import { deleteCounteragent, getCounteragents, getCounteragentsCategories, getUsers, upsertCounteragent, } from '../../api';
+import { deleteCounteragent, getCounterAgents, getCounterAgentsCategories, getUsers, upsertCounteragent, } from '../../api';
 import { Counteragent, CounterAgentCategory, User } from '../../database-models';
 
 export default function Counteragents(props: {}) {
@@ -30,7 +30,7 @@ export default function Counteragents(props: {}) {
       try {
         setIsLoading(true);
         const counteragentsDatabaseModels: Array<Counteragent> | undefined 
-          = await getCounteragents();
+          = await getCounterAgents();
         let counteragents: Array<CounteragentModel> = counteragentsDatabaseModels
           ? counteragentsDatabaseModels.map((c: Counteragent) => {
               return {
@@ -54,7 +54,7 @@ export default function Counteragents(props: {}) {
             })
           : [];
 
-        const getCounteragentsCategoriesResult = await getCounteragentsCategories();
+        const getCounteragentsCategoriesResult = await getCounterAgentsCategories();
         const getUsersResult = await getUsers();
 
         const counteragentsCategories: Array<{ value: string; label: string; }> | undefined = 
@@ -395,6 +395,16 @@ export default function Counteragents(props: {}) {
     {
         field: 'id',
         type: 'number',
+        valueGetter: (params) => {
+          const row = rows?.find(r => r.id === params.id);
+          if (!row) {
+            return null;
+          }
+          if (!row.isSavedInDatabase) {
+            return null;
+          }
+          return params.id;
+        }
     },
     {
       field: 'name',

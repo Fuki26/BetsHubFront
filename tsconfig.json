@@ -2,7 +2,7 @@
   "compilerOptions": {
     "lib": [ "dom", "dom.iterable", "esnext" ],
     "module": "CommonJS",
-    "target": "es5",
+    "target": "ES2016",
     "strict": true,
     "allowJs": true,
     "skipLibCheck": true,

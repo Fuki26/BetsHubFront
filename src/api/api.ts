@@ -50,19 +50,19 @@ const getExpenses = async (): Promise<Array<Expense> | undefined> => {
     }
 }
 
-const getCounteragents = async (): Promise<Array<Counteragent> | undefined> => {
+const getCounterAgents = async (): Promise<Array<Counteragent> | undefined> => {
     try {
-        const getCountaagentsResult = await axios.get(`${domain}/GetAllCounteragents`);
-        return getCountaagentsResult.data;
+        const getCounterAgentsResult = await axios.get(`${domain}/GetAllCounteragents`);
+        return getCounterAgentsResult.data;
     } catch(e) {
         alert(JSON.stringify(e));
     }
 };
 
-const getCounteragentsCategories = async (): Promise<Array<CounterAgentCategory> | undefined> => {
+const getCounterAgentsCategories = async (): Promise<Array<CounterAgentCategory> | undefined> => {
     try {
-        const getCounteragentsCategoriesResult = await axios.get(`${domain}/GetAllCounteragentsCategories`);
-        return getCounteragentsCategoriesResult.data;
+        const getCounterAgentsCategoriesResult = await axios.get(`${domain}/GetAllCounteragentsCategories`);
+        return getCounterAgentsCategoriesResult.data;
     } catch(e) {
         alert(JSON.stringify(e));
     }
@@ -191,21 +191,20 @@ const deleteCurrency = async (props: { id: number; }) => {
 }
 
 const upsertBet = async (bet: BetModel) => {
-    try {
+    try {        
         const obj = {
             Id: bet.isSavedInDatabase
                 ? bet.id
                 : null,
-            BetStatus: bet.betStatus,
-            WinStatus: bet.winStatus,
+            BetStatus: bet.betStatus ? bet.betStatus.id : 0,
+            WinStatus: bet.winStatus ? bet.winStatus.id : 0,
+            LiveStatus: bet.liveStatus ? bet.liveStatus.id : 0,
+            CounteragentId: bet.counterAgent ? bet.counterAgent.id : '',
+            Sport: bet.sport ? bet.sport.id : '',
+            Tournament: bet.tournament ? bet.tournament.id : '',
+            Market: bet.market ? bet.market.id : '',
             Stake: bet.stake ? bet.stake : 0,
-            CounteragentId: bet.counteragentId,
-            Sport: bet.sport ? bet.sport : '',
-            LiveStatus: bet.liveStatus,
-            PSLimit: bet.psLimit ? bet.psLimit : 0,
-            Market: bet.market ? bet.market : '',
-            Tournament: bet.tournament ? bet.tournament : '',
-            Selection: bet.selection ? bet.selection : '',
+            PSLimit: bet.psLimit ? bet.psLimit : 0, 
             AmountBGN: bet.amountBGN ? bet.amountBGN : 0,
             AmountEUR: bet.amountEUR ? bet.amountEUR : 0,
             AmountUSD: bet.amountUSD ? bet.amountUSD : 0,
@@ -214,8 +213,9 @@ const upsertBet = async (bet: BetModel) => {
             DateFinished: bet.dateFinished ? bet.dateFinished.toISOString().split('T')[0] : null,
             Profits: bet.profits ? bet.profits : 0,
             Notes: bet.notes ? bet.notes : '',
+
+            Selection: bet.selection ? bet.selection : '',
         };
-        console.log(`UPSERT BET - ${JSON.stringify(obj)}`);
         const id = bet.isSavedInDatabase
             ? `Id=${obj.Id}&`
             : '';
@@ -231,7 +231,7 @@ const upsertExpense = async (expense: ExpenseModel) => {
         const id = expense.isSavedInDatabase
             ? `Id=${expense.id}&`
             : '';
-        return await axios.post(`${domain}/UpsertExpense?${id}CounteragentId=${expense.counteragentId}&Description=${expense.description}&Amount=${expense.amount}`);
+        return await axios.post(`${domain}/UpsertExpense?${id}CounteragentId=${expense.counterAgent?.id}&Description=${expense.description}&Amount=${expense.amount}`);
     } catch(e) {
         alert(JSON.stringify(e));
     }
@@ -276,8 +276,8 @@ export {
     getBetStatistics,
     getBetHistory,
     getExpenses,
-    getCounteragents,
-    getCounteragentsCategories,
+    getCounterAgents,
+    getCounterAgentsCategories,
     getUsers,
     getCurrencies,
     getSports,

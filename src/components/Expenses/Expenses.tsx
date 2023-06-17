@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { toast } from 'react-toastify';
 import { DataGridPro, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
-  GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer , } from '@mui/x-data-grid-pro';
+  GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams , } from '@mui/x-data-grid-pro';
 import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, Paper, TextField, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
-import { EditToolbarProps, Enums, ExpenseModel, } from '../../models';
+import { EditToolbarProps, Enums, ExpenseModel, IDropdownValue, } from '../../models';
 // import { deleteExpense, } from '../../api';
 import { ItemTypes } from '../../models/enums';
 import { deleteExpense, upsertExpense } from '../../api';
@@ -17,9 +17,9 @@ export default function Expenses(props: {
   isRead: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   defaultRows: Array<ExpenseModel> | null;
-  possibleCounteragents: Array<{ value: string; label: string; }> | undefined;
+  possibleCounterAgents: Array<IDropdownValue> | undefined;
 }) {
-  const { isRead, setIsLoading, defaultRows, possibleCounteragents, } = props;
+  const { isRead, setIsLoading, defaultRows, possibleCounterAgents, } = props;
 
   const [ rows, setRows, ] = React.useState<Array<ExpenseModel> | null>(defaultRows);
   const [ rowModesModel, setRowModesModel, ] = React.useState<GridRowModesModel>({});
@@ -39,26 +39,25 @@ export default function Expenses(props: {
   const editToolbar = (props: EditToolbarProps) => {
     const { setRows, setRowModesModel } = props;
   
-    if(!possibleCounteragents || possibleCounteragents.length === 0) {
+    if(!possibleCounterAgents || possibleCounterAgents.length === 0) {
       alert('There are not any possible contraagents in the system. You cannot create an expsense.');
       return null;
     }
 
-    const contraagent = possibleCounteragents[0];
+    const counterAgent = possibleCounterAgents[0];
     const handleAddNewClick = () => {
       const id = Math.round(Math.random() * 1000000);
       setRows((oldRows) => [...oldRows, 
         { 
           id,
-          counteragentId: parseInt(contraagent.value),
-          counteragent: contraagent.label,
+          counterAgent: { id: counterAgent.id, label: counterAgent.label, },
           amount: 0,
           description: '',
           dateCreated: new Date(),
       
           actionTypeApplied: undefined,
           isSavedInDatabase: false,
-        } as ExpenseModel
+        }
       ]);
       setRowModesModel((oldModel) => ({
         ...oldModel,
@@ -201,8 +200,7 @@ export default function Expenses(props: {
         || currentRow?.actionTypeApplied === Enums.ActionType.EDITED) {
           const newRowData: ExpenseModel = {
             ...currentRow,
-            counteragentId: newRow.counteragentId,
-            counteragent: currentRow.counteragent,
+            counterAgent: currentRow.counterAgent,
             amount: newRow.amount,
             description: newRow.description,
             dateCreated: newRow.dateCreated,
@@ -280,70 +278,96 @@ export default function Expenses(props: {
     {
         field: 'id',
         type: 'number',
+        valueGetter: (params) => {
+          const row = rows?.find(r => r.id === params.id);
+          if (!row) {
+            return null;
+          }
+          if (!row.isSavedInDatabase) {
+            return null;
+          }
+          return params.id;
+        }
     },
     {
-        field: 'counteragent',
-        headerName: 'counteragent',
-        type: 'singleSelect',
-        editable: true,
-        width: 300,
-        renderCell: (params: GridRenderCellParams) => {
-          const row = rows 
-            ? rows?.find((r) => r.id === params.id)
-            : undefined;
-  
-          if(!row) {
-            throw Error(`Row did not found.`);
-          }
-  
-          return (
-            <>
-              {row.counteragent}
-            </>
-          )
-        },
-        renderEditCell: (params: GridRenderEditCellParams) => {
-          const row = rows 
-            ? rows?.find((r) => r.id === params.id)
-            : undefined;
-  
-          if(!row) {
-            throw Error(`Row did not found.`);
-          }
-  
-          return (
-            <Autocomplete
-              options={
-                possibleCounteragents
-                  ? possibleCounteragents.map((counteragent) => {
-                    return {
-                          rowId: params.id,
-                          value: counteragent.value, 
-                          label: counteragent.label, 
-                        };
-                    })
-                  : []
-              }       
-              sx={{ width: 300 }}
-              renderInput={(params: any) => <TextField {...params} 
-                label={ItemTypes.COUNTERAGENT} />}
-              onChange={onChange}
-              value={
-                row.counteragentId && row.counteragent
-                  ? {
-                      rowId: params.id,
-                      value: row.counteragentId.toString(),
-                      label: row.counteragent,
-                    }
-                  : {
-                      rowId: params.id,
-                      value: '',
-                      label: '',
-                    }
-              }
-            />
-          )
+      field: 'counterAgent',
+      headerName: 'Counteragent',
+      editable: true,
+      width: 300,
+      renderCell: (params: GridRenderCellParams<ExpenseModel>) => {
+        const row = rows?.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
         }
+
+        return (
+          <>
+            {
+              row.counterAgent 
+                ? row.counterAgent.label
+                : ''
+            }
+          </>
+        );
+      },
+      renderEditCell: (params: GridRenderEditCellParams<ExpenseModel>) => {
+        const row = rows?.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return (
+          <Autocomplete
+            // freeSolo
+            options={
+              possibleCounterAgents
+                ? possibleCounterAgents
+                : []
+            }
+            renderInput={(params) => 
+              <TextField {...params}/>
+            }
+            onChange={(e, value: any) => {
+              setRows((previousRowsModel) => {
+                if(!previousRowsModel) {
+                  return [];
+                }
+
+                return previousRowsModel.map((row: ExpenseModel) => {
+                  if(row.id === params.row.id) {
+                    return {
+                      ...row, 
+                      counterAgent: value
+                        ? typeof value === 'string'
+                          ? { id: value, label: value }
+                          : value
+                        : undefined
+                    };
+                  } else {
+                    return row;
+                  }
+                });
+              });
+            }}
+            value={row.counterAgent}
+            sx={{
+              width: 300,
+            }}
+          />
+        );
+      },
+      valueGetter: (params: GridValueGetterParams<ExpenseModel>) => {
+        if(!rows) {
+          return;
+        }
+
+        const row = rows.find((r) => r.id === params.row.id);
+        if(!row) {
+          return;
+        }
+
+        return row.counterAgent;
+      },
     },
     {
         field: 'amount',

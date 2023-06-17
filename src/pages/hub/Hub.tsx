@@ -4,47 +4,14 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import Bets from '../../components/Bets/Bets';
-import { BetModel, ExpenseModel, ISelectionsResult, StatisticItemModel } from '../../models';
-import { getBetStatistics, getCompletedBets, getCounteragents, getCurrencies, getExpenses, getMarkets, 
+import { BetModel, ExpenseModel, IDropdownValue, ISelectionsResult, StatisticItemModel } from '../../models';
+import { getBetStatistics, getCompletedBets, getCounterAgents, getCurrencies, getExpenses, getMarkets, 
   getPendingBets, getSports, getTournaments } from '../../api';
-import { Bet, Currency, Expense, Statistics } from '../../database-models';
-import { StatisticType } from '../../models/enums';
+import { Currency, Expense, Statistics } from '../../database-models';
+import { StatisticType, } from '../../models/enums';
 import { DataGridPro, GridColDef } from '@mui/x-data-grid-pro';
 import Expenses from '../../components/Expenses/Expenses';
-
-
-const betToBetModelMapper = (bet: Bet) => {
-  return {
-    id: bet.id,
-    dateCreated: new Date(bet.dateCreated),
-    betStatus: bet.betStatus,
-    winStatus: bet.winStatus,
-    stake: bet.stake,
-    counteragentId: bet.counteragentId,
-    counteragent: bet.counteragent
-      ? bet.counteragent.name
-      : '',
-    sport:	bet.sport,
-    liveStatus:	bet.liveStatus, 
-    psLimit: bet.psLimit,
-    market: bet.market,
-    tournament: bet.tournament,
-    selection: bet.selection,
-    amountBGN: bet.amountBGN,
-    amountEUR: bet.amountEUR,
-    amountUSD: bet.amountUSD,
-    amountGBP: bet.amountGBP,
-    odd: bet.odd,
-    dateFinished: bet.dateFinished
-      ? new Date(bet.dateFinished)
-      : null,
-    profits: bet.profits,
-    notes: bet.notes,
-
-    actionTypeApplied: undefined,
-    isSavedInDatabase: true,
-  } as BetModel;
-};
+import { betToBetModelMapper } from '../../utils';
 
 export default function Hub() {
   const [ isLoading, setIsLoading, ] = React.useState<boolean>(false);
@@ -60,15 +27,16 @@ export default function Hub() {
   const [ completedRows, setCompletedRows] = React.useState<Array<BetModel> | undefined>(undefined);
   const [ filteredPendingRows, setFilteredPendingRows] = React.useState<Array<BetModel> | undefined>(undefined);
   const [ filteredCompletedRows, setFilteredCompletedRows] = React.useState<Array<BetModel> | undefined>(undefined);
-  const [ possibleCounteragents, setCounteragents ] = 
-    React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
+  const [ possibleCounterAgents, setCounterAgents ] = 
+    React.useState<Array<IDropdownValue> | undefined>(undefined);
   const [ possibleSports, setSports ] = 
-    React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
+    React.useState<Array<IDropdownValue> | undefined>(undefined);
   const [ possibleTournaments, setTournaments ] = 
-    React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
+    React.useState<Array<IDropdownValue> | undefined>(undefined);
   const [ possibleMarkets, setMarkets ] =
-    React.useState<Array<{ value: string; label: string; }> | undefined>(undefined);
-  const [ possibleSelections, setSelections ] = React.useState<ISelectionsResult | undefined>(undefined);
+    React.useState<Array<IDropdownValue> | undefined>(undefined);
+  const [ possibleSelections, setSelections ] = 
+    React.useState<ISelectionsResult | undefined>(undefined);
   const [ expensesRows, setExpensesRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
 
   useEffect(() => {
@@ -78,7 +46,7 @@ export default function Hub() {
         let currencies: Array<Currency> | undefined = await getCurrencies();
         let pendingBets: Array<BetModel> = (await getPendingBets())!.map(betToBetModelMapper);
         let completedBets: Array<BetModel> = (await getCompletedBets())!.map(betToBetModelMapper);
-        const getCounteragentsResult = await getCounteragents();
+        const getCounteragentsResult = await getCounterAgents();
         // const getSelectionsResult = await getSelections();
         const getSelectionsResult = {
           '1': [
@@ -133,45 +101,45 @@ export default function Hub() {
             && b.dateFinished.getDate() === now.getDate()
         }));
 
-        const counterAgents: Array<{ value: string; label: string; }> | undefined = 
+        const counterAgents: Array<IDropdownValue> | undefined = 
           getCounteragentsResult
-            ? getCounteragentsResult.map((counteragent) => {
+            ? getCounteragentsResult.map((counterAgent: any) => {
                 return {
-                  value: counteragent.id.toString(),
-                  label: counteragent.name,
+                  id: counterAgent.id.toString(),
+                  label: counterAgent.name,
                 };
               })
             : [];
 
-        setCounteragents(counterAgents);
+        setCounterAgents(counterAgents);
 
-        const sports: Array<{ value: string; label: string; }> | undefined =
+        const sports: Array<IDropdownValue> | undefined =
           getSportsResult
               ? getSportsResult.map((sport) => {
                   return {
-                    value: sport,
+                    id: sport,
                     label: sport,
                   };
                 })
               : [];
         setSports(sports);
 
-        const markets: Array<{ value: string; label: string; }> | undefined =
+        const markets: Array<IDropdownValue> | undefined =
           getMarketsResult
               ? getMarketsResult.map((market) => {
                   return {
-                    value: market,
+                    id: market,
                     label: market,
                   };
                 })
               : [];
         setMarkets(markets);
 
-        const tournaments: Array<{ value: string; label: string; }> | undefined =
+        const tournaments: Array<IDropdownValue> | undefined =
           getTournamentsResult
               ? getTournamentsResult.map((tournament) => {
                   return {
-                    value: tournament,
+                    id: tournament,
                     label: tournament,
                   };
                 })
@@ -182,11 +150,11 @@ export default function Hub() {
                 ? getAllExpenses.map((expense) => {
                     return {
                       id: expense.id,
-                      counteragentId: expense.counteragentId
-                        ? expense.counteragentId
-                        : undefined,
-                      counteragent: expense.counteragent
-                        ? expense.counteragent.name
+                      counterAgent: expense.counteragent
+                        ? {
+                            id: expense.counteragent.id.toString(),
+                            label: expense.counteragent.name
+                          }
                         : undefined,
                       amount: expense.amount,
                       description: expense.description,
@@ -369,28 +337,30 @@ export default function Hub() {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DateCalendar onChange={selectedDateFn}/>
       </LocalizationProvider>
-      <RadioGroup
-        aria-labelledby="demo-controlled-radio-buttons-group"
-        name="controlled-radio-buttons-group"
-        value={statisticsType}
-        onChange={(event) => {
-          const value: string = (event.target as HTMLInputElement).value;
-          setStatisticsType(value === 'Flat' 
-            ? StatisticType.Flat
-            : StatisticType.Real);
-        }}
-      >
-        <FormControlLabel value="Flat" control={<Radio />} label="Flat" />
-        <FormControlLabel value="Real" control={<Radio />} label="Real" />
-      </RadioGroup>
-      <Typography variant='h4'>Statistics</Typography>
       {
         currentStatistcs
           ? (
-              <DataGridPro
-                columns={statisticsColumns}
-                rows={currentStatistcs}
-              />
+              <Paper>
+                <Typography variant='h4'>Statistics</Typography>
+                <RadioGroup
+                  aria-labelledby="demo-controlled-radio-buttons-group"
+                  name="controlled-radio-buttons-group"
+                  value={statisticsType}
+                  onChange={(event) => {
+                    const value: string = (event.target as HTMLInputElement).value;
+                    setStatisticsType(value === 'Flat' 
+                      ? StatisticType.Flat
+                      : StatisticType.Real);
+                  }}
+                >
+                  <FormControlLabel value="Flat" control={<Radio />} label="Flat" />
+                  <FormControlLabel value="Real" control={<Radio />} label="Real" />
+                </RadioGroup>
+                <DataGridPro
+                  columns={statisticsColumns}
+                  rows={currentStatistcs}
+                />
+              </Paper>
             )
           : null
       }
@@ -404,7 +374,7 @@ export default function Hub() {
                 setIsLoading={setIsLoading} 
                 defaultRows={filteredPendingRows}
                 currencies={currencies}
-                possibleCounteragents={possibleCounteragents}
+                possibleCounteragents={possibleCounterAgents}
                 possibleSports={possibleSports}
                 possibleTournaments={possibleTournaments}
                 possibleMarkets={possibleMarkets}
@@ -424,7 +394,7 @@ export default function Hub() {
                 setIsLoading={setIsLoading}
                 defaultRows={filteredCompletedRows}
                 currencies={currencies}
-                possibleCounteragents={possibleCounteragents}
+                possibleCounteragents={possibleCounterAgents}
                 possibleSports={possibleSports}
                 possibleTournaments={possibleTournaments}
                 possibleMarkets={possibleMarkets}
@@ -442,7 +412,7 @@ export default function Hub() {
                 isRead={false}
                 setIsLoading={setIsLoading}
                 defaultRows={expensesRows}
-                possibleCounteragents={possibleCounteragents}
+                possibleCounterAgents={possibleCounterAgents}
               />
             )
           : null
