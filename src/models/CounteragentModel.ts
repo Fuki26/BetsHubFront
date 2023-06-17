@@ -1,17 +1,14 @@
+import { IDropdownValue } from '.';
 import { ActionType, } from './enums';
 
 export type CounteragentModel = {
     id: number | null;
     name: string;
-    counteragentCategoryId: number; 
-    counteragentCategory: string; 
-    // usedMinRate: number; 
-    // usedMaxRate: number; 
+    counteragentCategory?: IDropdownValue;
+    user?: IDropdownValue;
     maxRate: number;
     dateCreated: Date;
     dateChanged: Date;
-    userId: string;
-    user: string;
 
     actionTypeApplied?: ActionType;
     isSavedInDatabase: boolean;
