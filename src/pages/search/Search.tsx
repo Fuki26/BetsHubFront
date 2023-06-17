@@ -875,6 +875,7 @@ export default function Search() {
         filteredRows
           ? (
               <Bets
+                arePengindBets={false}
                 isRead={true} 
                 selectBetIdFn={selectBetId}
                 setIsLoading={setIsLoading} 
