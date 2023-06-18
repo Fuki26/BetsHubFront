@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect, } from 'react';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route, Routes} from 'react-router-dom';
 import { styled, } from '@mui/material/styles';
 import { ToastContainer, } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -12,59 +12,59 @@ import Search from './pages/search/Search';
 import Authentication from './pages/authentication/Authentication';
 import RequireAuth from './contexts/providers/RequireAuthProvider';
 import React from 'react';
+import useSession from './hooks/useSession';
 
+// const router = createBrowserRouter([
+//   {
+//     path: '/login',
+//     element: <Authentication />,
+//   },
+//   {
+//     path: '/',
+//     element: (
+//       <RequireAuth>
+//         <Hub />
+//       </RequireAuth>
+//     ),
+//   },
+//   {
+//     path: '/search',
+//     element: (
+//       <RequireAuth>
+//         <Search />
+//       </RequireAuth>
+//     ),
+//   },
+//   {
+//     path: '/counteragents',
+//     element: (
+//       <RequireAuth>
+//         <Counteragents />
+//       </RequireAuth>
+//     ),
+//   },
+//   {
+//     path: '/currency',
+//     element: (
+//       <RequireAuth>
+//         <Currencies />
+//       </RequireAuth>
+//     ),
+//   },
+//   {
+//     path: '/users',
+//     element: (
+//       <RequireAuth>
+//         <Users />
+//       </RequireAuth>
+//     ),
+//   },
+// ]);
 
-
-const router = createBrowserRouter([
-  {
-    path: '/login',
-    element: <Authentication />,
-  },
-  {
-    path: '/',
-    element: (
-      <RequireAuth>
-        <Hub />
-      </RequireAuth>
-    ),
-  },
-  {
-    path: '/search',
-    element: (
-      <RequireAuth>
-        <Search />
-      </RequireAuth>
-    ),
-  },
-  {
-    path: '/counteragents',
-    element: (
-      <RequireAuth>
-        <Counteragents />
-      </RequireAuth>
-    ),
-  },
-  {
-    path: '/currency',
-    element: (
-      <RequireAuth>
-        <Currencies />
-      </RequireAuth>
-    ),
-  },
-  {
-    path: '/users',
-    element: (
-      <RequireAuth>
-        <Users />
-      </RequireAuth>
-    ),
-  },
-]);
 
 function App() {
   const [ isOpenSideBar, setIsOpenSideBar, ] = React.useState<boolean>();
-
+  useSession();
   const SIDE_NAV_WIDTH = 280;
   let LayoutRoot = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -104,17 +104,42 @@ function App() {
 
   return (
     <>
-      <PersistentDrawerLeft openSidebarCb={setIsOpenSideBar}/>
-      <LayoutRoot>
-        <LayoutContainer>
-          <div>
-            <header>
-              <RouterProvider router={router}/>
-            </header>
-            <ToastContainer />
-          </div>
-        </LayoutContainer>
-      </LayoutRoot>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<RequireAuth>
+            <Hub />
+          </RequireAuth>} />
+          <Route path="/login" element={<Authentication />} />
+          <Route path="/search" element={ (
+          <RequireAuth>
+            <Search />
+          </RequireAuth>
+        )} />
+          <Route path="/counteragents" element={(
+            <RequireAuth>
+              <Counteragents />
+            </RequireAuth>
+          )} />
+          <Route path="/currency" element={(
+            <RequireAuth>
+              <Currencies />
+            </RequireAuth>
+          )} />
+          <Route path="/users" element={(
+          <RequireAuth>
+            <Users />
+          </RequireAuth>
+        )} />
+        </Routes>
+        <PersistentDrawerLeft openSidebarCb={setIsOpenSideBar}/>
+          <LayoutRoot>
+            <LayoutContainer>
+              <div>
+                <ToastContainer />
+              </div>
+            </LayoutContainer>
+          </LayoutRoot>
+      </BrowserRouter>
     </>
   );
 }
