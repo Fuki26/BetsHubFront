@@ -29,7 +29,7 @@ const useSession = () => {
             window.removeEventListener('focus', windowFocusEventHandler);
             window.removeEventListener('visibilitychange', windowBlurEventHandler);
         }
-    }, []);
+    }, [alreadyFocused]);
 }
 
 export default useSession;
