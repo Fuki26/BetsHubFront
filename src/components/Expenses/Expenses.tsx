@@ -384,7 +384,7 @@ export default function Expenses(props: {
     },
     {
         field: 'amount',
-        headerName: 'amount',
+        headerName: 'AmountBGN',
         type: 'number',
         editable: true,
         width: 150,
