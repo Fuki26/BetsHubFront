@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { toast } from 'react-toastify';
+import { isMobile } from 'react-device-detect';
 import { DataGridPro, GridActionsCellItem, GridColDef,
   GridRenderCellParams,
   GridRenderEditCellParams,GridRowId, GridRowModel, GridRowModes, 
@@ -103,15 +104,17 @@ export default function Bets(props: {
       return rowModeData && rowModeData.mode === GridRowModes.Edit;
     });
 
-    return (
-      <GridToolbarContainer>
-        <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleAddNewClick}
-          disabled={isAnyRowInEditMode}
-        >
-          Create a bet
-        </Button>
-      </GridToolbarContainer>
-    );
+    return !isMobile
+      ? (
+          <GridToolbarContainer>
+            <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleAddNewClick}
+              disabled={isAnyRowInEditMode}
+            >
+              Create a bet
+            </Button>
+          </GridToolbarContainer>
+        )
+      : <></>;
   }
 
 
@@ -1074,48 +1077,61 @@ export default function Bets(props: {
           }
 
           return isInEditMode 
-          ? [
-                <GridActionsCellItem
-                  icon={<SaveIcon />}
-                  label='Save'
-                  onClick={handleSaveClick(params.id)}
-                />,
-                <GridActionsCellItem
-                  icon={<CancelIcon />}
-                  label='Cancel'
-                  className='textPrimary'
-                  onClick={handleCancelClick(params.id)}
-                  color='inherit'
-                />,
-            ]
-          : [
-              <GridActionsCellItem
-                icon={<EditIcon />}
-                label='Edit'
-                className='textPrimary'
-                onClick={handleEditClick(params.id)}
-                color='inherit'
-              />,
-              <GridActionsCellItem
-                icon={<HistoryIcon />}
-                label='Bet History'
-                className='textPrimary'
-                onClick={() => handleHistoryClick(params) as any}
-                color='inherit'
-              />,
-              <GridActionsCellItem
-                icon={<DeleteIcon />}
-                label='Delete'
-                onClick={handleClickOpenOnDeleteDialog(params.id)}
-                color='inherit'
-              />,
-              <GridActionsCellItem
-                icon={<AddIcon />}
-                label='Copy bet'
-                onClick={handleCopyBetClick(params.id)}
-                color='inherit'
-              />,
-            ]
+          ? !isMobile 
+              ? [
+                    <GridActionsCellItem
+                      icon={<SaveIcon />}
+                      label='Save'
+                      onClick={handleSaveClick(params.id)}
+                    />,
+                    <GridActionsCellItem
+                      icon={<CancelIcon />}
+                      label='Cancel'
+                      className='textPrimary'
+                      onClick={handleCancelClick(params.id)}
+                      color='inherit'
+                    />,
+                ]
+              : []
+          : !isMobile
+              ? 
+                [
+                  <GridActionsCellItem
+                    icon={<EditIcon />}
+                    label='Edit'
+                    className='textPrimary'
+                    onClick={handleEditClick(params.id)}
+                    color='inherit'
+                  />,
+                  <GridActionsCellItem
+                    icon={<HistoryIcon />}
+                    label='Bet History'
+                    className='textPrimary'
+                    onClick={() => handleHistoryClick(params) as any}
+                    color='inherit'
+                  />,
+                  <GridActionsCellItem
+                    icon={<DeleteIcon />}
+                    label='Delete'
+                    onClick={handleClickOpenOnDeleteDialog(params.id)}
+                    color='inherit'
+                  />,
+                  <GridActionsCellItem
+                    icon={<AddIcon />}
+                    label='Copy bet'
+                    onClick={handleCopyBetClick(params.id)}
+                    color='inherit'
+                  />,
+                ]
+              : [
+                  <GridActionsCellItem
+                    icon={<HistoryIcon />}
+                    label='Bet History'
+                    className='textPrimary'
+                    onClick={() => handleHistoryClick(params) as any}
+                    color='inherit'
+                  />,
+                ]
         }
       },
     }

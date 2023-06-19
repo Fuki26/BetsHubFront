@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { toast } from 'react-toastify';
+import { isMobile } from 'react-device-detect';
 import { DataGridPro, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
   GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams , } from '@mui/x-data-grid-pro';
 import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, Paper, TextField, } from '@mui/material';
@@ -9,8 +10,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
 import { EditToolbarProps, Enums, ExpenseModel, IDropdownValue, } from '../../models';
-// import { deleteExpense, } from '../../api';
-import { ItemTypes } from '../../models/enums';
 import { deleteExpense, upsertExpense } from '../../api';
 
 export default function Expenses(props: { 
@@ -65,13 +64,15 @@ export default function Expenses(props: {
       }));
     };
   
-    return (
-      <GridToolbarContainer>
-        <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleAddNewClick}>
-          Create an expense
-        </Button>
-      </GridToolbarContainer>
-    );
+    return !isMobile
+      ? (
+          <GridToolbarContainer>
+            <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleAddNewClick}>
+              Create an expense
+            </Button>
+          </GridToolbarContainer>
+        )
+      : <></>;
   }
 
 
@@ -402,51 +403,56 @@ export default function Expenses(props: {
         editable: false,
         width: 150,
     },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      type: 'actions',
-      width: 150,
-      cellClassName: 'actions',
-      getActions: (params) => {
-        const isInEditMode = rowModesModel[params.id]?.mode === GridRowModes.Edit;
-        if(isRead) {
-          return [];
-        } else {
-          return isInEditMode 
-          ? [
+  ];
+
+  if(!isMobile) {
+    columns.push(
+      {
+        field: 'actions',
+        headerName: 'Actions',
+        type: 'actions',
+        width: 150,
+        cellClassName: 'actions',
+        getActions: (params) => {
+          const isInEditMode = rowModesModel[params.id]?.mode === GridRowModes.Edit;
+          if(isRead) {
+            return [];
+          } else {
+            return isInEditMode 
+            ? [
+                  <GridActionsCellItem
+                    icon={<SaveIcon />}
+                    label='Save'
+                    onClick={handleSaveClick(params.id)}
+                  />,
+                  <GridActionsCellItem
+                    icon={<CancelIcon />}
+                    label='Cancel'
+                    className='textPrimary'
+                    onClick={handleCancelClick(params.id)}
+                    color='inherit'
+                  />,
+              ]
+            : [
                 <GridActionsCellItem
-                  icon={<SaveIcon />}
-                  label='Save'
-                  onClick={handleSaveClick(params.id)}
-                />,
-                <GridActionsCellItem
-                  icon={<CancelIcon />}
-                  label='Cancel'
+                  icon={<EditIcon />}
+                  label='Edit'
                   className='textPrimary'
-                  onClick={handleCancelClick(params.id)}
+                  onClick={handleEditClick(params.id)}
                   color='inherit'
                 />,
-            ]
-          : [
-              <GridActionsCellItem
-                icon={<EditIcon />}
-                label='Edit'
-                className='textPrimary'
-                onClick={handleEditClick(params.id)}
-                color='inherit'
-              />,
-              <GridActionsCellItem
-                icon={<DeleteIcon />}
-                label='Delete'
-                onClick={handleClickOpenOnDeleteDialog(params.id)}
-                color='inherit'
-              />,
-            ]
-        }
-      },
-    }
-  ];
+                <GridActionsCellItem
+                  icon={<DeleteIcon />}
+                  label='Delete'
+                  onClick={handleClickOpenOnDeleteDialog(params.id)}
+                  color='inherit'
+                />,
+              ]
+          }
+        },
+      }
+    );
+  }
 
   return (
     <Paper sx={{ padding: '5%', }}>
