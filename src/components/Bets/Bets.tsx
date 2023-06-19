@@ -1040,7 +1040,7 @@ export default function Bets(props: {
     },
     {
       field: 'profits',
-      headerName: 'Profits',
+      headerName: 'P/L',
       type: 'number',
       editable: false,
       width: 150,
