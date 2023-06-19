@@ -282,16 +282,16 @@ export default function Counteragents(props: {}) {
         if(!newRowData.name
           || !newRowData.counteragentCategory
           || !newRowData.user
-          || !newRowData.maxRate) {
-        setRowModesModel((previousRowModesModel) => {
-          return { ...previousRowModesModel, [currentRow.id!.toString()]: { mode: GridRowModes.Edit } }
-        });
-        toast(`Name, counteragent category, max rate and user should be specified!`, {
-          position: 'top-center',
-        });
-        
-        return;
-      }
+          || newRowData.maxRate === null) {
+          setRowModesModel((previousRowModesModel) => {
+            return { ...previousRowModesModel, [currentRow.id!.toString()]: { mode: GridRowModes.Edit } }
+          });
+          toast(`Name, counteragent category, max rate and user should be specified!`, {
+            position: 'top-center',
+          });
+          
+          return;
+        }
 
         setIsLoading(true);
         
