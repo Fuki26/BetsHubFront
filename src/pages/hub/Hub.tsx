@@ -334,9 +334,6 @@ export default function Hub() {
             )
           : null
       }
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DateCalendar onChange={selectedDateFn}/>
-      </LocalizationProvider>
       {
         currentStatistcs
           ? (
@@ -364,58 +361,74 @@ export default function Hub() {
             )
           : null
       }
-      <Typography variant='h4'>PENDING</Typography>
-      {
-        pendingRows
-          ? (
-              <Bets
-                arePengindBets={true}
-                isRead={false}
-                selectBetIdFn={selectBetId}
-                setIsLoading={setIsLoading} 
-                defaultRows={pendingRows}
-                currencies={currencies}
-                possibleCounteragents={possibleCounterAgents}
-                possibleSports={possibleSports}
-                possibleTournaments={possibleTournaments}
-                possibleMarkets={possibleMarkets}
-                allSelections={possibleSelections ? possibleSelections : {}}
-              />
-            )
-          : null
-      }
-
-      <Typography variant='h4'>COMPLETED</Typography>
-      {
-        filteredCompletedRows
-          ? (
-              <Bets
-                arePengindBets={false}
-                isRead={true} 
-                selectBetIdFn={selectBetId}
-                setIsLoading={setIsLoading}
-                defaultRows={filteredCompletedRows}
-                currencies={currencies}
-                possibleCounteragents={possibleCounterAgents}
-                possibleSports={possibleSports}
-                possibleTournaments={possibleTournaments}
-                possibleMarkets={possibleMarkets}
-                allSelections={possibleSelections ? possibleSelections : {}}
-              />
-            )
-          : null
-      }
-
-      <Typography variant='h4'>Expenses</Typography>
+      
+      <Paper style={{ display: 'flex', flexWrap: 'nowrap' }}>
+        <Paper>
+          <Paper style={{ paddingTop: '40%' }}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateCalendar onChange={selectedDateFn}/>
+            </LocalizationProvider>
+          </Paper>
+        </Paper>
+        <Paper>
+          {
+            pendingRows
+              ? (
+                  <>
+                    <Typography variant='h4'>PENDING</Typography>
+                    <Bets
+                      arePengindBets={true}
+                      isRead={false}
+                      selectBetIdFn={selectBetId}
+                      setIsLoading={setIsLoading} 
+                      defaultRows={pendingRows}
+                      currencies={currencies}
+                      possibleCounteragents={possibleCounterAgents}
+                      possibleSports={possibleSports}
+                      possibleTournaments={possibleTournaments}
+                      possibleMarkets={possibleMarkets}
+                      allSelections={possibleSelections ? possibleSelections : {}}
+                    />
+                  </> 
+                )
+              : null
+          }
+          {
+            filteredCompletedRows
+              ? (
+                  <>
+                    <Typography variant='h4'>COMPLETED</Typography>
+                    <Bets
+                      arePengindBets={false}
+                      isRead={true} 
+                      selectBetIdFn={selectBetId}
+                      setIsLoading={setIsLoading}
+                      defaultRows={filteredCompletedRows}
+                      currencies={currencies}
+                      possibleCounteragents={possibleCounterAgents}
+                      possibleSports={possibleSports}
+                      possibleTournaments={possibleTournaments}
+                      possibleMarkets={possibleMarkets}
+                      allSelections={possibleSelections ? possibleSelections : {}}
+                    />
+                  </>
+                )
+              : null
+          }
+        </Paper>
+      </Paper>
       {
         expensesRows
           ? (
-              <Expenses 
-                isRead={false}
-                setIsLoading={setIsLoading}
-                defaultRows={expensesRows}
-                possibleCounterAgents={possibleCounterAgents}
-              />
+              <>
+                <Typography variant='h4'>Expenses</Typography>
+                <Expenses 
+                  isRead={false}
+                  setIsLoading={setIsLoading}
+                  defaultRows={expensesRows}
+                  possibleCounterAgents={possibleCounterAgents}
+                />
+              </>
             )
           : null
       }
