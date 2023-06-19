@@ -208,7 +208,7 @@ export default function Expenses(props: {
           };
 
           if(!newRowData.counterAgent
-              || !newRowData.amount
+              || newRowData.amount === null
               || !newRowData.description) {
             setRowModesModel((previousRowModesModel) => {
               return { ...previousRowModesModel, [currentRow.id]: { mode: GridRowModes.Edit } }
