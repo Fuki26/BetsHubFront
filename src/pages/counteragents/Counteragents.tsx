@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { toast } from 'react-toastify';
+import { isMobile } from 'react-device-detect';
 import { DataGridPro, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
   GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams , } from '@mui/x-data-grid-pro';
 import { Autocomplete, Button, CircularProgress, Dialog, DialogActions, DialogTitle, Paper, TextField, Typography, } from '@mui/material';
@@ -9,7 +10,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
 import { CounteragentModel, EditToolbarProps, Enums, IDropdownValue, } from '../../models';
-import { ItemTypes } from '../../models/enums';
 import { deleteCounteragent, getCounterAgents, getCounterAgentsCategories, getUsers, upsertCounteragent, } from '../../api';
 import { Counteragent, CounterAgentCategory, User } from '../../database-models';
 
@@ -129,13 +129,15 @@ export default function Counteragents(props: {}) {
       }));
     };
   
-    return (
-      <GridToolbarContainer>
-        <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleAddNewClick}>
-          Create a counteragent
-        </Button>
-      </GridToolbarContainer>
-    );
+    return !isMobile
+      ? (
+          <GridToolbarContainer>
+            <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleAddNewClick}>
+              Create a counteragent
+            </Button>
+          </GridToolbarContainer>
+        )
+      : <></>;
   }
 
 
@@ -280,16 +282,16 @@ export default function Counteragents(props: {}) {
         if(!newRowData.name
           || !newRowData.counteragentCategory
           || !newRowData.user
-          || !newRowData.maxRate) {
-        setRowModesModel((previousRowModesModel) => {
-          return { ...previousRowModesModel, [currentRow.id!.toString()]: { mode: GridRowModes.Edit } }
-        });
-        toast(`Name, counteragent category, max rate and user should be specified!`, {
-          position: 'top-center',
-        });
-        
-        return;
-      }
+          || newRowData.maxRate === null) {
+          setRowModesModel((previousRowModesModel) => {
+            return { ...previousRowModesModel, [currentRow.id!.toString()]: { mode: GridRowModes.Edit } }
+          });
+          toast(`Name, counteragent category, max rate and user should be specified!`, {
+            position: 'top-center',
+          });
+          
+          return;
+        }
 
         setIsLoading(true);
         
@@ -522,47 +524,52 @@ export default function Counteragents(props: {}) {
       editable: false,
       width: 150,
     },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      type: 'actions',
-      width: 150,
-      cellClassName: 'actions',
-      getActions: (params) => {
-        const isInEditMode = rowModesModel[params.id]?.mode === GridRowModes.Edit;
-        return isInEditMode 
-          ? [
+  ];
+
+  if(!isMobile) {
+    columns.push(
+      {
+        field: 'actions',
+        headerName: 'Actions',
+        type: 'actions',
+        width: 150,
+        cellClassName: 'actions',
+        getActions: (params) => {
+          const isInEditMode = rowModesModel[params.id]?.mode === GridRowModes.Edit;
+          return isInEditMode 
+            ? [
+                  <GridActionsCellItem
+                    icon={<SaveIcon />}
+                    label='Save'
+                    onClick={handleSaveClick(params.id)}
+                  />,
+                  <GridActionsCellItem
+                    icon={<CancelIcon />}
+                    label='Cancel'
+                    className='textPrimary'
+                    onClick={handleCancelClick(params.id)}
+                    color='inherit'
+                  />,
+              ]
+            : [
                 <GridActionsCellItem
-                  icon={<SaveIcon />}
-                  label='Save'
-                  onClick={handleSaveClick(params.id)}
-                />,
-                <GridActionsCellItem
-                  icon={<CancelIcon />}
-                  label='Cancel'
+                  icon={<EditIcon />}
+                  label='Edit'
                   className='textPrimary'
-                  onClick={handleCancelClick(params.id)}
+                  onClick={handleEditClick(params.id)}
                   color='inherit'
                 />,
-            ]
-          : [
-              <GridActionsCellItem
-                icon={<EditIcon />}
-                label='Edit'
-                className='textPrimary'
-                onClick={handleEditClick(params.id)}
-                color='inherit'
-              />,
-              <GridActionsCellItem
-                icon={<DeleteIcon />}
-                label='Delete'
-                onClick={handleClickOpenOnDeleteDialog(params.id)}
-                color='inherit'
-              />,
-            ]
-      },
-    }
-  ];
+                <GridActionsCellItem
+                  icon={<DeleteIcon />}
+                  label='Delete'
+                  onClick={handleClickOpenOnDeleteDialog(params.id)}
+                  color='inherit'
+                />,
+              ]
+        },
+      }
+    );
+  }
 
   return (
     <Paper sx={{ padding: '5%', }}>
