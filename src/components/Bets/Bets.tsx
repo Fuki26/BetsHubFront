@@ -19,7 +19,22 @@ import { BetStatus, WinStatus, LiveStatus } from '../../models/enums';
 import { Currency } from '../../database-models';
 import Modal from '../UI/Modal';
 
-export default function Bets(props: { 
+const getAbbreviations = (currencies: Currency[] | undefined) => {
+  if (!currencies) return [];
+  return currencies.map(cur => cur.abbreviation);
+}
+const insertCurrenciesIntoColumns = (columns: any, abbreviations: string[]) => {
+  const idx = columns.findIndex((c: any) => c.field === 'psLimit');
+  const currencyColumns = abbreviations.map((a) => ({
+      field: `amount${a}`,
+      headerName: a,
+      type: 'number',
+      editable: true,
+      width: 150,
+  }));
+  columns.splice(idx + 1, 0, ...currencyColumns);
+}
+function Bets(props: { 
   isRead: boolean;
   arePengindBets: boolean;
   selectBetIdFn: (id: number) => void;
@@ -47,6 +62,8 @@ export default function Bets(props: {
   const [ deleteDialogIsOpened, setOpenDeleteDialog, ] = React.useState(false);
   const [showHistoryModal, setShowHistoryModal] = React.useState(false);
   const [history, setHistory] = React.useState(null);
+
+  const abbreviations = getAbbreviations(currencies);
 
   React.useEffect(() => {
     setRows((oldRows) => {
@@ -393,6 +410,35 @@ export default function Bets(props: {
 
   //#endregion Rows update handler
 
+  const handleChange = (e: any, value: any, params: any) => {
+    setRows((previousRowsModel) => {
+      return previousRowsModel.map((row: BetModel) => {
+        if(row.id === params.row.id) {
+          return {
+            ...row, 
+            betStatus: value
+              ? typeof value === 'string'
+                ? { id: value, label: value }
+                : value
+              : undefined
+          };
+        } else {
+          return row;
+        }
+      });
+    });
+  };
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    switch (event.key) {
+      case "Tab": {
+        const editableRow = document.querySelector('.MuiDataGrid-row--editable');
+        if (!editableRow) return;
+        (editableRow.childNodes[2] as HTMLElement).focus();
+        break;
+      }
+      default:
+    }
+  };
   let columns: Array<GridColDef> = [
     {
       field: 'id',
@@ -462,27 +508,12 @@ export default function Bets(props: {
               { id: '0', label: BetStatus[0], },
               { id: '1', label: BetStatus[1], },
             ]}
-            renderInput={(params) => 
-              <TextField {...params}/>
+            renderInput={(params) => {
+                params.inputProps.onKeyDown = handleKeyDown;
+                return <TextField {...params} />
+              }
             }
-            onChange={(e, value: any) => {
-              setRows((previousRowsModel) => {
-                return previousRowsModel.map((row: BetModel) => {
-                  if(row.id === params.row.id) {
-                    return {
-                      ...row, 
-                      betStatus: value
-                        ? typeof value === 'string'
-                          ? { id: value, label: value }
-                          : value
-                        : undefined
-                    };
-                  } else {
-                    return row;
-                  }
-                });
-              });
-            }}
+            onChange={(e, value) => handleChange(e, value, params)}
             value={row.betStatus}
             sx={{
               width: 300,
@@ -955,34 +986,34 @@ export default function Bets(props: {
       editable: true,
       width: 150,
     },
-    {
-      field: 'amountBGN',
-      headerName: 'BGN',
-      type: 'number',
-      editable: true,
-      width: 150,
-    },
-    {
-      field: 'amountEUR',
-      headerName: 'EUR',
-      type: 'number',
-      editable: true,
-      width: 150,
-    },
-    {
-      field: 'amountUSD',
-      headerName: 'USD',
-      type: 'number',
-      editable: true,
-      width: 150,
-    },
-    {
-      field: 'amountGBP',
-      headerName: 'GBP',
-      type: 'number',
-      editable: true,
-      width: 150,
-    },
+    // {
+    //   field: 'amountBGN',
+    //   headerName: 'BGN',
+    //   type: 'number',
+    //   editable: true,
+    //   width: 150,
+    // },
+    // {
+    //   field: 'amountEUR',
+    //   headerName: 'EUR',
+    //   type: 'number',
+    //   editable: true,
+    //   width: 150,
+    // },
+    // {
+    //   field: 'amountUSD',
+    //   headerName: 'USD',
+    //   type: 'number',
+    //   editable: true,
+    //   width: 150,
+    // },
+    // {
+    //   field: 'amountGBP',
+    //   headerName: 'GBP',
+    //   type: 'number',
+    //   editable: true,
+    //   width: 150,
+    // },
     {
       field: 'totalAmount',
       headerName: 'Total amount',
@@ -1146,6 +1177,8 @@ export default function Bets(props: {
     columns = columns.filter(c => c.headerName !== 'Profits');
   }
 
+  insertCurrenciesIntoColumns(columns, abbreviations);
+
   return (
     <Paper sx={{ padding: '5%'}}>
       {
@@ -1203,4 +1236,6 @@ export default function Bets(props: {
     </Paper>
   );
 }
+
+export default React.memo(Bets);
   
