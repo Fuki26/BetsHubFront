@@ -1,5 +1,10 @@
 import { WinStatus } from '../models/enums';
-import { Counteragent, } from './CounterAgent';
+import { Counteragent } from './CounterAgent';
+
+export type CurrencyAmount = {
+  abbreviation: string;
+  amount: number;
+};
 
 export type Bet = {
     id: number;
@@ -15,10 +20,7 @@ export type Bet = {
     market?: string;
     tournament?: string;
     selection?: string;
-    amountBGN?: number;
-    amountEUR?: number;
-    amountUSD?: number;
-    amountGBP?: number;
+    currencyAmounts?: CurrencyAmount[]; 
     odd?: number;
     dateFinished?: string;
     profits?: number;

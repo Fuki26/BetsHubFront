@@ -205,21 +205,18 @@ const upsertBet = async (bet: BetModel) => {
             Market: bet.market ? bet.market.id : '',
             Stake: bet.stake ? bet.stake : 0,
             PSLimit: bet.psLimit ? bet.psLimit : 0, 
-            AmountBGN: bet.amountBGN ? bet.amountBGN : 0,
-            AmountEUR: bet.amountEUR ? bet.amountEUR : 0,
-            AmountUSD: bet.amountUSD ? bet.amountUSD : 0,
-            AmountGBP: bet.amountGBP ? bet.amountGBP : 0,
+            CurrencyAmounts: JSON.stringify(bet.amounts), // Convert to JSON
             Odd: bet.odd ? bet.odd : 0,
             DateFinished: bet.dateFinished ? bet.dateFinished.toISOString().split('T')[0] : null,
             Profits: bet.profits ? bet.profits : 0,
             Notes: bet.notes ? bet.notes : '',
-
             Selection: bet.selection ? bet.selection : '',
         };
         const id = bet.isSavedInDatabase
             ? `Id=${obj.Id}&`
             : '';
-        return await axios.post(`${domain}/UpsertBets?${id}BetStatus=${obj.BetStatus}&WinStatus=${obj.WinStatus}&Stake=${obj.Stake}&CounteragentId=${obj.CounteragentId}&Sport=${obj.Sport}&LiveStatus=${obj.LiveStatus}&PSLimit=${obj.PSLimit}&Market=${obj.Market}&Tournament=${obj.Tournament}&Selection=${obj.Selection}&AmountBGN=${obj.AmountBGN}&AmountEUR=${obj.AmountEUR}&AmountUSD=${obj.AmountUSD}&AmountGBP=${obj.AmountGBP}&Odd=${obj.Odd}&Notes=${obj.Notes}`);
+        //TODO: Edit on bet doesn't work.
+        return await axios.post(`${domain}/UpsertBets?${id}BetStatus=${obj.BetStatus}&WinStatus=${obj.WinStatus}&Stake=${obj.Stake}&CounteragentId=${obj.CounteragentId}&Sport=${obj.Sport}&LiveStatus=${obj.LiveStatus}&PSLimit=${obj.PSLimit}&Market=${obj.Market}&Tournament=${obj.Tournament}&Selection=${obj.Selection}&CurrencyAmounts=${encodeURIComponent(obj.CurrencyAmounts)}&Odd=${obj.Odd}&Notes=${obj.Notes}`);
     } catch(e) {
         alert(JSON.stringify(e));
     }

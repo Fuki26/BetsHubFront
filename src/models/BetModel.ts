@@ -15,10 +15,7 @@ export type BetModel = {
     market?: IDropdownValue;
     tournament?: IDropdownValue;
     selection?: IDropdownValue;
-    amountBGN?: number;
-    amountEUR?: number;
-    amountUSD?: number;
-    amountGBP?: number;
+    amounts?: Record<string, number>; 
     totalAmount?: number;
     odd?: number;
     dateFinished?: Date;

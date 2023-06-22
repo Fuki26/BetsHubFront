@@ -143,10 +143,7 @@ function Bets(props: {
           market: undefined,
           tournament: undefined,
           selection: undefined,
-          amountBGN: undefined,
-          amountEUR: undefined,
-          amountUSD: undefined,
-          amountGBP: undefined,
+          amounts: undefined,
           totalAmount: undefined,
           odd: undefined,
           dateFinished: undefined,
@@ -345,10 +342,7 @@ function Bets(props: {
           market: clickedRow.market,
           tournament: clickedRow.tournament,
           selection: clickedRow.selection,
-          amountBGN: undefined,
-          amountEUR: undefined,
-          amountUSD: undefined,
-          amountGBP: undefined,
+          amounts: clickedRow.amounts,
           totalAmount: undefined,
           odd: clickedRow.odd,
           dateFinished: undefined,
@@ -404,10 +398,7 @@ function Bets(props: {
 
         stake: newRow.stake,
         psLimit: newRow.psLimit,
-        amountBGN: newRow.amountBGN,
-        amountEUR: newRow.amountEUR,
-        amountUSD: newRow.amountUSD,
-        amountGBP: newRow.amountGBP,
+        // currencyAmounts: <herechatgpt>., //TODO: Edit need to be synchronised with new endpoint
         totalAmount: newRow.totalAmount,
         odd: newRow.odd,
         dateFinished: new Date(),
@@ -563,7 +554,6 @@ function Bets(props: {
 
         return (
           <Autocomplete
-            // freeSolo
             options={[
               { id: "0", label: BetStatus[0] },
               { id: "1", label: BetStatus[1] },
@@ -610,7 +600,6 @@ function Bets(props: {
 
         return (
           <Autocomplete
-            // freeSolo
             options={[
               { id: "0", label: WinStatus[0] },
               { id: "1", label: WinStatus[1] },
@@ -675,7 +664,6 @@ function Bets(props: {
 
         return (
           <Autocomplete
-            // freeSolo
             options={[
               { id: "0", label: LiveStatus[0] },
               { id: "1", label: LiveStatus[1] },
@@ -738,7 +726,6 @@ function Bets(props: {
 
         return (
           <Autocomplete
-            // freeSolo
             options={possibleCounteragents ? possibleCounteragents : []}
             renderInput={(params) => <TextField {...params} />}
             onChange={(e, value: any) => {
@@ -969,34 +956,6 @@ function Bets(props: {
       editable: true,
       width: 150,
     },
-    // {
-    //   field: 'amountBGN',
-    //   headerName: 'BGN',
-    //   type: 'number',
-    //   editable: true,
-    //   width: 150,
-    // },
-    // {
-    //   field: 'amountEUR',
-    //   headerName: 'EUR',
-    //   type: 'number',
-    //   editable: true,
-    //   width: 150,
-    // },
-    // {
-    //   field: 'amountUSD',
-    //   headerName: 'USD',
-    //   type: 'number',
-    //   editable: true,
-    //   width: 150,
-    // },
-    // {
-    //   field: 'amountGBP',
-    //   headerName: 'GBP',
-    //   type: 'number',
-    //   editable: true,
-    //   width: 150,
-    // },
     {
       field: "totalAmount",
       headerName: "Total amount",
@@ -1008,30 +967,7 @@ function Bets(props: {
           return 0;
         }
 
-        const eurCurrency = currencies.find((c) => c.abbreviation === "EUR");
-        const usdCurrency = currencies.find((c) => c.abbreviation === "USD");
-        const gbpCurrency = currencies.find((c) => c.abbreviation === "GBP");
-        if (!eurCurrency || !usdCurrency || !gbpCurrency) {
-          return 0;
-        }
-
-        let totalAmount = 0;
-        totalAmount += !isNaN(params.row.amountBGN)
-          ? parseInt(params.row.amountBGN)
-          : 0;
-
-        totalAmount += !isNaN(params.row.amountEUR)
-          ? parseInt(params.row.amountEUR) * eurCurrency.conversionRateToBGN
-          : 0;
-
-        totalAmount += !isNaN(params.row.amountUSD)
-          ? parseInt(params.row.amountUSD) * usdCurrency.conversionRateToBGN
-          : 0;
-
-        totalAmount += !isNaN(params.row.amountGBP)
-          ? parseInt(params.row.amountGBP) * gbpCurrency.conversionRateToBGN
-          : 0;
-
+        const totalAmount = !isNaN(params.row.totalAmount);
         return params.row && params.row.totalAmount
           ? params.row.totalAmount
           : totalAmount;
