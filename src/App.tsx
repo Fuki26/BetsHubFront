@@ -12,7 +12,6 @@ import Search from "./pages/search/Search";
 import Authentication from "./pages/authentication/Authentication";
 import RequireAuth from "./contexts/providers/RequireAuthProvider";
 import useSession from "./hooks/useSession";
-import { GoogleOAuthProvider } from '@react-oauth/google';
 import './App.css'
 
 const LayoutRoot = styled("div")<{ isOpenSideBar: boolean | undefined }>(
@@ -37,7 +36,6 @@ function App() {
 
   return (
     <>
-    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID as string}>
       <BrowserRouter>
         <Routes>
           <Route
@@ -116,7 +114,6 @@ function App() {
         </Routes>
         <PersistentDrawerLeft openSidebarCb={setIsOpenSideBar} />
       </BrowserRouter>
-      </GoogleOAuthProvider>
     </>
   );
 }
