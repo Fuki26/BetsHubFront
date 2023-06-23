@@ -192,6 +192,8 @@ const deleteCurrency = async (props: { id: number; }) => {
 
 const upsertBet = async (bet: BetModel) => {
     try {        
+        const amounts = Object.fromEntries(Object.entries(bet).filter(([key, value]) => key.startsWith('amount')));
+
         const obj = {
             Id: bet.isSavedInDatabase
                 ? bet.id
@@ -205,7 +207,7 @@ const upsertBet = async (bet: BetModel) => {
             Market: bet.market ? bet.market.id : '',
             Stake: bet.stake ? bet.stake : 0,
             PSLimit: bet.psLimit ? bet.psLimit : 0, 
-            CurrencyAmounts: JSON.stringify(bet.amounts), // Convert to JSON
+            CurrencyAmounts: amounts,
             Odd: bet.odd ? bet.odd : 0,
             DateFinished: bet.dateFinished ? bet.dateFinished.toISOString().split('T')[0] : null,
             Profits: bet.profits ? bet.profits : 0,
@@ -215,8 +217,12 @@ const upsertBet = async (bet: BetModel) => {
         const id = bet.isSavedInDatabase
             ? `Id=${obj.Id}&`
             : '';
-        //TODO: Edit on bet doesn't work.
-        return await axios.post(`${domain}/UpsertBets?${id}BetStatus=${obj.BetStatus}&WinStatus=${obj.WinStatus}&Stake=${obj.Stake}&CounteragentId=${obj.CounteragentId}&Sport=${obj.Sport}&LiveStatus=${obj.LiveStatus}&PSLimit=${obj.PSLimit}&Market=${obj.Market}&Tournament=${obj.Tournament}&Selection=${obj.Selection}&CurrencyAmounts=${encodeURIComponent(obj.CurrencyAmounts)}&Odd=${obj.Odd}&Notes=${obj.Notes}`);
+            
+        return await axios.post(`${domain}/UpsertBets`, obj, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
     } catch(e) {
         alert(JSON.stringify(e));
     }

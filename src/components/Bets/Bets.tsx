@@ -385,6 +385,7 @@ function Bets(props: {
       currentRow.actionTypeApplied === Enums.ActionType.SAVED ||
       currentRow.actionTypeApplied === Enums.ActionType.EDITED
     ) {
+      const amounts = Object.fromEntries(Object.entries(newRow).filter(([key, value]) => key.startsWith('amount')));
       const newRowData: BetModel = {
         ...currentRow,
         dateCreated: newRow.dateCreated,
@@ -398,7 +399,7 @@ function Bets(props: {
 
         stake: newRow.stake,
         psLimit: newRow.psLimit,
-        // currencyAmounts: <herechatgpt>., //TODO: Edit need to be synchronised with new endpoint
+        ...amounts,
         totalAmount: newRow.totalAmount,
         odd: newRow.odd,
         dateFinished: new Date(),
@@ -407,7 +408,7 @@ function Bets(props: {
 
         selection: newRow.selection,
       };
-
+      debugger;
       setIsLoading(true);
 
       const rowData = await upsertBet(newRowData);
