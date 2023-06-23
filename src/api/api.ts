@@ -174,124 +174,121 @@ const deleteCounteragent = async (props: { id: number; }) => {
 }
 
 const deleteCurrency = async (props: { id: number; }) => {
-    try {
-        const { id, } = props;
-        const deleteCurrencyResult = await axios.delete(`${domain}/DeleteCurrency`, {
-            data: id,
-            headers: {
-                'Accept': '*/*',
-                'Content-Type': 'application/json',
-            }
-        });
+  try {
+      const { id, } = props;
+      const deleteCurrencyResult = await axios.delete(`${domain}/DeleteCurrency`, {
+          data: id,
+          headers: {
+              'Accept': '*/*',
+              'Content-Type': 'application/json',
+          }
+      });
 
-        return deleteCurrencyResult.data;
-    } catch(e) {
-        alert(JSON.stringify(e));
-    }
+      return deleteCurrencyResult.data;
+  } catch(e) {
+      alert(JSON.stringify(e));
+  }
 }
 
 const upsertBet = async (bet: BetModel) => {
-    try {        
-        const amounts = Object.fromEntries(Object.entries(bet).filter(([key, value]) => key.startsWith('amount')));
+  try {
+    const amounts = Object.fromEntries(
+        Object.entries(bet).filter(([key, value]) => key.startsWith("amount")).map(([key, value]) => [key.replace('amount', ''), value])
+      );
 
-        const obj = {
-            Id: bet.isSavedInDatabase
-                ? bet.id
-                : null,
-            BetStatus: bet.betStatus ? bet.betStatus.id : 0,
-            WinStatus: bet.winStatus ? bet.winStatus.id : 0,
-            LiveStatus: bet.liveStatus ? bet.liveStatus.id : 0,
-            CounteragentId: bet.counterAgent ? bet.counterAgent.id : '',
-            Sport: bet.sport ? bet.sport.id : '',
-            Tournament: bet.tournament ? bet.tournament.id : '',
-            Market: bet.market ? bet.market.id : '',
-            Stake: bet.stake ? bet.stake : 0,
-            PSLimit: bet.psLimit ? bet.psLimit : 0, 
-            CurrencyAmounts: amounts,
-            Odd: bet.odd ? bet.odd : 0,
-            DateFinished: bet.dateFinished ? bet.dateFinished.toISOString().split('T')[0] : null,
-            Profits: bet.profits ? bet.profits : 0,
-            Notes: bet.notes ? bet.notes : '',
-            Selection: bet.selection ? bet.selection : '',
-        };
-        const id = bet.isSavedInDatabase
-            ? `Id=${obj.Id}&`
-            : '';
-            
-        return await axios.post(`${domain}/UpsertBets`, obj, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-    } catch(e) {
-        alert(JSON.stringify(e));
-    }
-}
+    const request = {
+        id: bet.isSavedInDatabase ? Number(bet.id) : null,
+        winStatus: bet.winStatus ? Number(bet.winStatus.id) : 0,
+        counteragentId: bet.counterAgent ? Number(bet.counterAgent.id) : "",
+        sport: bet.sport ? bet.sport.id : "",
+        tournament: bet.tournament ? bet.tournament.id : "",
+        market: bet.market ? bet.market.id : "",
+        stake: bet.stake ? bet.stake : 0,
+        psLimit: bet.psLimit ? bet.psLimit : 0,
+        currencyAmounts: amounts,
+        odd: bet.odd ? bet.odd : 0,
+        dateFinished: bet.dateFinished
+          ? bet.dateFinished.toISOString().split("T")[0]
+          : null,
+        profits: bet.profits ? bet.profits : 0,
+        notes: bet.notes ? bet.notes : "",
+        selection: bet.selection ? bet.selection.label : "",
+      };
+      
+    return await axios.post(`${domain}/UpsertBets`, request, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (e) {
+    alert(JSON.stringify(e));
+  }
+};
 
 const upsertExpense = async (expense: ExpenseModel) => {
-    try {
-        const id = expense.isSavedInDatabase
-            ? `Id=${expense.id}&`
-            : '';
-        return await axios.post(`${domain}/UpsertExpense?${id}CounteragentId=${expense.counterAgent?.id}&Description=${expense.description}&Amount=${expense.amount}`);
-    } catch(e) {
-        alert(JSON.stringify(e));
-    }
+  try {
+      const id = expense.isSavedInDatabase
+          ? `Id=${expense.id}&`
+          : '';
+      return await axios.post(`${domain}/UpsertExpense?${id}CounteragentId=${expense.counterAgent?.id}&Description=${expense.description}&Amount=${expense.amount}`);
+  } catch(e) {
+      alert(JSON.stringify(e));
+  }
 };
 
 const upsertCounteragent = async (counteragent: CounteragentModel) => {
-    try {
-        console.log(`UPSERT COUNTERAGENT - ${JSON.stringify(counteragent)}`);
-        const id = counteragent.isSavedInDatabase
-            ? `Id=${counteragent.id}&`
-            : 'Id=0&';
-        return await axios.post(`${domain}/UpsertCounteragent?${id}Name=${counteragent.name}&CounteragentCategoryId=${counteragent.counteragentCategory?.id}&MaxRate=${counteragent.maxRate}&UserId=${counteragent.user?.id}`);
-    } catch(e) {
-        alert(JSON.stringify(e));
-    }
+  try {
+      console.log(`UPSERT COUNTERAGENT - ${JSON.stringify(counteragent)}`);
+      const id = counteragent.isSavedInDatabase
+          ? `Id=${counteragent.id}&`
+          : 'Id=0&';
+      return await axios.post(`${domain}/UpsertCounteragent?${id}Name=${counteragent.name}&CounteragentCategoryId=${counteragent.counteragentCategory?.id}&MaxRate=${counteragent.maxRate}&UserId=${counteragent.user?.id}`);
+  } catch(e) {
+      alert(JSON.stringify(e));
+  }
 };
 
 const upsertCurrency = async (currency: CurrencyModel) => {
-    try {
-        console.log(`UPSERT CURRENCY - ${JSON.stringify(currency)}`);
-        const id = currency.isSavedInDatabase
-            ? `Id=${currency.id}&`
-            : '';
-        await axios.post(`${domain}/UpsertCurrency?${id}Name=${currency.name}&Abbreviation=${currency.abbreviation}&ConversionRateToBGN=${currency.conversionRateToBGN}`);
-    } catch(e) {
-        alert(JSON.stringify(e));
-    }
+  try {
+      console.log(`UPSERT CURRENCY - ${JSON.stringify(currency)}`);
+      const id = currency.isSavedInDatabase
+          ? `Id=${currency.id}&`
+          : '';
+      await axios.post(`${domain}/UpsertCurrency?${id}Name=${currency.name}&Abbreviation=${currency.abbreviation}&ConversionRateToBGN=${currency.conversionRateToBGN}`);
+  } catch(e) {
+      alert(JSON.stringify(e));
+  }
 };
 
 const getBetHistory = async (betId: number) => {
-    try {
-        const response = await axios.get(`${domain}/GetBetHistory?betId=${betId}`);
-        return response.data;
-    } catch(e) {
-        alert(JSON.stringify(e));
-    }
+  try {
+      const response = await axios.get(`${domain}/GetBetHistory?betId=${betId}`);
+      return response.data;
+  } catch(e) {
+      alert(JSON.stringify(e));
+  }
 };
 
 export {
-    getPendingBets,
-    getCompletedBets,
-    getBetStatistics,
-    getBetHistory,
-    getExpenses,
-    getCounterAgents,
-    getCounterAgentsCategories,
-    getUsers,
-    getCurrencies,
-    getSports,
-    getTournaments,
-    getMarkets,
-    getSelections,
-    deleteBet,
-    deleteExpense,
-    deleteCounteragent,
-    deleteCurrency,
-    upsertBet,
-    upsertExpense,
-    upsertCounteragent,
-    upsertCurrency,
+  getPendingBets,
+  getCompletedBets,
+  getBetStatistics,
+  getBetHistory,
+  getExpenses,
+  getCounterAgents,
+  getCounterAgentsCategories,
+  getUsers,
+  getCurrencies,
+  getSports,
+  getTournaments,
+  getMarkets,
+  getSelections,
+  deleteBet,
+  deleteExpense,
+  deleteCounteragent,
+  deleteCurrency,
+  upsertBet,
+  upsertExpense,
+  upsertCounteragent,
+  upsertCurrency,
 };

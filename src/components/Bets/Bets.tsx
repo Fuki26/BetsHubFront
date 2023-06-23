@@ -408,7 +408,6 @@ function Bets(props: {
 
         selection: newRow.selection,
       };
-      debugger;
       setIsLoading(true);
 
       const rowData = await upsertBet(newRowData);
@@ -534,52 +533,52 @@ function Bets(props: {
         );
       },
     },
-    {
-      field: "betStatus",
-      headerName: "Bet status",
-      editable: true,
-      width: 300,
-      renderCell: (params: GridRenderCellParams<BetModel>) => {
-        const row = rows.find((r) => r.id === params.row.id);
-        if (!row) {
-          return;
-        }
+    // { // Redundant column
+    //   field: "betStatus",
+    //   headerName: "Bet status",
+    //   editable: true,
+    //   width: 300,
+    //   renderCell: (params: GridRenderCellParams<BetModel>) => {
+    //     const row = rows.find((r) => r.id === params.row.id);
+    //     if (!row) {
+    //       return;
+    //     }
 
-        return <>{row.betStatus ? row.betStatus.label : ""}</>;
-      },
-      renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
-        const row = rows.find((r) => r.id === params.row.id);
-        if (!row) {
-          return;
-        }
+    //     return <>{row.betStatus ? row.betStatus.label : ""}</>;
+    //   },
+    //   renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
+    //     const row = rows.find((r) => r.id === params.row.id);
+    //     if (!row) {
+    //       return;
+    //     }
 
-        return (
-          <Autocomplete
-            options={[
-              { id: "0", label: BetStatus[0] },
-              { id: "1", label: BetStatus[1] },
-            ]}
-            renderInput={(params) => {
-              params.inputProps.onKeyDown = handleKeyDown;
-              return <TextField {...params} />;
-            }}
-            onChange={(e, value) => handleChange(e, value, params)}
-            value={row.betStatus}
-            sx={{
-              width: 300,
-            }}
-          />
-        );
-      },
-      valueGetter: (params: GridValueGetterParams<BetModel>) => {
-        const row = rows.find((r) => r.id === params.row.id);
-        if (!row) {
-          return;
-        }
+    //     return (
+    //       <Autocomplete
+    //         options={[
+    //           { id: "0", label: BetStatus[0] },
+    //           { id: "1", label: BetStatus[1] },
+    //         ]}
+    //         renderInput={(params) => {
+    //           params.inputProps.onKeyDown = handleKeyDown;
+    //           return <TextField {...params} />;
+    //         }}
+    //         onChange={(e, value) => handleChange(e, value, params)}
+    //         value={row.betStatus}
+    //         sx={{
+    //           width: 300,
+    //         }}
+    //       />
+    //     );
+    //   },
+    //   valueGetter: (params: GridValueGetterParams<BetModel>) => {
+    //     const row = rows.find((r) => r.id === params.row.id);
+    //     if (!row) {
+    //       return;
+    //     }
 
-        return row.betStatus;
-      },
-    },
+    //     return row.betStatus;
+    //   },
+    // },
     {
       field: "winStatus",
       headerName: "Win status",
