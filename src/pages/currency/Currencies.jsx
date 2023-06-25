@@ -1,12 +1,12 @@
 import { useState, useCallback, useEffect } from "react";
-import { DataGrid } from "@material-ui/data-grid";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import TextField from "@material-ui/core/TextField";
+import { DataGrid } from "@mui/x-data-grid";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import TextField from "@mui/material/TextField";
 import { getCurrencies, upsertCurrency, deleteCurrency } from "../../api";
-import Button from "@material-ui/core/Button";
+import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 
