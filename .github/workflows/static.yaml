@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - "master"
+      - "currencies-page-fix"
       - "CommandPanel"
 
 permissions:
