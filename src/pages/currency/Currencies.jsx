@@ -9,6 +9,7 @@ import { getCurrencies, upsertCurrency, deleteCurrency } from "../../api";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from '@mui/icons-material/Edit';
 
 export default function CurrencyTable() {
   const [rows, setRows] = useState([]);
@@ -37,8 +38,8 @@ export default function CurrencyTable() {
     { field: "dateCreated", headerName: "Date Created", width: 230 },
     { field: "dateChanged", headerName: "Date Changed", width: 230 },
     {
-      field: "remove",
-      headerName: "Remove",
+      field: "Modify",
+      headerName: "Modify",
       sortable: false,
       width: 120,
       disableClickEventBubbling: true,
@@ -48,9 +49,20 @@ export default function CurrencyTable() {
           fetchCurrencies();
         };
         return (
-          <IconButton onClick={onClick} aria-label="delete" size="large">
-            <DeleteIcon />
-          </IconButton>
+          <>
+            <IconButton
+              onClick={(e) => {
+                handleRowEditButton(params.row);
+              }}
+              aria-label="delete"
+              size="large"
+            >
+              <EditIcon />
+            </IconButton>
+            <IconButton onClick={onClick} aria-label="delete" size="large">
+              <DeleteIcon />
+            </IconButton>
+          </>
         );
       },
     },
@@ -77,8 +89,8 @@ export default function CurrencyTable() {
     fetchCurrencies();
   }, [fetchCurrencies]);
 
-  const handleRowDoubleClick = (row) => {
-    setEditRow(row.row);
+  const handleRowEditButton = (row) => {
+    setEditRow(row);
     setOpen(true);
   };
 
@@ -130,7 +142,6 @@ export default function CurrencyTable() {
         rows={rows}
         columns={columns}
         pageSize={15}
-        onRowDoubleClick={handleRowDoubleClick}
       />
 
       <Dialog open={open} onClose={handleClose}>
