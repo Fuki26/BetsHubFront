@@ -4,6 +4,7 @@ import { BetModel, CounteragentModel, CurrencyModel, ExpenseModel, ISelectionsRe
 import { StatisticType } from '../models/enums';
 
 const domain = 'http://213.91.236.205:5000';
+// const domain = 'http://localhost:5001'
 
 const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
     try {
