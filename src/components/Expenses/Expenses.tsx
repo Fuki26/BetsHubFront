@@ -264,25 +264,25 @@ export default function Expenses(props: {
   
   //#region Dropdown handlers
 
-  const onChange = (event: any, value: {
-    rowId: GridRowId | undefined;
-    value?: string;
-    label?: string,
-  } | null): void => {
-    setRows((previousRowsModel) => {
-      return previousRowsModel!.map((row) => {
-        if(row.id === value?.rowId) {
-          return {
-            ...row, 
-            counteragentId: parseInt(value.value!),
-            counteragent: value.label,
-          };
-        } else {
-          return row;
-        }
-      });
-    });
-  }
+  // const onChange = (event: any, value: {
+  //   rowId: GridRowId | undefined;
+  //   value?: string;
+  //   label?: string,
+  // } | null): void => {
+  //   setRows((previousRowsModel) => {
+  //     return previousRowsModel!.map((row) => {
+  //       if(row.id === value?.rowId) {
+  //         return {
+  //           ...row, 
+  //           counteragentId: parseInt(value.value!),
+  //           counteragent: value.label,
+  //         };
+  //       } else {
+  //         return row;
+  //       }
+  //     });
+  //   });
+  // }
 
 
   //#endreigon Dropdown handlers

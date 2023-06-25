@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 
 const useSession = () => {
     const [alreadyFocused, setAlreadyFocused] = useState(false);
-    const [activeTime, setActiveTime] = useState(0);
+    // const [activeTime, setActiveTime] = useState(0);
     let lastActiveTime = Date.now();
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        lastActiveTime = Date.now();
+
         const windowFocusEventHandler = () => {
             if (!alreadyFocused) {
-                lastActiveTime = Date.now();
                 console.log('windowFocusEventHandler');
                 setAlreadyFocused(true);
             }
@@ -16,7 +18,7 @@ const useSession = () => {
         const windowBlurEventHandler = () => {
             if (!document.hidden) return;
             const elapsedSeconds = Math.floor((Date.now() - lastActiveTime) / 1000);
-            setActiveTime(activeTime => activeTime + elapsedSeconds);
+            // setActiveTime(activeTime => activeTime + elapsedSeconds);
             console.log('windowBlurEventHandler');
             setAlreadyFocused(false);
             localStorage.setItem('activeTime', elapsedSeconds.toString());

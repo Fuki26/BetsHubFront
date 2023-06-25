@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import {
-  Box,
+  // Box,
   CircularProgress,
   FormControlLabel,
   Grid,
@@ -71,6 +71,7 @@ export default function Hub() {
   const [completedRows, setCompletedRows] = React.useState<
     Array<BetModel> | undefined
   >(undefined);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [filteredPendingRows, setFilteredPendingRows] = React.useState<
     Array<BetModel> | undefined
   >(undefined);
@@ -271,6 +272,7 @@ export default function Hub() {
         }
       }
     );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);
 
   useEffect(() => {

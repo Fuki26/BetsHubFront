@@ -50,8 +50,8 @@ export default function PersistentDrawerLeft(
   props: { openSidebarCb: React.Dispatch<React.SetStateAction<boolean | undefined>>}) {
   const {
     auth,
-    logIn,
-    logout,
+    // logIn,
+    // logout,
   } = useAuth();
   const { openSidebarCb, } = props;
   const theme = useTheme();
@@ -138,6 +138,7 @@ export default function PersistentDrawerLeft(
                               title: string; 
                               requireAuthentication: boolean;
                             }
+                        // eslint-disable-next-line array-callback-return
                         ) => 
                         {
                           if(!item.requireAuthentication 

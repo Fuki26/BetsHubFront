@@ -104,6 +104,7 @@ const AutocompleteComponent = (props: {
 
         for(var i = 0; i <= values.length - 1; i++) {
           const shouldRemove = 
+            // eslint-disable-next-line no-loop-func
             values.filter((v) => v.id === values[i].id).length % 2 === 0;
           if(!shouldRemove) {
             finalValues.push(values[i]);
@@ -113,7 +114,7 @@ const AutocompleteComponent = (props: {
         const ids: Array<string> = finalValues.map((v) => v.id);
         
         const uniqueIds = ids.filter((elem, pos) => {
-          return ids.indexOf(elem) == pos;
+          return ids.indexOf(elem) === pos;
         });
 
         setStateFn((previousModel: Array<string>) => {
@@ -546,7 +547,7 @@ export default function Search() {
       }
     });
   }, [ dateFrom, dateTo, stakeFrom, stakeTo, oddFrom, oddTo, psLimitFrom, psLimitTo, 
-    counteragentCategoriesIds, counteragentIds, sportIds, marketIds, tournamentIds, liveStatusIds,]);
+    counteragentCategoriesIds, counteragentIds, sportIds, marketIds, tournamentIds, liveStatusIds, rows]);
 
   useEffect(() => {
     setFilteredExpenseRows((previousRowsModel: Array<ExpenseModel> | undefined) => {
@@ -617,7 +618,7 @@ export default function Search() {
         return [];
       }
     });
-  }, [ dateFrom, dateTo, counteragentCategoriesIds, counteragentIds,]);
+  }, [ dateFrom, dateTo, counteragentCategoriesIds, counteragentIds, expenseRows]);
   
   useEffect(() => {
     (async () => {
