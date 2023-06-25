@@ -14,7 +14,6 @@ import {
   GridRowParams,
   GridToolbarContainer,
   GridValueGetterParams,
-  GridValueSetterParams,
 } from "@mui/x-data-grid-pro";
 import {
   Autocomplete,
@@ -81,7 +80,6 @@ function Bets(props: {
     defaultRows,
     currencies,
     possibleCounteragents,
-    allSelections,
     possibleSports,
     possibleTournaments,
     possibleMarkets,
@@ -465,37 +463,37 @@ function Bets(props: {
 
   //#endregion Rows update handler
 
-  const handleChange = (e: any, value: any, params: any) => {
-    setRows((previousRowsModel) => {
-      return previousRowsModel.map((row: BetModel) => {
-        if (row.id === params.row.id) {
-          return {
-            ...row,
-            betStatus: value
-              ? typeof value === "string"
-                ? { id: value, label: value }
-                : value
-              : undefined,
-          };
-        } else {
-          return row;
-        }
-      });
-    });
-  };
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    switch (event.key) {
-      case "Tab": {
-        const editableRow = document.querySelector(
-          ".MuiDataGrid-row--editable"
-        );
-        if (!editableRow) return;
-        (editableRow.childNodes[2] as HTMLElement).focus();
-        break;
-      }
-      default:
-    }
-  };
+  // const handleChange = (e: any, value: any, params: any) => {
+  //   setRows((previousRowsModel) => {
+  //     return previousRowsModel.map((row: BetModel) => {
+  //       if (row.id === params.row.id) {
+  //         return {
+  //           ...row,
+  //           betStatus: value
+  //             ? typeof value === "string"
+  //               ? { id: value, label: value }
+  //               : value
+  //             : undefined,
+  //         };
+  //       } else {
+  //         return row;
+  //       }
+  //     });
+  //   });
+  // };
+  // const handleKeyDown = (event: React.KeyboardEvent) => {
+  //   switch (event.key) {
+  //     case "Tab": {
+  //       const editableRow = document.querySelector(
+  //         ".MuiDataGrid-row--editable"
+  //       );
+  //       if (!editableRow) return;
+  //       (editableRow.childNodes[2] as HTMLElement).focus();
+  //       break;
+  //     }
+  //     default:
+  //   }
+  // };
   let columns: Array<GridColDef> = [
     {
       field: "id",
