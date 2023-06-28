@@ -2,7 +2,7 @@ import * as React from "react";
 import { toast } from "react-toastify";
 import { isMobile } from "react-device-detect";
 import {
-  DataGridPro,
+  DataGrid,
   GridActionsCellItem,
   GridColDef,
   GridRenderCellParams,
@@ -14,8 +14,7 @@ import {
   GridRowParams,
   GridToolbarContainer,
   GridValueGetterParams,
-  GridValueSetterParams,
-} from "@mui/x-data-grid-pro";
+} from "@mui/x-data-grid";
 import {
   Autocomplete,
   Button,
@@ -81,7 +80,6 @@ function Bets(props: {
     defaultRows,
     currencies,
     possibleCounteragents,
-    allSelections,
     possibleSports,
     possibleTournaments,
     possibleMarkets,
@@ -465,37 +463,37 @@ function Bets(props: {
 
   //#endregion Rows update handler
 
-  const handleChange = (e: any, value: any, params: any) => {
-    setRows((previousRowsModel) => {
-      return previousRowsModel.map((row: BetModel) => {
-        if (row.id === params.row.id) {
-          return {
-            ...row,
-            betStatus: value
-              ? typeof value === "string"
-                ? { id: value, label: value }
-                : value
-              : undefined,
-          };
-        } else {
-          return row;
-        }
-      });
-    });
-  };
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    switch (event.key) {
-      case "Tab": {
-        const editableRow = document.querySelector(
-          ".MuiDataGrid-row--editable"
-        );
-        if (!editableRow) return;
-        (editableRow.childNodes[2] as HTMLElement).focus();
-        break;
-      }
-      default:
-    }
-  };
+  // const handleChange = (e: any, value: any, params: any) => {
+  //   setRows((previousRowsModel) => {
+  //     return previousRowsModel.map((row: BetModel) => {
+  //       if (row.id === params.row.id) {
+  //         return {
+  //           ...row,
+  //           betStatus: value
+  //             ? typeof value === "string"
+  //               ? { id: value, label: value }
+  //               : value
+  //             : undefined,
+  //         };
+  //       } else {
+  //         return row;
+  //       }
+  //     });
+  //   });
+  // };
+  // const handleKeyDown = (event: React.KeyboardEvent) => {
+  //   switch (event.key) {
+  //     case "Tab": {
+  //       const editableRow = document.querySelector(
+  //         ".MuiDataGrid-row--editable"
+  //       );
+  //       if (!editableRow) return;
+  //       (editableRow.childNodes[2] as HTMLElement).focus();
+  //       break;
+  //     }
+  //     default:
+  //   }
+  // };
   let columns: Array<GridColDef> = [
     {
       field: "id",
@@ -1107,7 +1105,7 @@ function Bets(props: {
     <Paper sx={{ paddingTop: "1%" }}>
       {rows ? (
         <>
-          <DataGridPro
+          <DataGrid
             columns={columns}
             getRowClassName={(params) => {
               if (!copiedRowIds) return "";

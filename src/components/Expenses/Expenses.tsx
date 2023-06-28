@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { toast } from 'react-toastify';
 import { isMobile } from 'react-device-detect';
-import { DataGridPro, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
-  GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams , } from '@mui/x-data-grid-pro';
+import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
+  GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams , } from '@mui/x-data-grid';
 import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, Paper, TextField, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
@@ -264,25 +264,25 @@ export default function Expenses(props: {
   
   //#region Dropdown handlers
 
-  const onChange = (event: any, value: {
-    rowId: GridRowId | undefined;
-    value?: string;
-    label?: string,
-  } | null): void => {
-    setRows((previousRowsModel) => {
-      return previousRowsModel!.map((row) => {
-        if(row.id === value?.rowId) {
-          return {
-            ...row, 
-            counteragentId: parseInt(value.value!),
-            counteragent: value.label,
-          };
-        } else {
-          return row;
-        }
-      });
-    });
-  }
+  // const onChange = (event: any, value: {
+  //   rowId: GridRowId | undefined;
+  //   value?: string;
+  //   label?: string,
+  // } | null): void => {
+  //   setRows((previousRowsModel) => {
+  //     return previousRowsModel!.map((row) => {
+  //       if(row.id === value?.rowId) {
+  //         return {
+  //           ...row, 
+  //           counteragentId: parseInt(value.value!),
+  //           counteragent: value.label,
+  //         };
+  //       } else {
+  //         return row;
+  //       }
+  //     });
+  //   });
+  // }
 
 
   //#endreigon Dropdown handlers
@@ -460,7 +460,7 @@ export default function Expenses(props: {
         rows
           ? (
               <>
-                <DataGridPro
+                <DataGrid
                   columns={columns}
                   columnBuffer={2} 
                   columnThreshold={2}

@@ -4,8 +4,8 @@ import { useAuth } from '../AuthContext';
 function RequireAuth({ children }: { children: React.ReactNode }){    
     const {
         auth,
-        logIn,
-        logout,
+        // logIn,
+        // logout,
     } = useAuth();
 
     if (!auth.user) {

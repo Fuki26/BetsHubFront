@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Autocomplete, Checkbox, CircularProgress, FormControl, FormControlLabel, 
   Paper, Radio, RadioGroup, TextField, Typography} from '@mui/material';
-  import { DataGridPro, GridColDef } from '@mui/x-data-grid-pro';
+  import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
@@ -104,6 +104,7 @@ const AutocompleteComponent = (props: {
 
         for(var i = 0; i <= values.length - 1; i++) {
           const shouldRemove = 
+            // eslint-disable-next-line no-loop-func
             values.filter((v) => v.id === values[i].id).length % 2 === 0;
           if(!shouldRemove) {
             finalValues.push(values[i]);
@@ -113,7 +114,7 @@ const AutocompleteComponent = (props: {
         const ids: Array<string> = finalValues.map((v) => v.id);
         
         const uniqueIds = ids.filter((elem, pos) => {
-          return ids.indexOf(elem) == pos;
+          return ids.indexOf(elem) === pos;
         });
 
         setStateFn((previousModel: Array<string>) => {
@@ -546,7 +547,7 @@ export default function Search() {
       }
     });
   }, [ dateFrom, dateTo, stakeFrom, stakeTo, oddFrom, oddTo, psLimitFrom, psLimitTo, 
-    counteragentCategoriesIds, counteragentIds, sportIds, marketIds, tournamentIds, liveStatusIds,]);
+    counteragentCategoriesIds, counteragentIds, sportIds, marketIds, tournamentIds, liveStatusIds, rows]);
 
   useEffect(() => {
     setFilteredExpenseRows((previousRowsModel: Array<ExpenseModel> | undefined) => {
@@ -617,7 +618,7 @@ export default function Search() {
         return [];
       }
     });
-  }, [ dateFrom, dateTo, counteragentCategoriesIds, counteragentIds,]);
+  }, [ dateFrom, dateTo, counteragentCategoriesIds, counteragentIds, expenseRows]);
   
   useEffect(() => {
     (async () => {
@@ -820,7 +821,7 @@ export default function Search() {
                   <FormControlLabel value="Flat" control={<Radio />} label="Flat" />
                   <FormControlLabel value="Real" control={<Radio />} label="Real" />
                 </RadioGroup>
-                <DataGridPro
+                <DataGrid
                   columns={statisticsColumns}
                   rows={currentStatistcs}
                 />
