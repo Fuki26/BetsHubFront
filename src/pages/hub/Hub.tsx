@@ -34,7 +34,7 @@ import {
 } from "../../api";
 import { Currency, Expense, Statistics } from "../../database-models";
 import { StatisticType } from "../../models/enums";
-import { DataGridPro, GridColDef } from "@mui/x-data-grid-pro";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Expenses from "../../components/Expenses/Expenses";
 import { betToBetModelMapper } from "../../utils";
 import Collapse from "@mui/material/Collapse";
@@ -418,7 +418,7 @@ export default function Hub() {
             <FormControlLabel value="Flat" control={<Radio />} label="Flat" />
             <FormControlLabel value="Real" control={<Radio />} label="Real" />
           </RadioGroup>
-          <DataGridPro columns={statisticsColumns} rows={currentStatistcs} />
+          <DataGrid columns={statisticsColumns} rows={currentStatistcs} />
         </Paper>
       ) : null}
 

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { toast } from 'react-toastify';
 import { isMobile } from 'react-device-detect';
-import { DataGridPro, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
-  GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams , } from '@mui/x-data-grid-pro';
+import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
+  GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams , } from '@mui/x-data-grid';
 import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, Paper, TextField, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
@@ -460,7 +460,7 @@ export default function Expenses(props: {
         rows
           ? (
               <>
-                <DataGridPro
+                <DataGrid
                   columns={columns}
                   columnBuffer={2} 
                   columnThreshold={2}

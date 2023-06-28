@@ -2,7 +2,7 @@ import * as React from "react";
 import { toast } from "react-toastify";
 import { isMobile } from "react-device-detect";
 import {
-  DataGridPro,
+  DataGrid,
   GridActionsCellItem,
   GridColDef,
   GridRenderCellParams,
@@ -14,7 +14,7 @@ import {
   GridRowParams,
   GridToolbarContainer,
   GridValueGetterParams,
-} from "@mui/x-data-grid-pro";
+} from "@mui/x-data-grid";
 import {
   Autocomplete,
   Button,
@@ -1105,7 +1105,7 @@ function Bets(props: {
     <Paper sx={{ paddingTop: "1%" }}>
       {rows ? (
         <>
-          <DataGridPro
+          <DataGrid
             columns={columns}
             getRowClassName={(params) => {
               if (!copiedRowIds) return "";

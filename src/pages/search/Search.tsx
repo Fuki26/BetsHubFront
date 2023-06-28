@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Autocomplete, Checkbox, CircularProgress, FormControl, FormControlLabel, 
   Paper, Radio, RadioGroup, TextField, Typography} from '@mui/material';
-  import { DataGridPro, GridColDef } from '@mui/x-data-grid-pro';
+  import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
@@ -821,7 +821,7 @@ export default function Search() {
                   <FormControlLabel value="Flat" control={<Radio />} label="Flat" />
                   <FormControlLabel value="Real" control={<Radio />} label="Real" />
                 </RadioGroup>
-                <DataGridPro
+                <DataGrid
                   columns={statisticsColumns}
                   rows={currentStatistcs}
                 />
