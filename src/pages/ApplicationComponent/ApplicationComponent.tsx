@@ -13,6 +13,7 @@ import { Stack } from '@mui/material';
 import { SideNavItem } from '../../components/side-navigation/side-nav-item';
 import { items } from '../../components/side-navigation/config';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLocation } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -66,6 +67,10 @@ export default function PersistentDrawerLeft(
     setOpen(false);
     openSidebarCb(false);
   };
+
+  const location = useLocation();
+  React.useEffect(() => {}, 
+    [location.pathname]);
 
   return (
     <Box sx={{ display: 'flex' }}>
