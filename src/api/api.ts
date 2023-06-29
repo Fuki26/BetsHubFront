@@ -3,8 +3,8 @@ import { Bet, Counteragent, CounterAgentCategory, Currency, Expense, Statistics,
 import { BetModel, CounteragentModel, CurrencyModel, ExpenseModel, ISelectionsResult, } from '../models';
 import { StatisticType } from '../models/enums';
 
-// const domain = 'http://213.91.236.205:5000';
-const domain = 'http://localhost:5001'
+const domain = 'http://213.91.236.205:5000';
+// const domain = 'http://localhost:5001'
 
 const instance = axios.create({
     baseURL: domain
