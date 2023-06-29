@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button, Typography, TextField, Box, Avatar } from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { login, verifyTfa, getTfaSetup } from "../../api";
@@ -11,7 +10,6 @@ const LoginPage = () => {
   const [isTfaRequired, setIsTfaRequired] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [error, setError] = useState(null);
-  const history = useNavigate(); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,8 +35,8 @@ const LoginPage = () => {
     try {
       const res = await verifyTfa(userName, tfaCode);
       if (res && res.data && res.data.token) {
-        localStorage.setItem("token", res.data.token);
-        history.push("/");
+        localStorage.setItem("token", res.data.token.token);
+        window.location.href = '/';
       } else {
         throw new Error("Invalid TFA code");
       }
