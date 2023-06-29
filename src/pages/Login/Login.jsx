@@ -5,7 +5,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { login, verifyTfa, getTfaSetup } from "../../api";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
+  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [tfaCode, setTfaCode] = useState("");
   const [isTfaRequired, setIsTfaRequired] = useState(false);
@@ -16,11 +16,12 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await login(email, password);
+      const res = await login(userName, password);
 
       if (res && res.data && res.data.isTfaRequired) {
         setIsTfaRequired(true);
         fetchTfaSetup();
+        setError(null)
       } else if (res && res.data && res.data.token) {
         localStorage.setItem("token", res.data.token);
       } else {
@@ -34,7 +35,7 @@ const LoginPage = () => {
   const handleTfaSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await verifyTfa(email, tfaCode);
+      const res = await verifyTfa(userName, tfaCode);
       if (res && res.data && res.data.token) {
         localStorage.setItem("token", res.data.token);
         history.push("/");
@@ -48,7 +49,7 @@ const LoginPage = () => {
 
   const fetchTfaSetup = async () => {
     try {
-      const res = await getTfaSetup(email);
+      const res = await getTfaSetup(userName);
       if (res && res.data && res.data.formattedKey) {
         setQrCodeUrl(
           `https://api.qrserver.com/v1/create-qr-code/?data=${res.data.formattedKey}`
@@ -92,9 +93,9 @@ const LoginPage = () => {
         >
           <TextField
             sx={{ marginBottom: 2 }}
-            label="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            label="Username"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
             required
           />
           <TextField
