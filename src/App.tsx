@@ -9,7 +9,7 @@ import { Users } from "./pages/users/index";
 import { Currencies } from "./pages/currency/index";
 import PersistentDrawerLeft from "./pages/ApplicationComponent/ApplicationComponent";
 import Search from "./pages/search/Search";
-import Authentication from "./pages/authentication/Authentication";
+import Login from "./pages/Login/Login";
 import RequireAuth from "./contexts/providers/RequireAuthProvider";
 import useSession from "./hooks/useSession";
 import './App.css'
@@ -58,7 +58,7 @@ function App() {
             element={
               <LayoutRoot isOpenSideBar={isOpenSideBar}>
                 <LayoutContainer>
-                  <Authentication />{" "}
+                  <Login />{" "}
                 </LayoutContainer>
               </LayoutRoot>
             }

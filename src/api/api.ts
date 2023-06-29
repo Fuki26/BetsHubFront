@@ -3,8 +3,8 @@ import { Bet, Counteragent, CounterAgentCategory, Currency, Expense, Statistics,
 import { BetModel, CounteragentModel, CurrencyModel, ExpenseModel, ISelectionsResult, } from '../models';
 import { StatisticType } from '../models/enums';
 
-const domain = 'http://213.91.236.205:5000';
-// const domain = 'http://localhost:5001'
+// const domain = 'http://213.91.236.205:5000';
+const domain = 'http://localhost:5001'
 
 const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
     try {
@@ -270,6 +270,50 @@ const getBetHistory = async (betId: number) => {
   }
 };
 
+const login = async (email: string, password: string) => {
+  try {
+    return await axios.post(
+      `${domain}/Auth/login`,
+      { email, password },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (e) {
+    console.log(JSON.stringify(e));
+  }
+};
+
+const verifyTfa = async (email: string, code: string) => {
+    try {
+      const response = await axios.post(
+        `${domain}/Auth/verify-tfa`,
+        { email, code },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response && response.data) {
+        // save token in local storage
+        localStorage.setItem('token', response.data.token);
+        // redirect to home page
+        window.location.href = '/';
+      }
+      return response;
+    } catch (e) {
+      console.log(JSON.stringify(e));
+    }
+  };
+
+const getTfaSetup = async (email: string) => {
+    const tfaSetup = await axios.get(`${domain}/Auth/tfa-setup?email=${email}`);
+    return tfaSetup;
+}
+
 export {
   getPendingBets,
   getCompletedBets,
@@ -292,4 +336,7 @@ export {
   upsertExpense,
   upsertCounteragent,
   upsertCurrency,
+  login,
+  verifyTfa,
+  getTfaSetup,
 };
