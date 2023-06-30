@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Typography, TextField, Box, Avatar } from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { login, verifyTfa, getTfaSetup } from "../../api";
+import { useAuth } from "../../contexts/AuthContext"
 
 const LoginPage = () => {
   const [userName, setUserName] = useState("");
@@ -10,6 +11,7 @@ const LoginPage = () => {
   const [isTfaRequired, setIsTfaRequired] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [error, setError] = useState(null);
+  const { auth, logIn, logout } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,6 +38,12 @@ const LoginPage = () => {
       const res = await verifyTfa(userName, tfaCode);
       if (res && res.data && res.data.token) {
         localStorage.setItem("token", res.data.token.token);
+        logIn({ 
+          id: res.data.userId, // assuming response has a userId field
+          username: userName,
+          email: res.data.email, // assuming response has an email field
+          token: res.data.token
+        });
         window.location.href = '/';
       } else {
         throw new Error("Invalid TFA code");
@@ -72,88 +80,107 @@ const LoginPage = () => {
       <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
         <LockOutlinedIcon />
       </Avatar>
-      <Typography component="h1" variant="h5">
-        Sign in
-      </Typography>
-      {!isTfaRequired ? (
-        <Box
-          component="form"
-          onSubmit={handleSubmit}
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            width: "300px",
-            marginBottom: 2,
-            marginTop: 1,
-          }}
-          noValidate
-          autoComplete="off"
-        >
-          <TextField
-            sx={{ marginBottom: 2 }}
-            label="Username"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            required
-          />
-          <TextField
-            sx={{ marginBottom: 2 }}
-            label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <Button variant="contained" color="primary" type="submit">
-            Log In
+  
+      {auth.user ? (
+        <>
+          <Typography component="h1" variant="h5">
+            Welcome, {auth.user.username}
+          </Typography>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={logout}
+            sx={{ marginTop: 2 }}
+          >
+            Log Out
           </Button>
-        </Box>
+        </>
       ) : (
-        <Box
-          component="form"
-          onSubmit={handleTfaSubmit}
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center", // Centers items horizontally
-            width: "300px",
-            marginBottom: 2,
-          }}
-          noValidate
-          autoComplete="off"
-        >
-          {qrCodeUrl && (
+        <>
+          <Typography component="h1" variant="h5">
+            Sign in
+          </Typography>
+          {!isTfaRequired ? (
             <Box
+              component="form"
+              onSubmit={handleSubmit}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                width: "300px",
+                marginBottom: 2,
+                marginTop: 1,
+              }}
+              noValidate
+              autoComplete="off"
+            >
+              <TextField
+                sx={{ marginBottom: 2 }}
+                label="Username"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                required
+              />
+              <TextField
+                sx={{ marginBottom: 2 }}
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <Button variant="contained" color="primary" type="submit">
+                Log In
+              </Button>
+            </Box>
+          ) : (
+            <Box
+              component="form"
+              onSubmit={handleTfaSubmit}
               sx={{
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                marginBottom: 4, // Adds some space below the QR code
+                width: "300px",
+                marginBottom: 2,
               }}
+              noValidate
+              autoComplete="off"
             >
-              <Typography variant="body1" sx={{ marginBottom: 2 }}>
-                You didn't setup MFA? Use the following QR in desired
-                authenticator
-              </Typography>
-              <img
-                src={qrCodeUrl}
-                alt="QR Code for TFA setup"
-                style={{ width: "100px", height: "100px" }}
+              {qrCodeUrl && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    marginBottom: 4,
+                  }}
+                >
+                  <Typography variant="body1" sx={{ marginBottom: 2 }}>
+                    You didn't setup MFA? Use the following QR in desired
+                    authenticator
+                  </Typography>
+                  <img
+                    src={qrCodeUrl}
+                    alt="QR Code for TFA setup"
+                    style={{ width: "100px", height: "100px" }}
+                  />
+                </Box>
+              )}
+              <TextField
+                sx={{ marginBottom: 2 }}
+                label="2FA Code"
+                type="text"
+                value={tfaCode}
+                onChange={(e) => setTfaCode(e.target.value)}
+                required
               />
+              <Button variant="contained" color="primary" type="submit">
+                Verify 2FA Code
+              </Button>
             </Box>
           )}
-          <TextField
-            sx={{ marginBottom: 2 }}
-            label="2FA Code"
-            type="text"
-            value={tfaCode}
-            onChange={(e) => setTfaCode(e.target.value)}
-            required
-          />
-          <Button variant="contained" color="primary" type="submit">
-            Verify 2FA Code
-          </Button>
-        </Box>
+        </>
       )}
       {error && (
         <Typography variant="body1" sx={{ color: "red" }}>
