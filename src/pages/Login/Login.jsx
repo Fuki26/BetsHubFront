@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { Button, Typography, TextField, Box, Avatar } from "@mui/material";
+import { Box, Typography, Avatar } from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { useAuth } from "../../contexts/AuthContext";
 import { login, verifyTfa, getTfaSetup } from "../../api";
-import { useAuth } from "../../contexts/AuthContext"
+import LoginForm from './LoginForm';
+import TfaForm from './TfaForm';
+import LogoutForm from './LogoutForm';
 
 const LoginPage = () => {
   const [userName, setUserName] = useState("");
@@ -80,105 +83,29 @@ const LoginPage = () => {
       <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
         <LockOutlinedIcon />
       </Avatar>
-  
+      
       {auth.user ? (
-        <>
-          <Typography component="h1" variant="h5">
-            Welcome, {auth.user.username}
-          </Typography>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            onClick={logout}
-            sx={{ marginTop: 2 }}
-          >
-            Log Out
-          </Button>
-        </>
+        <LogoutForm user={auth.user} onLogout={logout} />
       ) : (
         <>
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
           {!isTfaRequired ? (
-            <Box
-              component="form"
-              onSubmit={handleSubmit}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                width: "300px",
-                marginBottom: 2,
-                marginTop: 1,
-              }}
-              noValidate
-              autoComplete="off"
-            >
-              <TextField
-                sx={{ marginBottom: 2 }}
-                label="Username"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                required
-              />
-              <TextField
-                sx={{ marginBottom: 2 }}
-                label="Password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <Button variant="contained" color="primary" type="submit">
-                Log In
-              </Button>
-            </Box>
+            <LoginForm 
+              userName={userName} 
+              password={password} 
+              setUserName={setUserName} 
+              setPassword={setPassword} 
+              onSubmit={handleSubmit} 
+            />
           ) : (
-            <Box
-              component="form"
-              onSubmit={handleTfaSubmit}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                width: "300px",
-                marginBottom: 2,
-              }}
-              noValidate
-              autoComplete="off"
-            >
-              {qrCodeUrl && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    marginBottom: 4,
-                  }}
-                >
-                  <Typography variant="body1" sx={{ marginBottom: 2 }}>
-                    You didn't setup MFA? Use the following QR in desired
-                    authenticator
-                  </Typography>
-                  <img
-                    src={qrCodeUrl}
-                    alt="QR Code for TFA setup"
-                    style={{ width: "100px", height: "100px" }}
-                  />
-                </Box>
-              )}
-              <TextField
-                sx={{ marginBottom: 2 }}
-                label="2FA Code"
-                type="text"
-                value={tfaCode}
-                onChange={(e) => setTfaCode(e.target.value)}
-                required
-              />
-              <Button variant="contained" color="primary" type="submit">
-                Verify 2FA Code
-              </Button>
-            </Box>
+            <TfaForm 
+              tfaCode={tfaCode} 
+              setTfaCode={setTfaCode} 
+              qrCodeUrl={qrCodeUrl} 
+              onSubmit={handleTfaSubmit} 
+            />
           )}
         </>
       )}
