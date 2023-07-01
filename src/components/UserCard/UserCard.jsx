@@ -38,7 +38,7 @@ const UserCard = ({ user, qrCodeUrl, deleteUser }) => {
               Failed Access Attempts: {user.accessFailedCount}
             </Typography>
             <Typography variant="subtitle1">
-              Role: {user.role.name}
+              Role: {user?.role?.name}
             </Typography>
             <Link href="#" variant="body2" color="error" onClick={handleOpenDeleteUser}>
               Delete this user
