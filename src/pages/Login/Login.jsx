@@ -1,18 +1,18 @@
 import { useState } from "react";
-import { Box, Typography, Avatar } from "@mui/material";
+import { Box, Typography, Avatar, Button } from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useAuth } from "../../contexts/AuthContext";
-import { login, verifyTfa, getTfaSetup } from "../../api";
+import { login, verifyTfa, getTfaSetup, resetPassword } from "../../api";
 import LoginForm from './LoginForm';
 import TfaForm from './TfaForm';
 import LogoutForm from './LogoutForm';
+import ResetPasswordForm from './ResetPasswordForm'; // import the reset password form
 
 const LoginPage = () => {
+  const [view, setView] = useState("Login");
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [tfaCode, setTfaCode] = useState("");
-  const [isTfaRequired, setIsTfaRequired] = useState(false);
-  const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [error, setError] = useState(null);
   const { auth, logIn, logout } = useAuth();
 
@@ -22,8 +22,7 @@ const LoginPage = () => {
       const res = await login(userName, password);
 
       if (res && res.data && res.data.isTfaRequired) {
-        setIsTfaRequired(true);
-        fetchTfaSetup();
+        setView("Tfa");
         setError(null)
       } else if (res && res.data && res.data.token) {
         localStorage.setItem("token", res.data.token);
@@ -42,9 +41,9 @@ const LoginPage = () => {
       if (res && res.data && res.data.token) {
         localStorage.setItem("token", res.data.token.token);
         logIn({ 
-          id: res.data.userId, // assuming response has a userId field
+          id: res.data.userId, 
           username: userName,
-          email: res.data.email, // assuming response has an email field
+          email: res.data.email,
           token: res.data.token
         });
         window.location.href = '/';
@@ -56,14 +55,10 @@ const LoginPage = () => {
     }
   };
 
-  const fetchTfaSetup = async () => {
+  const handleResetPassword = async (email) => {
     try {
-      const res = await getTfaSetup(userName);
-      if (res && res.data && res.data.formattedKey) {
-        setQrCodeUrl(
-          `https://api.qrserver.com/v1/create-qr-code/?data=${res.data.formattedKey}`
-        );
-      }
+      await resetPassword(email);
+      setView("Login");
     } catch (err) {
       setError(err.message);
     }
@@ -91,19 +86,31 @@ const LoginPage = () => {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          {!isTfaRequired ? (
-            <LoginForm 
-              userName={userName} 
-              password={password} 
-              setUserName={setUserName} 
-              setPassword={setPassword} 
-              onSubmit={handleSubmit} 
-            />
-          ) : (
+          {view === "Login" && (
+            <>
+              <LoginForm 
+                userName={userName} 
+                password={password} 
+                setUserName={setUserName} 
+                setPassword={setPassword} 
+                onSubmit={handleSubmit} 
+              />
+              <Button 
+                variant="text" 
+                color="primary" 
+                onClick={() => setView("ResetPassword")}
+              >
+                Forgot password?
+              </Button>
+            </>
+          )}
+          {view === "ResetPassword" && (
+            <ResetPasswordForm onSubmit={handleResetPassword} />
+          )}
+          {view === "Tfa" && (
             <TfaForm 
               tfaCode={tfaCode} 
               setTfaCode={setTfaCode} 
-              qrCodeUrl={qrCodeUrl} 
               onSubmit={handleTfaSubmit} 
             />
           )}
