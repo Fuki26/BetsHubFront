@@ -1,4 +1,4 @@
-import { GridRowModesModel, GridRowsProp, } from '@mui/x-data-grid-pro';
+import { GridRowModesModel, GridRowsProp, } from '@mui/x-data-grid';
 
 export interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;

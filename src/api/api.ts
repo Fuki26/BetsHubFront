@@ -3,8 +3,8 @@ import { Bet, Counteragent, CounterAgentCategory, Currency, Expense, Statistics,
 import { BetModel, CounteragentModel, CurrencyModel, ExpenseModel, ISelectionsResult, } from '../models';
 import { StatisticType } from '../models/enums';
 
-const domain = 'http://213.91.236.205:5000';
-// const domain = 'http://localhost:5001'
+// const domain = 'http://213.91.236.205:5000';
+const domain = 'http://localhost:5001'
 
 const instance = axios.create({
     baseURL: domain
@@ -322,6 +322,54 @@ const getTfaSetup = async (userName: string) => {
     return tfaSetup;
 }
 
+const registerUser = async (userName: string, password: string, email: string, role: number) => {
+    try {
+      return await instance.post(
+        `${domain}/Auth/Register`,
+        { userName, password, email, role },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch (e) {
+      console.log(JSON.stringify(e));
+    }
+};
+
+const resetPassword = async (email: string) => {
+    try {
+      return await instance.post(
+        `${domain}/Auth/ResetPassword`,
+        { email },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch (e) {
+      console.log(JSON.stringify(e));
+    }
+};
+
+const deleteUser = async (userName: string) => {
+    try {
+      return await instance.post(
+        `${domain}/Auth/DeleteUser`,
+        { userName },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch (e) {
+      console.log(JSON.stringify(e));
+    }
+};
+
 export {
   getPendingBets,
   getCompletedBets,
@@ -347,4 +395,7 @@ export {
   login,
   verifyTfa,
   getTfaSetup,
+  registerUser,
+  resetPassword,
+  deleteUser,
 };
