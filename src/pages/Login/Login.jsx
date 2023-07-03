@@ -2,11 +2,11 @@ import { useState } from "react";
 import { Box, Typography, Avatar, Button } from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useAuth } from "../../contexts/AuthContext";
-import { login, verifyTfa, getTfaSetup, resetPassword } from "../../api";
+import { login, verifyTfa, resetPassword } from "../../api";
 import LoginForm from './LoginForm';
 import TfaForm from './TfaForm';
 import LogoutForm from './LogoutForm';
-import ResetPasswordForm from './ResetPasswordForm'; // import the reset password form
+import ResetPasswordForm from './ResetPasswordForm';
 
 const LoginPage = () => {
   const [view, setView] = useState("Login");
@@ -40,12 +40,7 @@ const LoginPage = () => {
       const res = await verifyTfa(userName, tfaCode);
       if (res && res.data && res.data.token) {
         localStorage.setItem("token", res.data.token.token);
-        logIn({ 
-          id: res.data.userId, 
-          username: userName,
-          email: res.data.email,
-          token: res.data.token
-        });
+        logIn(userName, res.data.token.token);
         window.location.href = '/';
       } else {
         throw new Error("Invalid TFA code");

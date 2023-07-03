@@ -1,5 +1,1 @@
-import notificationService from "./notificationService";
-
-export {
-    notificationService
-}
+export * from "./notificationService";

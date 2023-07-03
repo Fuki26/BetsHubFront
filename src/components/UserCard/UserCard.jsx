@@ -1,6 +1,20 @@
 import React, { useState } from "react";
-import { Card, CardContent, Typography, Grid, Avatar, Link, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  Avatar,
+  Link,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
+} from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import SessionTable from "../../components/SessionTable/SessionTable";
 
 const UserCard = ({ user, qrCodeUrl, deleteUser }) => {
   const [openDeleteUser, setOpenDeleteUser] = useState(false);
@@ -19,7 +33,7 @@ const UserCard = ({ user, qrCodeUrl, deleteUser }) => {
   };
 
   return (
-    <Card style={{ margin: "20px" }}>
+    <Card variant="outlined" style={{ margin: "20px" }}>
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={8}>
@@ -31,22 +45,22 @@ const UserCard = ({ user, qrCodeUrl, deleteUser }) => {
                 {user.userName}
               </Typography>
             </Grid>
-            <Typography variant="subtitle1">
-              Email: {user.email}
-            </Typography>
+            <Typography variant="subtitle1">Email: {user.email}</Typography>
             <Typography variant="subtitle1">
               Failed Access Attempts: {user.accessFailedCount}
             </Typography>
             <Typography variant="subtitle1">
               Role: {user?.role?.name}
             </Typography>
-            <Link href="#" variant="body2" color="error" onClick={handleOpenDeleteUser}>
+            <Link
+              href="#"
+              variant="body2"
+              color="error"
+              onClick={handleOpenDeleteUser}
+            >
               Delete this user
             </Link>
-            <Dialog
-              open={openDeleteUser}
-              onClose={handleCloseDeleteUser}
-            >
+            <Dialog open={openDeleteUser} onClose={handleCloseDeleteUser}>
               <DialogTitle>{"Delete User"}</DialogTitle>
               <DialogContent>
                 <DialogContentText>
@@ -65,18 +79,23 @@ const UserCard = ({ user, qrCodeUrl, deleteUser }) => {
           </Grid>
           <Grid item xs={4}>
             <Typography variant="subtitle1" style={{ marginTop: "10px" }}>
-              QR for two-factor authentication setup
+              QR for two-factor setup
             </Typography>
             <img
-                src={qrCodeUrl}
-                alt="QR Code for TFA setup"
-                style={{ width: "100px", height: "100px" }}
+              src={qrCodeUrl}
+              alt="QR Code for TFA setup"
+              style={{ width: "100px", height: "100px" }}
             />
+          </Grid>
+        </Grid>
+        <Grid container>
+          <Grid item>
+            <SessionTable userName={user.userName} />
           </Grid>
         </Grid>
       </CardContent>
     </Card>
   );
-}
+};
 
 export default UserCard;

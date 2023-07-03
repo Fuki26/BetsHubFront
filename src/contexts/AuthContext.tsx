@@ -22,7 +22,7 @@ export const getUserFromLocalStorate = () => {
 
 type AuthState = {
   auth: State;
-  logIn: () => void;
+  logIn: (userName: string, token: string) => void;
   logout: () => void;
 };
 
@@ -38,20 +38,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const logout = async () => {
       localStorage.setItem('user', '');
+      localStorage.setItem('token', '');
       setAuth((prevState) => ({
           ...prevState,
           user: undefined,
       }));
     };
 
-  const logIn = async () => {
+  const logIn = async (userName: string, token: string) => {
     const user: UserContext = {
       id: 'User_Id',
-      username: 'User_Username',
+      username: userName,
       email: 'User_email',
-      token: 'User_token',
+      token: token,
     };
-
     localStorage.setItem('user', JSON.stringify(user));
     setAuth((prevState) => ({
       ...prevState,
