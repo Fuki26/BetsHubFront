@@ -20,7 +20,6 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const res = await login(userName, password);
-
       if (res && res.data && res.data.isTfaRequired) {
         setView("Tfa");
         setError(null)
@@ -40,7 +39,7 @@ const LoginPage = () => {
       const res = await verifyTfa(userName, tfaCode);
       if (res && res.data && res.data.token) {
         localStorage.setItem("token", res.data.token.token);
-        logIn(userName, res.data.token.token);
+        logIn(userName, res.data.token.token, res.data.token.roleId);
         window.location.href = '/';
       } else {
         throw new Error("Invalid TFA code");

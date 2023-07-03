@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import { Box, ButtonBase } from '@mui/material';
+import LockIcon from '@mui/icons-material/Lock';
 import { Link } from 'react-router-dom';
 
 export function SideNavItem(props: 
-  { active: boolean; icon: any; path: any; title: any; }) 
+  { active: boolean; icon: any; path: any; title: any; disabled?: boolean }) 
 {
-  const { active, icon, path, title } = props;
+  const { active, icon, path, title, disabled = false } = props;
 
   const linkProps = path
     ? {
@@ -32,9 +33,15 @@ export function SideNavItem(props:
           }),
           '&:hover': {
             backgroundColor: 'rgba(255, 255, 255, 0.04)'
-          }
+          },
+          ...(disabled && {
+            pointerEvents: 'none',
+            color: 'gray',
+            backgroundColor: 'lightgray',
+          }),
         }}
         {...linkProps}
+        disabled={disabled}
       >
         {icon && (
           <Box
@@ -47,11 +54,22 @@ export function SideNavItem(props:
               mr: 2,
               ...(active && {
                 color: 'primary.main'
-              })
+              }),
+              ...(disabled && {
+                color: 'gray',
+              }),
             }}
           >
             {icon}
           </Box>
+        )}
+        {disabled && (
+          <LockIcon
+            sx={{
+              ml: 1,
+              color: 'gray',
+            }}
+          />
         )}
         <Box
           component='span'
@@ -65,6 +83,9 @@ export function SideNavItem(props:
             whiteSpace: 'nowrap',
             ...(active && {
               color: 'common.white'
+            }),
+            ...(disabled && {
+              color: 'gray',
             }),
           }}
         >

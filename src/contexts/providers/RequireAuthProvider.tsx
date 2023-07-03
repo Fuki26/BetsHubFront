@@ -1,22 +1,14 @@
-import { Navigate, } from 'react-router-dom';
-import { useAuth } from '../AuthContext';
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 
-function RequireAuth({ children }: { children: React.ReactNode }){    
-    const {
-        auth,
-        // logIn,
-        // logout,
-    } = useAuth();
+function RequireAuth({ children, restrictedRole }: { children: React.ReactNode, restrictedRole?: number }) {
+  const { auth } = useAuth();
+  if (!auth.user || ( restrictedRole && Number(auth.user.role) !== restrictedRole)) {
+    return <Navigate to="/login" />;
+  }
 
-    if (!auth.user) {
-        return <Navigate to='/login' />
-    }
-
-    return (
-        <>
-            {children}
-        </>
-    );
+  return <>{children}</>;
 }
+
 
 export default RequireAuth;

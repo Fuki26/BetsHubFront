@@ -142,6 +142,7 @@ export default function PersistentDrawerLeft(
                               icon: any; 
                               title: string; 
                               requireAuthentication: boolean;
+                              adminOnly?: boolean;
                             }
                         // eslint-disable-next-line array-callback-return
                         ) => 
@@ -158,6 +159,7 @@ export default function PersistentDrawerLeft(
                                   key={item.title}
                                   path={item.path}
                                   title={item.title!}
+                                  disabled={(item.adminOnly && Number(auth.user?.role) !== 1)}
                               />
                             );
                           }

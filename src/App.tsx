@@ -99,7 +99,7 @@ function App() {
           <Route
             path="/users"
             element={
-              <RequireAuth>
+              <RequireAuth restrictedRole={1}>
                 <LayoutRoot isOpenSideBar={isOpenSideBar}>
                   <LayoutContainer>
                     <Users />

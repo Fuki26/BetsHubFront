@@ -42,6 +42,7 @@ export const items = [
       </SvgIcon>
     ),
     requireAuthentication: true,
+    adminOnly: true,
   },
   {
     title: 'Currency',
