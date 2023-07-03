@@ -12,6 +12,7 @@ const TfaForm = ({ tfaCode, setTfaCode, onSubmit }) => {
         alignItems: "center",
         width: "300px",
         marginBottom: 2,
+        marginTop: 2,
       }}
       noValidate
       autoComplete="off"

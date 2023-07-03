@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import Register from "../../components/Register/Register";
 import UserCard from "../../components/UserCard/UserCard";
-import { notificationService } from "../../services";
+import { notifySuccess, notifyError } from "../../services";
 import { registerUser, getTfaSetup, deleteUser} from "../../api";
+import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
 import {
   Autocomplete,
   Box,
@@ -22,9 +23,9 @@ const Users = () => {
     try {
       await registerUser(user);
       fetchUsers();
-      notificationService.notifySuccess(`Successfully created new user with username ${user.userName}`);
+      notifySuccess(`Successfully created new user with username ${user.userName}`);
     } catch (err) {
-      notificationService.notifyError(`Error while creating user: ${err}`);
+      notifyError(`Error while creating user: ${err}`);
       throw err;
     }
   };
@@ -45,7 +46,7 @@ const Users = () => {
       await deleteUser(userName);
       fetchUsers();
     } catch (err) {
-      notificationService.notifyError(`Error while deleting user: ${err}`);
+      notifyError(`Error while deleting user: ${err}`);
     }
   };
 
@@ -97,6 +98,7 @@ const Users = () => {
       maxWidth: '90%',
       margin: 'auto'
     }}>
+      <SupervisedUserCircleIcon style={{ fontSize: 100 }} />
       <Paper sx={{ padding: "5%", width: '100%' }}>
         <Box sx={{ marginBottom: "5%" }}>
           <Register submit={createNewUser} />

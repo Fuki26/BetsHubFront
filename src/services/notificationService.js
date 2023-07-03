@@ -12,7 +12,7 @@ const notifyError = (message) => {
     });
 }
 
-export default {
+export {
     notifySuccess,
     notifyError
 }

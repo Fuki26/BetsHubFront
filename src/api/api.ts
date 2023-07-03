@@ -7,6 +7,7 @@ const domain = 'http://213.91.236.205:5000';
 // const domain = 'http://localhost:5001'
 
 const instance = axios.create({
+    withCredentials: true,
     baseURL: domain
 });
 
@@ -322,20 +323,23 @@ const getTfaSetup = async (userName: string) => {
     return tfaSetup;
 }
 
-const registerUser = async (userName: string, password: string, email: string, role: number) => {
-    try {
-      return await instance.post(
-        `${domain}/Auth/Register`,
-        { userName, password, email, role },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    } catch (e) {
-      console.log(JSON.stringify(e));
-    }
+const registerUser = async (user: User) => {
+  const { userName, password, email, role } = user;
+
+  try {
+    return await instance.post(
+      `${domain}/Auth/Register`,
+      { userName, password, email, role },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (e) {
+    console.log(JSON.stringify(e));
+    throw e;
+  }
 };
 
 const resetPassword = async (email: string) => {
@@ -356,19 +360,24 @@ const resetPassword = async (email: string) => {
 
 const deleteUser = async (userName: string) => {
     try {
-      return await instance.post(
-        `${domain}/Auth/DeleteUser`,
-        { userName },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+      return await instance.delete(
+        `${domain}/Auth/DeleteUser?userName=${userName}`,
       );
     } catch (e) {
       console.log(JSON.stringify(e));
     }
 };
+
+const getUserSessions = async (userName: string) => {
+  try{
+    var sessions =  await instance.get(
+      `${domain}/GetUserSessions?userName=${userName}`
+    )
+    return sessions;
+  }catch (e) {
+    console.log(JSON.stringify(e));
+  }
+}
 
 export {
   getPendingBets,
@@ -398,4 +407,5 @@ export {
   registerUser,
   resetPassword,
   deleteUser,
+  getUserSessions,
 };
