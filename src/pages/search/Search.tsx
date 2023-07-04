@@ -152,6 +152,7 @@ export default function Search() {
   const [ marketIds, setMarketIds ] = React.useState<Array<string>>([]);
   const [ tournamentIds, setTournamentIds ] = React.useState<Array<string>>([]);
   const [ liveStatusIds, setLiveStatusIds ] = React.useState<Array<string>>([]);
+  const [ currencyIds, setCurrencyIds ] = React.useState<Array<string>>([]);
 
   //#endregion Filters
 
@@ -346,8 +347,8 @@ export default function Search() {
 
         //#region Currencies
 
-        let currencies: Array<Currency> | undefined = await getCurrencies();
-        setAllCurrencies(currencies);
+        let getCurrenciesResult: Array<Currency> | undefined = await getCurrencies();
+        setAllCurrencies(getCurrenciesResult);
 
         //#endregion
       
@@ -442,6 +443,19 @@ export default function Search() {
           }
 
           //#endregion Live status filter
+
+          //#region Currency filter
+
+          if(currencyIds.length > 0) {
+            //TODO: filter the proper bets
+            const matchTournaments = false
+
+            if(!matchTournaments) {
+              continue;
+            }
+          }
+
+          //#endregion Currency filter
 
 
           //#region DateFrom - DateTo filter
@@ -547,7 +561,8 @@ export default function Search() {
       }
     });
   }, [ dateFrom, dateTo, stakeFrom, stakeTo, oddFrom, oddTo, psLimitFrom, psLimitTo, 
-    counteragentCategoriesIds, counteragentIds, sportIds, marketIds, tournamentIds, liveStatusIds, rows]);
+    counteragentCategoriesIds, counteragentIds, sportIds, marketIds, tournamentIds, liveStatusIds, currencyIds, 
+      rows]);
 
   useEffect(() => {
     setFilteredExpenseRows((previousRowsModel: Array<ExpenseModel> | undefined) => {
@@ -765,6 +780,27 @@ export default function Search() {
             } as IDropdownValue; 
           });
 
+    const distinctCurrencies: Array<IDropdownValue> = (filteredRows
+      ? [
+          ...new Set(
+            filteredRows!
+              .filter((b: BetModel) => !!b.amounts)
+              .map((b) => Object.keys(b.amounts!))
+              .reduce((a, c) => a.filter(i => c.includes(i)))
+          ) 
+        ]
+      : []).map((currencyAbbreviation) => { 
+              const currency = allCurrencies?.find((c) => c.abbreviation === currencyAbbreviation);
+              if(!currency) {
+                throw new Error(`Currency with abbreviation = ${currencyAbbreviation} does not exists in the database`);
+              }
+  
+              return { 
+                id: currency.abbreviation, 
+                label: currency.abbreviation,
+              } as IDropdownValue; 
+            });
+
   return (
     <Paper sx={{ padding: '5%', }}>
       <Typography variant='h1' className='typography'>
@@ -929,6 +965,12 @@ export default function Search() {
             options={distinctLiveStatuses} 
             selectedOptions={liveStatusIds}
             setStateFn={setLiveStatusIds}/>
+          <AutocompleteComponent 
+            id='currencies-autocomplete'
+            label='Currency'
+            options={distinctCurrencies} 
+            selectedOptions={currencyIds}
+            setStateFn={setCurrencyIds}/>
         </Paper>
       </Paper>
       <Typography variant='h4'>Bets</Typography>
