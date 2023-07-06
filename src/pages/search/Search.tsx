@@ -174,6 +174,10 @@ export default function Search() {
     React.useState<ISelectionsResult | undefined>(undefined);
   const [ allCurrencies, setAllCurrencies ] = 
     React.useState<Array<Currency> | undefined>(undefined);
+
+
+  const [ databaseCurrencies, setDatabaseCurrencies ] = 
+    React.useState<Array<Currency> | undefined>(undefined);
   
 
   useEffect(() => {
@@ -196,14 +200,15 @@ export default function Search() {
 
         let bets: Array<BetModel> = (await getPendingBets())!.map(betToBetModelMapper);
         setRows(bets);
-        setFilteredRows(bets.filter((b) => {
+        const filteredRows: Array<BetModel> = bets.filter((b) => {
           if(b.dateFinished) {
             return b.dateFinished.getTime() > dateFrom.getTime()
               && b.dateFinished.getTime() < now.getTime();
           } else {
             return false;
           }
-        }));
+        });
+        setFilteredRows(filteredRows);
 
         //#endregion Bets
 
@@ -348,6 +353,7 @@ export default function Search() {
         //#region Currencies
 
         let getCurrenciesResult: Array<Currency> | undefined = await getCurrencies();
+        setDatabaseCurrencies(getCurrenciesResult);
         setAllCurrencies(getCurrenciesResult);
 
         //#endregion
@@ -447,10 +453,17 @@ export default function Search() {
           //#region Currency filter
 
           if(currencyIds.length > 0) {
-            //TODO: filter the proper bets
-            const matchTournaments = false
+            if(!currentRow.amounts || currentRow.amounts.length === 0) {
+              continue;
+            }
 
-            if(!matchTournaments) {
+            const matchCurrencies = (currentRow.amounts as any)
+              .some((a: any) => {
+                return currencyIds.indexOf(a.currencyId.toString()) !== -1
+                  && a.amount > 0;
+              });
+
+            if(!matchCurrencies) {
               continue;
             }
           }
@@ -555,6 +568,35 @@ export default function Search() {
           bets.push(currentRow);
         }
 
+        if(databaseCurrencies && currencyIds.length > 0) {
+          const filteredCurrencies: Array<Currency> 
+            = databaseCurrencies.filter((c) => currencyIds.indexOf(c.id.toString()) !== -1);
+
+          setAllCurrencies(filteredCurrencies);
+
+          for(var i = 0; i <= bets.length - 1; i++) {
+            const currentBet = bets[i];
+            if(!currentBet.amounts) {
+              continue;
+            }
+
+            let totalAmount = 0;
+            for(var j = 0; j <= currentBet.amounts.length - 1; j++) {
+              const currentAmount: any = currentBet.amounts[j];
+              if(currencyIds.indexOf(currentAmount.currencyId.toString()) === -1) {
+                continue;
+              }
+              
+              const databaseCurrency = databaseCurrencies.find((dC) => dC.id === currentAmount.currencyId)
+              totalAmount += currentAmount.amount * databaseCurrency!.conversionRateToBGN;
+            }
+
+            currentBet.totalAmount = totalAmount;
+          }
+        } else {
+          setAllCurrencies(databaseCurrencies);
+        }
+        
         return bets;
       } else {
         return [];
@@ -780,26 +822,14 @@ export default function Search() {
             } as IDropdownValue; 
           });
 
-    const distinctCurrencies: Array<IDropdownValue> = (filteredRows
-      ? [
-          ...new Set(
-            filteredRows!
-              .filter((b: BetModel) => !!b.amounts)
-              .map((b) => Object.keys(b.amounts!))
-              .reduce((a, c) => a.filter(i => c.includes(i)))
-          ) 
-        ]
-      : []).map((currencyAbbreviation) => { 
-              const currency = allCurrencies?.find((c) => c.abbreviation === currencyAbbreviation);
-              if(!currency) {
-                throw new Error(`Currency with abbreviation = ${currencyAbbreviation} does not exists in the database`);
-              }
-  
-              return { 
-                id: currency.abbreviation, 
-                label: currency.abbreviation,
-              } as IDropdownValue; 
-            });
+  const distinctCurrencies: Array<IDropdownValue> = databaseCurrencies
+        ? databaseCurrencies.map((currency) => {
+            return {
+              id: currency.id.toString(),
+              label: currency.abbreviation,
+            };
+          })
+        : [];
 
   return (
     <Paper sx={{ padding: '5%', }}>
