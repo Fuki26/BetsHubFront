@@ -152,6 +152,7 @@ export default function Search() {
   const [ marketIds, setMarketIds ] = React.useState<Array<string>>([]);
   const [ tournamentIds, setTournamentIds ] = React.useState<Array<string>>([]);
   const [ liveStatusIds, setLiveStatusIds ] = React.useState<Array<string>>([]);
+  const [ currencyIds, setCurrencyIds ] = React.useState<Array<string>>([]);
 
   //#endregion Filters
 
@@ -172,6 +173,10 @@ export default function Search() {
   const [ allSelections, setAllSelections ] = 
     React.useState<ISelectionsResult | undefined>(undefined);
   const [ allCurrencies, setAllCurrencies ] = 
+    React.useState<Array<Currency> | undefined>(undefined);
+
+
+  const [ databaseCurrencies, setDatabaseCurrencies ] = 
     React.useState<Array<Currency> | undefined>(undefined);
   
 
@@ -195,14 +200,15 @@ export default function Search() {
 
         let bets: Array<BetModel> = (await getPendingBets())!.map(betToBetModelMapper);
         setRows(bets);
-        setFilteredRows(bets.filter((b) => {
+        const filteredRows: Array<BetModel> = bets.filter((b) => {
           if(b.dateFinished) {
             return b.dateFinished.getTime() > dateFrom.getTime()
               && b.dateFinished.getTime() < now.getTime();
           } else {
             return false;
           }
-        }));
+        });
+        setFilteredRows(filteredRows);
 
         //#endregion Bets
 
@@ -346,8 +352,9 @@ export default function Search() {
 
         //#region Currencies
 
-        let currencies: Array<Currency> | undefined = await getCurrencies();
-        setAllCurrencies(currencies);
+        let getCurrenciesResult: Array<Currency> | undefined = await getCurrencies();
+        setDatabaseCurrencies(getCurrenciesResult);
+        setAllCurrencies(getCurrenciesResult);
 
         //#endregion
       
@@ -442,6 +449,26 @@ export default function Search() {
           }
 
           //#endregion Live status filter
+
+          //#region Currency filter
+
+          if(currencyIds.length > 0) {
+            if(!currentRow.amounts || currentRow.amounts.length === 0) {
+              continue;
+            }
+
+            const matchCurrencies = (currentRow.amounts as any)
+              .some((a: any) => {
+                return currencyIds.indexOf(a.currencyId.toString()) !== -1
+                  && a.amount > 0;
+              });
+
+            if(!matchCurrencies) {
+              continue;
+            }
+          }
+
+          //#endregion Currency filter
 
 
           //#region DateFrom - DateTo filter
@@ -541,13 +568,43 @@ export default function Search() {
           bets.push(currentRow);
         }
 
+        if(databaseCurrencies && currencyIds.length > 0) {
+          const filteredCurrencies: Array<Currency> 
+            = databaseCurrencies.filter((c) => currencyIds.indexOf(c.id.toString()) !== -1);
+
+          setAllCurrencies(filteredCurrencies);
+
+          for(var i = 0; i <= bets.length - 1; i++) {
+            const currentBet = bets[i];
+            if(!currentBet.amounts) {
+              continue;
+            }
+
+            let totalAmount = 0;
+            for(var j = 0; j <= currentBet.amounts.length - 1; j++) {
+              const currentAmount: any = currentBet.amounts[j];
+              if(currencyIds.indexOf(currentAmount.currencyId.toString()) === -1) {
+                continue;
+              }
+              
+              const databaseCurrency = databaseCurrencies.find((dC) => dC.id === currentAmount.currencyId)
+              totalAmount += currentAmount.amount * databaseCurrency!.conversionRateToBGN;
+            }
+
+            currentBet.totalAmount = totalAmount;
+          }
+        } else {
+          setAllCurrencies(databaseCurrencies);
+        }
+        
         return bets;
       } else {
         return [];
       }
     });
   }, [ dateFrom, dateTo, stakeFrom, stakeTo, oddFrom, oddTo, psLimitFrom, psLimitTo, 
-    counteragentCategoriesIds, counteragentIds, sportIds, marketIds, tournamentIds, liveStatusIds, rows]);
+    counteragentCategoriesIds, counteragentIds, sportIds, marketIds, tournamentIds, liveStatusIds, currencyIds, 
+      rows]);
 
   useEffect(() => {
     setFilteredExpenseRows((previousRowsModel: Array<ExpenseModel> | undefined) => {
@@ -765,6 +822,32 @@ export default function Search() {
             } as IDropdownValue; 
           });
 
+  const distinctCurrencies: Array<IDropdownValue> = databaseCurrencies
+        ? databaseCurrencies.map((currency) => {
+            return {
+              id: currency.id.toString(),
+              label: currency.abbreviation,
+            };
+          })
+        : [];
+
+
+  
+  let totalOfTotals = 0;
+  if(rows) {
+    totalOfTotals = rows.reduce(
+      (accumulator, currentValue: BetModel) => {
+        if(currentValue.totalAmount) {
+          return accumulator + currentValue.totalAmount;
+        } else {
+          return accumulator;
+        }
+      },
+      0
+    );
+  }
+  
+
   return (
     <Paper sx={{ padding: '5%', }}>
       <Typography variant='h1' className='typography'>
@@ -929,9 +1012,16 @@ export default function Search() {
             options={distinctLiveStatuses} 
             selectedOptions={liveStatusIds}
             setStateFn={setLiveStatusIds}/>
+          <AutocompleteComponent 
+            id='currencies-autocomplete'
+            label='Currency'
+            options={distinctCurrencies} 
+            selectedOptions={currencyIds}
+            setStateFn={setCurrencyIds}/>
         </Paper>
       </Paper>
       <Typography variant='h4'>Bets</Typography>
+      <Typography variant='h4'>Total of totals: {totalOfTotals}</Typography>
       {
         filteredRows
           ? (

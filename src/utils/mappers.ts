@@ -51,6 +51,7 @@ export const betToBetModelMapper = (bet: Bet) => {
     dateFinished: bet.dateFinished ? new Date(bet.dateFinished) : null,
     profits: bet.profits,
     notes: bet.notes,
+    amounts: bet.currencyAmounts,
     totalAmount: bet.totalAmount,
     actionTypeApplied: undefined,
     isSavedInDatabase: true,
