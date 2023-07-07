@@ -831,6 +831,23 @@ export default function Search() {
           })
         : [];
 
+
+  
+  let totalOfTotals = 0;
+  if(rows) {
+    totalOfTotals = rows.reduce(
+      (accumulator, currentValue: BetModel) => {
+        if(currentValue.totalAmount) {
+          return accumulator + currentValue.totalAmount;
+        } else {
+          return accumulator;
+        }
+      },
+      0
+    );
+  }
+  
+
   return (
     <Paper sx={{ padding: '5%', }}>
       <Typography variant='h1' className='typography'>
@@ -1004,6 +1021,7 @@ export default function Search() {
         </Paper>
       </Paper>
       <Typography variant='h4'>Bets</Typography>
+      <Typography variant='h4'>Total of totals: {totalOfTotals}</Typography>
       {
         filteredRows
           ? (
