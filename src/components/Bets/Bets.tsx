@@ -1126,7 +1126,7 @@ function Bets(props: {
               toolbar: { setRows, setRowModesModel },
             }}
             onRowClick={onRowClick}
-            editMode="cell"
+            editMode="row"
             sx={{
               height: 500,
             }}
