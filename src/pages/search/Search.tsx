@@ -860,8 +860,11 @@ export default function Search() {
                 disableShrink={true}
                 style={{
                   position: 'fixed', 
-                  top: '40%', 
-                  right: '40%', 
+                  top: '0', 
+                  right: '0',
+                  bottom: '0',
+                  left: '0',
+                  margin: 'auto',
                   zIndex: 9999999999999,
                   transition: 'none',
                 }}
