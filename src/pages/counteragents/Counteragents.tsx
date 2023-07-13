@@ -357,13 +357,13 @@ export default function Counteragents(props: {}) {
       headerName: 'Name',
       type: 'string',
       editable: true,
-      width: 150,
+      width: 120,
     },
     {
       field: 'counteragentCategory',
       headerName: 'Counteragent category',
       editable: true,
-      width: 300,
+      width:150,
       renderCell: (params: GridRenderCellParams<CounteragentModel>) => {
         const row = rows?.find((r) => r.id === params.row.id);
         if(!row) {
@@ -435,7 +435,7 @@ export default function Counteragents(props: {}) {
       field: 'user',
       headerName: 'User',
       editable: true,
-      width: 300,
+      width: 150,
       renderCell: (params: GridRenderCellParams<CounteragentModel>) => {
         const row = rows?.find((r) => r.id === params.row.id);
         if(!row) {
@@ -508,21 +508,21 @@ export default function Counteragents(props: {}) {
       headerName: 'Max rate',
       type: 'number',
       editable: true,
-      width: 150,
+      width: 70,
     },
     {
       field: 'dateCreated',
       headerName: 'Date created',
       type: 'date',
       editable: false,
-      width: 150,
+      width: 120,
     },
     {
       field: 'dateChanged',
       headerName: 'Date changed',
       type: 'date',
       editable: false,
-      width: 150,
+      width: 120,
     },
   ];
 
