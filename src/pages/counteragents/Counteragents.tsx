@@ -574,29 +574,30 @@ export default function Counteragents(props: {}) {
   return (
     <>
     {
-      isLoading
-        ? (
-            <>
-            <div className='background-color-blur'>
-            <CircularProgress color="success" 
-                size={250}
-                disableShrink={true}
-                style={{
-                  position: 'fixed', 
-                  top: '40%', 
-                  right: '40%', 
-                  zIndex: 9999999999999,
-                  transition: 'none',
-                }}
+  isLoading
+    ? (
+      <>
+      <div className='background-color-blur'>
+      <CircularProgress color="success" 
+          size={250}
+          disableShrink={true}
+          style={{
+            position: 'fixed', 
+            top: '0', 
+            right: '0',
+            bottom: '0',
+            left: '0',
+            margin: 'auto',
+            zIndex: 9999999999999,
+            transition: 'none',
+          }}
+        />
+      </div>
+      </>
+    )
+  : null
+}
 
-              />
-            </div>
-             
-            </>
-            
-          )
-        : null
-    }
     <Paper sx={{ padding: '5%', }}>
       <Typography variant='h3'>Counteragents</Typography>
      
