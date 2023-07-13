@@ -572,29 +572,34 @@ export default function Counteragents(props: {}) {
   }
 
   return (
+    <>
+    {
+      isLoading
+        ? (
+            <>
+            <div className='background-color-blur'>
+            <CircularProgress color="success" 
+                size={250}
+                disableShrink={true}
+                style={{
+                  position: 'fixed', 
+                  top: '40%', 
+                  right: '40%', 
+                  zIndex: 9999999999999,
+                  transition: 'none',
+                }}
+
+              />
+            </div>
+             
+            </>
+            
+          )
+        : null
+    }
     <Paper sx={{ padding: '5%', }}>
       <Typography variant='h3'>Counteragents</Typography>
-      {
-        isLoading
-          ? (
-              <>
-                <CircularProgress color="success" 
-                  size={250}
-                  disableShrink={true}
-                  style={{
-                    position: 'fixed', 
-                    top: '40%', 
-                    right: '50%', 
-                    zIndex: 9999999999999,
-                    transition: 'none',
-                  }}
-
-                />
-              </>
-              
-            )
-          : null
-      }
+     
       {
         rows
           ? (
@@ -633,5 +638,8 @@ export default function Counteragents(props: {}) {
           : null
       }
     </Paper>
+
+    </>
+    
   );
 }

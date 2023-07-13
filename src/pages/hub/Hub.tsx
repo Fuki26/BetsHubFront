@@ -384,23 +384,29 @@ export default function Hub() {
   };
 
   return (
+    <>
+{isLoading ? (
+      <>
+      <div className="background-color-blur">
+      <CircularProgress
+          color="success"
+          size={250}
+          disableShrink={true}
+          style={{
+            position: "fixed",
+            top: "40%",
+            right: "40%",
+            zIndex: 9999999999999,
+            transition: "none",
+          }}
+        />
+      </div>
+        
+      </>
+    ) : null}
+
     <Paper sx={{ padding: "5%" }}>
-      {isLoading ? (
-        <>
-          <CircularProgress
-            color="success"
-            size={250}
-            disableShrink={true}
-            style={{
-              position: "fixed",
-              top: "40%",
-              right: "50%",
-              zIndex: 9999999999999,
-              transition: "none",
-            }}
-          />
-        </>
-      ) : null}
+     
       <Paper style={{ display: "flex", marginBottom: "10%"}}>
         <Paper style={{ width: "60%"}}>
           <Typography variant="h4">Statistics</Typography>
@@ -558,5 +564,7 @@ export default function Hub() {
         </>
       ) : null}
     </Paper>
+    </>
+    
   );
 }

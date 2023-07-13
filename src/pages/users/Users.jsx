@@ -73,17 +73,20 @@ const Users = () => {
 
   if (isLoading) {
     return (
-      <CircularProgress
-        color="success"
-        size={250}
-        disableShrink={true}
-        style={{
-          position: "fixed",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        }}
-      />
+      <div className="background-color-blur">
+        <CircularProgress
+          color="success"
+          size={250}
+          disableShrink={true}
+          style={{
+            position: "fixed",
+            top: "40%",
+            left: "40%",
+            transform: "translate(-50%, -50%)",
+          }}
+
+        />
+      </div>
     );
   }
 
