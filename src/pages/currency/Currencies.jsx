@@ -27,8 +27,8 @@ export default function CurrencyTable() {
 
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
-    { field: "name", headerName: "Name", width: 130 },
-    { field: "abbreviation", headerName: "Abbreviation", width: 130 },
+    { field: "name", headerName: "Name", width: 80 },
+    { field: "abbreviation", headerName: "Abbreviation", width: 80 },
     {
       field: "conversionRateToBGN",
       headerName: "Conversion Rate to BGN",

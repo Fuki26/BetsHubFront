@@ -306,7 +306,7 @@ export default function Expenses(props: {
       field: 'counterAgent',
       headerName: 'Counteragent',
       editable: true,
-      width: 300,
+      width: 150,
       renderCell: (params: GridRenderCellParams<ExpenseModel>) => {
         const row = rows?.find((r) => r.id === params.row.id);
         if(!row) {
@@ -387,7 +387,7 @@ export default function Expenses(props: {
         headerName: 'AmountBGN',
         type: 'number',
         editable: true,
-        width: 150,
+        width: 70,
     },
     {
         field: 'description',
@@ -401,7 +401,7 @@ export default function Expenses(props: {
         headerName: 'Date created',
         type: 'date',
         editable: false,
-        width: 150,
+        width: 100,
     },
   ];
 

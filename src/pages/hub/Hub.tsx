@@ -343,31 +343,31 @@ export default function Hub() {
       field: "periodType",
       headerName: "Period",
       type: "string",
-      width: 150,
+      width: 100,
     },
     {
       field: "profit",
       headerName: "Profit",
       type: "number",
-      width: 150,
+      width: 70,
     },
     {
       field: "turnOver",
       headerName: "Turnover",
       type: "number",
-      width: 150,
+      width: 70,
     },
     {
       field: "winRate",
       headerName: "Win Rate",
       type: "number",
-      width: 150,
+      width: 100,
     },
     {
       field: "yield",
       headerName: "Yield",
       type: "number",
-      width: 150,
+      width: 70,
     },
   ];
 
@@ -401,26 +401,35 @@ export default function Hub() {
           />
         </>
       ) : null}
-      {currentStatistcs ? (
-        <Paper>
+      <Paper style={{ display: "flex", marginBottom: "10%"}}>
+        <Paper style={{ width: "60%"}}>
           <Typography variant="h4">Statistics</Typography>
           <RadioGroup
             aria-labelledby="demo-controlled-radio-buttons-group"
             name="controlled-radio-buttons-group"
             value={statisticsType}
             onChange={(event) => {
-              const value: string = (event.target as HTMLInputElement).value;
-              setStatisticsType(
-                value === "Flat" ? StatisticType.Flat : StatisticType.Real
-              );
+            const value: string = (event.target as HTMLInputElement).value;
+            setStatisticsType(
+            value === "Flat" ? StatisticType.Flat : StatisticType.Real
+            );
             }}
           >
             <FormControlLabel value="Flat" control={<Radio />} label="Flat" />
             <FormControlLabel value="Real" control={<Radio />} label="Real" />
           </RadioGroup>
-          <DataGrid columns={statisticsColumns} rows={currentStatistcs} />
+          <DataGrid columns={statisticsColumns} 
+            rows={currentStatistcs || []}
+            pageSizeOptions={[]}
+            autoPageSize={false}
+          />
         </Paper>
-      ) : null}
+        <Paper>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateCalendar onChange={selectedDateFn} />
+          </LocalizationProvider>
+        </Paper>
+      </Paper>
 
       <Paper style={{ display: "flex", flexWrap: "nowrap" }}>
         <Paper>
@@ -492,8 +501,8 @@ export default function Hub() {
                 timeout="auto"
                 unmountOnExit
               >
-                <Grid container spacing={3}>
-                  <Grid item xs={11} sx={{ maxWidth: "70vw !important" }}>
+                {/* <Grid container spacing={3}> */}
+                  {/* <Grid item xs={11} sx={{ maxWidth: "70vw !important" }}> */}
                     <Bets
                       arePengindBets={false}
                       isRead={true}
@@ -509,13 +518,11 @@ export default function Hub() {
                         possibleSelections ? possibleSelections : {}
                       }
                     />
-                  </Grid>
-                  <Grid item xs={1}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DateCalendar onChange={selectedDateFn} />
-                    </LocalizationProvider>
-                  </Grid>
-                </Grid>
+                  {/* </Grid> */}
+                  {/* <Grid item xs={1}>
+                    
+                  </Grid> */}
+                {/* </Grid> */}
               </Collapse>
             </>
           ) : null}

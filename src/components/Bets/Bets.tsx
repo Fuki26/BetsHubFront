@@ -54,7 +54,7 @@ const insertCurrenciesIntoColumns = (columns: any, abbreviations: string[]) => {
     headerName: a,
     type: "number",
     editable: true,
-    width: 150,
+    width: 70,
   }));
   columns.splice(idx + 1, 0, ...currencyColumns);
 };
@@ -514,7 +514,7 @@ function Bets(props: {
       headerName: "Date created",
       type: "date",
       editable: false,
-      width: 150,
+      width: 100,
       renderCell: (params) => {
         const row = rows ? rows.find((r) => r.id === params.id) : undefined;
 
@@ -581,7 +581,7 @@ function Bets(props: {
       field: "winStatus",
       headerName: "Win status",
       editable: true,
-      width: 300,
+      width: 100,
       renderCell: (params: GridRenderCellParams<BetModel>) => {
         const row = rows.find((r) => r.id === params.row.id);
         if (!row) {
@@ -645,7 +645,7 @@ function Bets(props: {
       field: "liveStatus",
       headerName: "Live status",
       editable: true,
-      width: 300,
+      width: 100,
       renderCell: (params: GridRenderCellParams<BetModel>) => {
         const row = rows.find((r) => r.id === params.row.id);
         if (!row) {
@@ -707,7 +707,7 @@ function Bets(props: {
       field: "counterAgent",
       headerName: "Counteragent",
       editable: true,
-      width: 300,
+      width: 150,
       renderCell: (params: GridRenderCellParams<BetModel>) => {
         const row = rows.find((r) => r.id === params.row.id);
         if (!row) {
@@ -764,7 +764,7 @@ function Bets(props: {
       field: "sport",
       headerName: "Sport",
       editable: true,
-      width: 300,
+      width: 120,
       renderCell: (params: GridRenderCellParams<BetModel>) => {
         const row = rows.find((r) => r.id === params.row.id);
         if (!row) {
@@ -824,7 +824,7 @@ function Bets(props: {
       field: "tournament",
       headerName: "Tournament",
       editable: true,
-      width: 300,
+      width: 150,
       renderCell: (params: GridRenderCellParams<BetModel>) => {
         const row = rows.find((r) => r.id === params.row.id);
         if (!row) {
@@ -884,7 +884,7 @@ function Bets(props: {
       field: "market",
       headerName: "Market",
       editable: true,
-      width: 300,
+      width: 120,
       renderCell: (params: GridRenderCellParams<BetModel>) => {
         const row = rows.find((r) => r.id === params.row.id);
         if (!row) {
@@ -945,21 +945,21 @@ function Bets(props: {
       headerName: "Stake",
       type: "number",
       editable: true,
-      width: 150,
+      width: 70,
     },
     {
       field: "psLimit",
       headerName: "PS Limit",
       type: "number",
       editable: true,
-      width: 150,
+      width: 70,
     },
     {
       field: "totalAmount",
       headerName: "Total amount",
       type: "number",
       editable: false,
-      width: 150,
+      width: 120,
       valueGetter: (params) => {
         if (!currencies || currencies.length === 0) {
           return 0;
@@ -976,21 +976,21 @@ function Bets(props: {
       headerName: "Odd",
       type: "number",
       editable: true,
-      width: 150,
+      width: 100,
     },
     {
       field: "dateFinished",
       headerName: "Date finished",
       type: "date",
       editable: false,
-      width: 150,
+      width: 100,
     },
     {
       field: "profits",
       headerName: "P/L",
       type: "number",
       editable: false,
-      width: 150,
+      width: 70,
     },
     {
       field: "notes",
@@ -1126,7 +1126,7 @@ function Bets(props: {
               toolbar: { setRows, setRowModesModel },
             }}
             onRowClick={onRowClick}
-            editMode="row"
+            editMode="cell"
             sx={{
               height: 500,
             }}
