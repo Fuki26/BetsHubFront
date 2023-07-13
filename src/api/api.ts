@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Bet, Counteragent, CounterAgentCategory, Currency, Expense, Statistics, User, } from '../database-models';
 import { BetModel, CounteragentModel, CurrencyModel, ExpenseModel, ISelectionsResult, } from '../models';
 import { StatisticType } from '../models/enums';
+const { evaluate } = require('mathjs')
 
 const domain = 'http://213.91.236.205:5000';
 // const domain = 'http://localhost:5001'
@@ -209,8 +210,11 @@ const deleteCurrency = async (props: { id: number; }) => {
 const upsertBet = async (bet: BetModel) => {
   try {
     const amounts = Object.fromEntries(
-        Object.entries(bet).filter(([key, value]) => key.startsWith("amount")).map(([key, value]) => [key.replace('amount', ''), value])
-      );
+      Object.entries(bet).filter(([key, value]) => key.startsWith("amount")).map(([key, value]) => {
+        if(!value || value.constructor === Array) return [];
+        return [key.replace('amount', ''), value ? evaluate(value.toString()) : 0 ]
+      })
+    );
 
     const request = {
         id: bet.isSavedInDatabase ? Number(bet.id) : null,

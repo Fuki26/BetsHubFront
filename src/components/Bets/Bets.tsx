@@ -52,7 +52,7 @@ const insertCurrenciesIntoColumns = (columns: any, abbreviations: string[]) => {
   const currencyColumns = abbreviations.map((a) => ({
     field: `amount${a}`,
     headerName: a,
-    type: "number",
+    type: "text",
     editable: true,
     width: 70,
   }));
