@@ -849,31 +849,39 @@ export default function Search() {
   
 
   return (
+    <>
+     {
+      isLoading
+        ? (
+            <>
+            <div className='background-color-blur'>
+            <CircularProgress color="success" 
+                size={250}
+                disableShrink={true}
+                style={{
+                  position: 'fixed', 
+                  top: '0', 
+                  right: '0',
+                  bottom: '0',
+                  left: '0',
+                  margin: 'auto',
+                  zIndex: 9999999999999,
+                  transition: 'none',
+                }}
+
+              />
+            </div>
+             
+            </>
+            
+          )
+        : null
+    }
     <Paper sx={{ padding: '5%', }}>
       <Typography variant='h1' className='typography'>
         Search
       </Typography>
-      {
-        isLoading
-          ? (
-              <>
-                <CircularProgress color="success" 
-                  size={250}
-                  disableShrink={true}
-                  style={{
-                    position: 'fixed', 
-                    top: '40%', 
-                    right: '50%', 
-                    zIndex: 9999999999999,
-                    transition: 'none',
-                  }}
-
-                />
-              </>
-              
-            )
-          : null
-      }
+    
       <FormControl component="fieldset">
         <FormControlLabel
           value="end"
@@ -1056,5 +1064,7 @@ export default function Search() {
           : null
       }
     </Paper>
+    </>
+   
   );
 }

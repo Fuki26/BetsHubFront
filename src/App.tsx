@@ -19,7 +19,8 @@ const LayoutRoot = styled("div")<{ isOpenSideBar: boolean | undefined }>(
     display: "flex",
     flex: "1 1 auto",
     maxWidth: "100%",
-    [theme.breakpoints.up("lg")]: isOpenSideBar ? { paddingLeft: 280 } : null,
+    
+    [theme.breakpoints.up("lg")]: isOpenSideBar ? { paddingLeft: 236 } : null,
   })
 );
 
