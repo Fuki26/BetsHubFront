@@ -25,3 +25,12 @@
 .margin-top-5 {
    margin-top: 5%; 
 }
+.background-color-blur{
+    position: fixed;
+    backdrop-filter: blur(5px);
+    width: -webkit-fill-available;
+    height:100vh;
+    z-index: 101;
+   
+}
+
