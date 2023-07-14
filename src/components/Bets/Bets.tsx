@@ -1009,7 +1009,47 @@ function Bets(props: {
         const isInEditMode =
           rowModesModel[params.id]?.mode === GridRowModes.Edit;
         if (isRead) {
-          return [];
+          const isAnyOtherRowInEditMode = rows?.some((r) => {
+            if (r.id === params.id) {
+              return false;
+            }
+
+            const rowModeData = rowModesModel[r.id];
+            return rowModeData && rowModeData.mode === GridRowModes.Edit;
+          });
+
+          if (isAnyOtherRowInEditMode) {
+            return [];
+          }
+
+          return isInEditMode
+            ? !isMobile
+              ? [
+                  <GridActionsCellItem
+                    icon={<SaveIcon />}
+                    label="Save"
+                    onClick={handleSaveClick(params.id)}
+                  />,
+                  <GridActionsCellItem
+                    icon={<CancelIcon />}
+                    label="Cancel"
+                    className="textPrimary"
+                    onClick={handleCancelClick(params.id)}
+                    color="inherit"
+                  />,
+                ]
+              : []
+            : !isMobile
+              ? [
+                  <GridActionsCellItem
+                    icon={<EditIcon />}
+                    label="Edit"
+                    className="textPrimary"
+                    onClick={handleEditClick(params.id)}
+                    color="inherit"
+                  />,
+                ]
+              : [];
         } else {
           const isAnyOtherRowInEditMode = rows?.some((r) => {
             if (r.id === params.id) {
