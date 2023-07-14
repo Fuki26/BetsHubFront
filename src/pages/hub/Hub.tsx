@@ -468,6 +468,7 @@ export default function Hub() {
                 unmountOnExit
               >
                 <Bets
+                  id="pending"
                   arePengindBets={true}
                   isRead={false}
                   selectBetIdFn={selectBetId}
@@ -513,6 +514,7 @@ export default function Hub() {
                 {/* <Grid container spacing={3}> */}
                   {/* <Grid item xs={11} sx={{ maxWidth: "70vw !important" }}> */}
                     <Bets
+                      id="completed"
                       arePengindBets={false}
                       isRead={true}
                       selectBetIdFn={selectBetId}

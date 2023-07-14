@@ -1,4 +1,4 @@
-import * as React from "react";
+import React,{ useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { isMobile } from "react-device-detect";
 import {
@@ -59,6 +59,7 @@ const insertCurrenciesIntoColumns = (columns: any, abbreviations: string[]) => {
   columns.splice(idx + 1, 0, ...currencyColumns);
 };
 function Bets(props: {
+  id: string;
   isRead: boolean;
   arePengindBets: boolean;
   selectBetIdFn: (id: number) => void;
@@ -85,25 +86,27 @@ function Bets(props: {
     possibleMarkets,
   } = props;
 
-  const [rows, setRows] = React.useState<Array<BetModel>>(
+  const [rows, setRows] = useState<Array<BetModel>>(
     defaultRows ? defaultRows : []
   );
-  const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>(
     {}
   );
-  const [copiedRowIds, setCopiedRowIds] = React.useState<
+  const [copiedRowIds, setCopiedRowIds] = useState<
     [number, number] | null
   >(null);
-  const [deleteRowId, setDeleteRowId] = React.useState<number | undefined>(
+  const [deleteRowId, setDeleteRowId] = useState<number | undefined>(
     undefined
   );
-  const [deleteDialogIsOpened, setOpenDeleteDialog] = React.useState(false);
-  const [showHistoryModal, setShowHistoryModal] = React.useState(false);
-  const [history, setHistory] = React.useState(null);
+  const [deleteDialogIsOpened, setOpenDeleteDialog] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [history, setHistory] = useState(null);
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState<Record<string, boolean>>({});
+
 
   const abbreviations = getAbbreviations(currencies);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setRows((oldRows) => {
       return defaultRows ? defaultRows : [];
     });
@@ -112,6 +115,20 @@ function Bets(props: {
       return {};
     });
   }, [defaultRows]);
+
+
+  useEffect(() => {
+    const savedColumnVisibilityModel = JSON.parse(localStorage.getItem(`${props.id}ColumnVisibilityModel`) || '{}');
+    if (savedColumnVisibilityModel) {
+      setColumnVisibilityModel(savedColumnVisibilityModel);
+    }
+  }, []);
+
+  const handleColumnVisibilityChange = useCallback((params: any) => {
+    const newVisibilityModel = {...columnVisibilityModel, ...params};
+    localStorage.setItem(`${props.id}ColumnVisibilityModel`, JSON.stringify(newVisibilityModel));
+    setColumnVisibilityModel(newVisibilityModel);
+  }, []);
 
   function EditToolbar(props: EditToolbarProps) {
     const { setRows, setRowModesModel } = props;
@@ -1140,13 +1157,20 @@ function Bets(props: {
   }
 
   insertCurrenciesIntoColumns(columns, abbreviations);
-
   return (
     <Paper sx={{ paddingTop: "1%" }}>
       {rows ? (
         <>
           <DataGrid
             columns={columns}
+            initialState={{
+              columns: {
+                columnVisibilityModel: {
+                  ...JSON.parse(localStorage.getItem(`${props.id}ColumnVisibilityModel`) || '{}')
+                },
+              },
+            }}
+            onColumnVisibilityModelChange={handleColumnVisibilityChange}
             getRowClassName={(params) => {
               if (!copiedRowIds) return "";
               if (copiedRowIds.includes(params.row.id)) {

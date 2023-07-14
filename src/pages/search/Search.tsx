@@ -1034,6 +1034,7 @@ export default function Search() {
         filteredRows
           ? (
               <Bets
+                id="search"
                 arePengindBets={false}
                 isRead={true} 
                 selectBetIdFn={selectBetId}
