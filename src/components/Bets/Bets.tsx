@@ -12,6 +12,7 @@ import {
   GridRowModes,
   GridRowModesModel,
   GridRowParams,
+  GridCellParams,
   GridToolbarContainer,
   GridValueGetterParams,
 } from "@mui/x-data-grid";
@@ -43,6 +44,7 @@ import { BetStatus, WinStatus, LiveStatus } from "../../models/enums";
 import { Currency } from "../../database-models";
 import Modal from "../UI/Modal";
 import { getBetsColumns } from "./BetsColumns";
+import { ConstructionOutlined } from "@mui/icons-material";
 
 const getAbbreviations = (currencies: Currency[] | undefined) => {
   if (!currencies) return [];
@@ -382,25 +384,40 @@ function Bets(props: {
     const row = rows.find((row) => row.id === params.id);
     if (row) {
       selectBetIdFn(row.id);
+     
+
     }
   };
+  const onCellEditStop = (params: GridCellParams) => {
+    const row = rows.find((row) => row.id === params.id);
+    if (row) {
+      handleEditClick(row.id)()
+    
+    }
+  };
+  
+  
+
 
   //#endregion Actions handlers
 
   //#region Rows update handler
 
   const processRowUpdate = async (
+    
     newRow: GridRowModel<BetModel>
   ): Promise<BetModel> => {
     const currentRow = rows.find((row) => row.id === newRow.id);
     if (!currentRow) {
       return newRow;
+      
     }
 
     if (
       currentRow.actionTypeApplied === Enums.ActionType.SAVED ||
-      currentRow.actionTypeApplied === Enums.ActionType.EDITED
+      currentRow.actionTypeApplied === Enums.ActionType.EDITED 
     ) {
+      
       const amounts = Object.fromEntries(Object.entries(newRow).filter(([key, value]) => key.startsWith('amount')));
       const newRowData: BetModel = {
         ...currentRow,
@@ -424,10 +441,12 @@ function Bets(props: {
 
         selection: newRow.selection,
       };
+      
       setIsLoading(true);
 
       const rowData = await upsertBet(newRowData);
       if (!rowData || !rowData.data) {
+        console.log(newRow)
         return newRow;
       }
 
@@ -444,6 +463,7 @@ function Bets(props: {
             };
           } else {
             return row;
+            
           }
         });
       });
@@ -459,6 +479,7 @@ function Bets(props: {
 
       newRow.id = rowData?.data.id;
     } else {
+      
       setRowModesModel((previousRowModesModel) => {
         return {
           ...previousRowModesModel,
@@ -475,7 +496,6 @@ function Bets(props: {
         position: "top-center",
       }
     );
-
     return newRow;
   };
 
@@ -574,13 +594,17 @@ function Bets(props: {
             slots={{
               toolbar: isRead ? undefined : EditToolbar,
             }}
+            
             rowModesModel={rowModesModel}
             processRowUpdate={processRowUpdate}
             slotProps={{
               toolbar: { setRows, setRowModesModel },
             }}
             onRowClick={onRowClick}
-            editMode="row"
+      
+            onCellEditStop={onCellEditStop}
+            // editMode="row"
+            editMode="cell"
             sx={{
               height: 500,
             }}
