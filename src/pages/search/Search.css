@@ -33,4 +33,6 @@
     z-index: 101;
    
 }
-
+.css-kbvnd4-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline{
+    box-shadow: none !important;
+}
