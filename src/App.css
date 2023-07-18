@@ -49,3 +49,6 @@
     transform: rotate(360deg);
   }
 }
+.css-kbvnd4-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused{
+  box-shadow: none !important;
+}
