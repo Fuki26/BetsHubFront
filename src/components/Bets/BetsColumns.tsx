@@ -466,10 +466,9 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
               return 0;
             }
     
-            const totalAmount = !isNaN(params.row.totalAmount);
             return params.row && params.row.totalAmount
               ? params.row.totalAmount
-              : totalAmount;
+              : 0;
           },
         },
         {
