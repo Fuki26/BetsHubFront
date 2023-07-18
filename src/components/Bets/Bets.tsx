@@ -446,7 +446,28 @@ function Bets(props: {
 
       const rowData = await upsertBet(newRowData);
       if (!rowData || !rowData.data) {
-        console.log(newRow)
+        toast(
+          `Some fields are not populated correctly or they are missing.`,
+          {
+            position: "top-center",
+          }
+        );
+
+        setRowModesModel((previousRowModesModel) => {
+          return {
+            ...previousRowModesModel,
+            [newRowData.id]: { mode: GridRowModes.View },
+          };
+        });
+
+        setRows((previousRowsModel) => {
+          return previousRowsModel.filter((row) => {
+            return row.id !== newRowData.id;
+          });
+        });
+
+        setIsLoading(false);
+
         return newRow;
       }
 
