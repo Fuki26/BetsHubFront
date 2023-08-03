@@ -1,0 +1,19 @@
+.row-win-status-winner {
+  background-color: #90ee90; 
+}
+
+.row-win-status-loser {
+  background-color: #ff6347;
+}
+
+.row-win-status-halfwin {
+  background-color: #98fb98; 
+}
+
+.row-win-status-halfloss {
+  background-color: #ffb6c1; 
+}
+
+.row-win-status-void {
+  background-color: #d3d3d3;
+}

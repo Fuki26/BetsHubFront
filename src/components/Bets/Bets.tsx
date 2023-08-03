@@ -45,6 +45,7 @@ import { Currency } from "../../database-models";
 import Modal from "../UI/Modal";
 import { getBetsColumns } from "./BetsColumns";
 import { ConstructionOutlined } from "@mui/icons-material";
+import './Bets.css'
 
 const getAbbreviations = (currencies: Currency[] | undefined) => {
   if (!currencies) return [];
@@ -239,6 +240,29 @@ function Bets(props: {
     });
   };
 
+  const getRowClassName = (params : any) => {
+    const row = rows.find((r) => r.id === params.id);
+    if (props.id === 'completed' && row && row.winStatus?.label) {
+      switch (row.winStatus.label) {
+        case WinStatus[0]:
+          return "row-win-status-void";
+        case WinStatus[1]:
+          return "row-win-status-winner";
+        case WinStatus[2]:
+          return "row-win-status-loser";
+        case WinStatus[3]:
+          return "row-win-status-halfwin";
+        case WinStatus[4]:
+          return "row-win-status-halfloss";
+        case WinStatus[5]:
+          return "row-win-status-void";
+        default:
+          return "";
+      }
+    }
+    return "";
+  };
+
   const handleCancelClick = (id: GridRowId) => () => {
     setCopiedRowIds(null);
     const canceledRow = rows.find((r) => r.id === id);
@@ -395,13 +419,6 @@ function Bets(props: {
     
     }
   };
-  
-  
-
-
-  //#endregion Actions handlers
-
-  //#region Rows update handler
 
   const processRowUpdate = async (
     
@@ -602,13 +619,7 @@ function Bets(props: {
               },
             }}
             onColumnVisibilityModelChange={handleColumnVisibilityChange}
-            getRowClassName={(params) => {
-              if (!copiedRowIds) return "";
-              if (copiedRowIds.includes(params.row.id)) {
-                return `super-app-theme--edit`;
-              }
-              return "";
-            }}
+            getRowClassName={getRowClassName}
             columnBuffer={2}
             columnThreshold={2}
             rows={rows}
