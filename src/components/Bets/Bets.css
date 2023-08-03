@@ -1,19 +1,40 @@
 .row-win-status-winner {
-  background-color: #90ee90; 
+  background: rgb(0, 255, 0);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 255, 0, 1) 0%,
+    rgba(0, 255, 209, 1) 100%
+  );
 }
 
 .row-win-status-loser {
-  background-color: #ff6347;
+    background: rgb(255,65,65);
+    background: linear-gradient(90deg, rgba(255,65,65,1) 0%, rgba(255,184,77,1) 100%);
 }
 
 .row-win-status-halfwin {
-  background-color: #98fb98; 
+  background: rgb(157, 255, 157);
+  background: linear-gradient(
+    90deg,
+    rgba(157, 255, 157, 1) 0%,
+    rgba(0, 255, 209, 1) 100%
+  );
 }
 
 .row-win-status-halfloss {
-  background-color: #ffb6c1; 
+  background: rgb(255, 140, 140);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 140, 140, 1) 0%,
+    rgba(255, 141, 0, 1) 100%
+  );
 }
 
 .row-win-status-void {
-  background-color: #d3d3d3;
+  background: rgb(177, 177, 177);
+  background: linear-gradient(
+    90deg,
+    rgba(177, 177, 177, 1) 0%,
+    rgba(60, 60, 60, 1) 100%
+  );
 }
