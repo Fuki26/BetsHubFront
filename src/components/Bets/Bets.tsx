@@ -3,10 +3,7 @@ import { toast } from "react-toastify";
 import { isMobile } from "react-device-detect";
 import {
   DataGrid,
-  GridActionsCellItem,
   GridColDef,
-  GridRenderCellParams,
-  GridRenderEditCellParams,
   GridRowId,
   GridRowModel,
   GridRowModes,
@@ -14,24 +11,15 @@ import {
   GridRowParams,
   GridCellParams,
   GridToolbarContainer,
-  GridValueGetterParams,
 } from "@mui/x-data-grid";
 import {
-  Autocomplete,
   Button,
   Dialog,
   DialogActions,
   DialogTitle,
   Paper,
-  TextField,
-  Tooltip,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import SaveIcon from "@mui/icons-material/Save";
-import HistoryIcon from "@mui/icons-material/History";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/DeleteOutlined";
-import CancelIcon from "@mui/icons-material/Close";
 import {
   BetModel,
   EditToolbarProps,
@@ -44,8 +32,8 @@ import { BetStatus, WinStatus, LiveStatus } from "../../models/enums";
 import { Currency } from "../../database-models";
 import Modal from "../UI/Modal";
 import { getBetsColumns } from "./BetsColumns";
-import { ConstructionOutlined } from "@mui/icons-material";
 import './Bets.css'
+const { evaluate } = require('mathjs')
 
 const getAbbreviations = (currencies: Currency[] | undefined) => {
   if (!currencies) return [];
@@ -435,7 +423,16 @@ function Bets(props: {
       currentRow.actionTypeApplied === Enums.ActionType.EDITED 
     ) {
       
-      const amounts = Object.fromEntries(Object.entries(newRow).filter(([key, value]) => key.startsWith('amount')));
+      let amounts = Object.fromEntries(Object.entries(newRow).filter(([key, value]) => key.startsWith('amount')));
+
+      for (let key in amounts) {
+        if (
+          typeof amounts[key] === "string")
+           {
+          amounts[key] = evaluate(amounts[key]);
+        }
+      }
+
       const newRowData: BetModel = {
         ...currentRow,
         dateCreated: newRow.dateCreated,
@@ -458,9 +455,8 @@ function Bets(props: {
 
         selection: newRow.selection,
       };
-      
       setIsLoading(true);
-
+      newRow = newRowData;
       const rowData = await upsertBet(newRowData);
       if (!rowData || !rowData.data) {
         toast(
@@ -501,7 +497,7 @@ function Bets(props: {
             };
           } else {
             return row;
-            
+
           }
         });
       });
@@ -537,39 +533,6 @@ function Bets(props: {
     return newRow;
   };
 
-  //#endregion Rows update handler
-
-  // const handleChange = (e: any, value: any, params: any) => {
-  //   setRows((previousRowsModel) => {
-  //     return previousRowsModel.map((row: BetModel) => {
-  //       if (row.id === params.row.id) {
-  //         return {
-  //           ...row,
-  //           betStatus: value
-  //             ? typeof value === "string"
-  //               ? { id: value, label: value }
-  //               : value
-  //             : undefined,
-  //         };
-  //       } else {
-  //         return row;
-  //       }
-  //     });
-  //   });
-  // };
-  // const handleKeyDown = (event: React.KeyboardEvent) => {
-  //   switch (event.key) {
-  //     case "Tab": {
-  //       const editableRow = document.querySelector(
-  //         ".MuiDataGrid-row--editable"
-  //       );
-  //       if (!editableRow) return;
-  //       (editableRow.childNodes[2] as HTMLElement).focus();
-  //       break;
-  //     }
-  //     default:
-  //   }
-  // };
   let columns: Array<GridColDef> = getBetsColumns({ 
     rows, 
     setRows,
