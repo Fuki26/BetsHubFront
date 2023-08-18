@@ -616,7 +616,7 @@ function Bets(props: {
             </DialogTitle>
             <DialogActions>
               <Button onClick={handleDeleteClick} autoFocus>
-                Ok
+                Yes
               </Button>
               <Button onClick={handleCloseOnDeleteDialog}>No</Button>
             </DialogActions>
