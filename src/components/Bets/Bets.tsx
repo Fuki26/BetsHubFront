@@ -113,6 +113,7 @@ function Bets(props: {
     setRows((oldRows) => {
       return defaultRows ? defaultRows : [];
     });
+  
 
     setRowModesModel(() => {
       return {};
@@ -125,6 +126,7 @@ function Bets(props: {
     if (savedColumnVisibilityModel) {
       setColumnVisibilityModel(savedColumnVisibilityModel);
     }
+    
   }, []);
 
   const handleColumnVisibilityChange = useCallback((params: any) => {
@@ -407,6 +409,7 @@ function Bets(props: {
     
     newRow: GridRowModel<BetModel>
   ): Promise<BetModel> => {
+    
     const currentRow = rows.find((row) => row.id === newRow.id);
     if (!currentRow) {
       return newRow;
@@ -433,7 +436,7 @@ function Bets(props: {
         stake: newRow.stake,
         psLimit: newRow.psLimit,
         ...amounts,
-        totalAmount: newRow.totalAmount,
+        totalAmount: Number(newRow.totalAmount?.toFixed(2)),
         odd: newRow.odd,
         dateFinished: new Date(),
         profits: newRow.profits,
@@ -474,7 +477,6 @@ function Bets(props: {
           [rowData.data.id]: { mode: GridRowModes.View },
         };
       });
-
       setIsLoading(false);
 
       newRow.id = rowData?.data.id;

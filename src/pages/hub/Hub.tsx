@@ -210,7 +210,7 @@ export default function Hub() {
                       label: expense.counteragent.name,
                     }
                   : undefined,
-                amount: expense.amount,
+                amount: Number(expense.amount.toFixed(2)),
                 description: expense.description,
                 dateCreated: new Date(expense.dateCreated),
 
