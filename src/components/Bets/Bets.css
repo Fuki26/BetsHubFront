@@ -1,0 +1,40 @@
+.row-win-status-winner {
+  background: rgb(0, 255, 0);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 255, 0, 1) 0%,
+    rgba(0, 255, 209, 1) 100%
+  );
+}
+
+.row-win-status-loser {
+    background: rgb(255,65,65);
+    background: linear-gradient(90deg, rgba(255,65,65,1) 0%, rgba(255,184,77,1) 100%);
+}
+
+.row-win-status-halfwin {
+  background: rgb(157, 255, 157);
+  background: linear-gradient(
+    90deg,
+    rgba(157, 255, 157, 1) 0%,
+    rgba(0, 255, 209, 1) 100%
+  );
+}
+
+.row-win-status-halfloss {
+  background: rgb(255, 140, 140);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 140, 140, 1) 0%,
+    rgba(255, 141, 0, 1) 100%
+  );
+}
+
+.row-win-status-void {
+  background: rgb(177, 177, 177);
+  background: linear-gradient(
+    90deg,
+    rgba(177, 177, 177, 1) 0%,
+    rgba(177, 177, 177, 1) 100%
+  );
+}
