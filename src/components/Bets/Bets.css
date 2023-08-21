@@ -1,0 +1,44 @@
+.row-win-status-winner {
+  background: #b9d7a6;
+  /*Not sure if this needs to be a linear gradient because the task was just the color. 
+  The following linear gradients as well.*/
+
+  /* background: linear-gradient(
+    90deg,
+    #b9d7a6 0%,
+    rgba(0, 255, 209, 1) 100%
+  ); */
+}
+
+.row-win-status-loser {
+  background: #d86564;
+  /* background: linear-gradient(90deg, rgba(255,65,65,1) 0%, rgba(255,184,77,1) 100%); */
+}
+
+.row-win-status-halfwin {
+  background: #daead2
+  /* background: linear-gradient(
+    90deg,
+    rgba(157, 255, 157, 1) 0%,
+    rgba(0, 255, 209, 1) 100%
+  ); */
+}
+
+.row-win-status-halfloss {
+  background: #f1cccc;
+  /* background: linear-gradient(
+    90deg,
+    rgba(255, 140, 140, 1) 0%,
+    rgba(255, 141, 0, 1) 100%
+  ); */
+}
+
+.row-win-status-void {
+  background:#cccccc;
+  /* background: linear-gradient(
+    90deg,
+    rgba(177, 177, 177, 1) 0%,
+    rgba(177, 177, 177, 1) 100%
+  ); */
+}
+

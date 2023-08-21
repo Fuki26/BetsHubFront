@@ -45,6 +45,7 @@ const Users = () => {
     try {
       await deleteUser(userName);
       fetchUsers();
+      setSelectedUser(null);
     } catch (err) {
       notifyError(`Error while deleting user: ${err}`);
     }
