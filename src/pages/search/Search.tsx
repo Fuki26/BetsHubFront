@@ -696,7 +696,7 @@ export default function Search() {
         const statisticsModel: Array<StatisticItemModel> = [
           {
             id: 1,
-            periodType: 'today',
+            periodType: 'CalendarBased',
             profit: betStatistics.current.profit,
             turnOver: betStatistics.current.turnOver,
             winRate: betStatistics.current.winRate,
@@ -704,7 +704,7 @@ export default function Search() {
           },
           {
             id: 2,
-            periodType: 'last 3m',
+            periodType: '3mTillToday',
             profit: betStatistics.threeMonths.profit,
             turnOver: betStatistics.threeMonths.turnOver,
             winRate: betStatistics.threeMonths.winRate,
@@ -712,7 +712,7 @@ export default function Search() {
           },
           {
             id: 3,
-            periodType: 'last 6m',
+            periodType: '6mTillToday',
             profit: betStatistics.sixMonths.profit,
             turnOver: betStatistics.sixMonths.turnOver,
             winRate: betStatistics.sixMonths.winRate,

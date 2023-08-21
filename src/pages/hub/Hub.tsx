@@ -294,7 +294,7 @@ export default function Hub() {
         const statisticsModel: Array<StatisticItemModel> = [
           {
             id: 1,
-            periodType: "today",
+            periodType: "CalendarBased",
             profit: betStatistics.current.profit,
             turnOver: betStatistics.current.turnOver,
             winRate: betStatistics.current.winRate,
@@ -302,7 +302,7 @@ export default function Hub() {
           },
           {
             id: 2,
-            periodType: "last 3m",
+            periodType: "3mTillToday",
             profit: betStatistics.threeMonths.profit,
             turnOver: betStatistics.threeMonths.turnOver,
             winRate: betStatistics.threeMonths.winRate,
@@ -310,7 +310,7 @@ export default function Hub() {
           },
           {
             id: 3,
-            periodType: "last 6m",
+            periodType: "6mTillToday",
             profit: betStatistics.sixMonths.profit,
             turnOver: betStatistics.sixMonths.turnOver,
             winRate: betStatistics.sixMonths.winRate,
@@ -441,102 +441,107 @@ export default function Hub() {
       </Paper>
 
       <Paper style={{ display: "flex", flexWrap: "nowrap" }}>
-          <Paper>
-            {pendingRows ? (
-              <>
-                <Grid container>
-                  <Grid item xs={12} sx={{ maxWidth: "90vw !important" }}>
-                    <Typography variant="h4">
-                      PENDING
-                      <IconButton
-                        onClick={handleExpandClick}
-                        aria-expanded={isPendingTableExpanded}
-                        aria-label="show more"
-                        sx={{
-                          transform: isPendingTableExpanded
-                            ? "rotate(0deg)"
-                            : "rotate(180deg)",
-                          transition: "transform 0.3s",
-                        }}
-                      >
-                        <ExpandMoreIcon />
-                      </IconButton>
-                    </Typography>
-                    <Collapse
-                      in={isPendingTableExpanded}
-                      timeout="auto"
-                      unmountOnExit
-                    >
-                      <Bets
-                        id="pending"
-                        arePengindBets={true}
-                        isRead={false}
-                        selectBetIdFn={selectBetId}
-                        setIsLoading={setIsLoading}
-                        defaultRows={pendingRows}
-                        currencies={currencies}
-                        possibleCounteragents={possibleCounterAgents}
-                        possibleSports={possibleSports}
-                        possibleTournaments={possibleTournaments}
-                        possibleMarkets={possibleMarkets}
-                        allSelections={possibleSelections ? possibleSelections : {}}
-                      />
-                    </Collapse>
-                  </Grid>
-
-                </Grid>
-
-              </>
-            ) : null}
-          {filteredCompletedRows ? (
-  <>
-    <Grid container>
-      <Grid item xs={12} sx={{ maxWidth: "90vw !important" }}>
-        <Typography variant="h4">
-          COMPLETED
-          <IconButton
-            onClick={handleExpandClickCompleted}
-            aria-expanded={isCompletedTableExpanded}
-            aria-label="show more"
-            sx={{
-              transform: isCompletedTableExpanded
-                ? "rotate(0deg)"
-                : "rotate(180deg)",
-              transition: "transform 0.3s",
-            }}
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-        </Typography>
-        <Collapse in={isCompletedTableExpanded} timeout="auto" unmountOnExit>
-          {/* <Grid container spacing={3}> */}
-          {/* <Grid item xs={11} sx={{ maxWidth: "70vw !important" }}> */}
-          <Bets
-            id="completed"
-            arePengindBets={false}
-            isRead={true}
-            selectBetIdFn={selectBetId}
-            setIsLoading={setIsLoading}
-            defaultRows={filteredCompletedRows}
-            currencies={currencies}
-            possibleCounteragents={possibleCounterAgents}
-            possibleSports={possibleSports}
-            possibleTournaments={possibleTournaments}
-            possibleMarkets={possibleMarkets}
-            allSelections={possibleSelections ? possibleSelections : {}}
-          />
-          {/* </Grid> */}
-          {/* <Grid item xs={1}> */}
-          {/* </Grid> */}
-          {/* </Grid> */}
-        </Collapse>
-      </Grid>
-    </Grid>
-  </>
-) : null}
-
+        <Paper>
+          {
+            pendingRows 
+              ? (
+                  <>
+                    <Grid container>
+                      <Grid item xs={12} sx={{ maxWidth: "90vw !important" }}>
+                        <Typography variant="h4">
+                          PENDING
+                          <IconButton
+                            onClick={handleExpandClick}
+                            aria-expanded={isPendingTableExpanded}
+                            aria-label="show more"
+                            sx={{
+                              transform: isPendingTableExpanded
+                                ? "rotate(0deg)"
+                                : "rotate(180deg)",
+                              transition: "transform 0.3s",
+                            }}
+                          >
+                          <ExpandMoreIcon />
+                          </IconButton>
+                        </Typography>
+                        <Collapse
+                          in={isPendingTableExpanded}
+                          timeout="auto"
+                          unmountOnExit
+                        >
+                          <Bets
+                            id="pending"
+                            arePengindBets={true}
+                            isRead={false}
+                            selectBetIdFn={selectBetId}
+                            setIsLoading={setIsLoading}
+                            defaultRows={pendingRows}
+                            currencies={currencies}
+                            possibleCounteragents={possibleCounterAgents}
+                            possibleSports={possibleSports}
+                            possibleTournaments={possibleTournaments}
+                            possibleMarkets={possibleMarkets}
+                            allSelections={possibleSelections ? possibleSelections : {}}
+                          />
+                        </Collapse>
+                      </Grid>
+                    </Grid>
+                  </>
+                ) 
+              : null
+          }
+          {
+            filteredCompletedRows 
+              ? (
+                  <>
+                    <Grid container>
+                      <Grid item xs={12} sx={{ maxWidth: "90vw !important" }}>
+                        <Typography variant="h4">
+                          COMPLETED
+                          <IconButton
+                            onClick={handleExpandClickCompleted}
+                            aria-expanded={isCompletedTableExpanded}
+                            aria-label="show more"
+                            sx={{
+                              transform: isCompletedTableExpanded
+                                ? "rotate(0deg)"
+                                : "rotate(180deg)",
+                              transition: "transform 0.3s",
+                            }}
+                          >
+                            <ExpandMoreIcon />
+                          </IconButton>
+                        </Typography>
+                        <Collapse
+                          in={isCompletedTableExpanded}
+                          timeout="auto"
+                          unmountOnExit
+                        >
+                          <Bets
+                            id="completed"
+                            arePengindBets={false}
+                            isRead={true}
+                            selectBetIdFn={selectBetId}
+                            setIsLoading={setIsLoading}
+                            defaultRows={filteredCompletedRows}
+                            currencies={currencies}
+                            possibleCounteragents={possibleCounterAgents}
+                            possibleSports={possibleSports}
+                            possibleTournaments={possibleTournaments}
+                            possibleMarkets={possibleMarkets}
+                            allSelections={
+                              possibleSelections ? possibleSelections : {}
+                            }
+                          />
+                        </Collapse>
+                      </Grid>
+                    </Grid>
+                  </>
+                ) 
+              : null
+          }
           </Paper>
-      </Paper>
+        </Paper>
 
       {expensesRows ? (
         <>

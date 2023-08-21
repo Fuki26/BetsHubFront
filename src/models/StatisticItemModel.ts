@@ -1,6 +1,6 @@
 export type StatisticItemModel = {
     id: number,
-    periodType: 'today' | 'last 3m' | 'last 6m',
+    periodType: 'CalendarBased' | '3mTillToday' | '6mTillToday',
     winRate: number;
     yield: number;
     turnOver: number;
