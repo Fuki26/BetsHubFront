@@ -32,6 +32,7 @@ import { BetStatus, WinStatus, LiveStatus } from "../../models/enums";
 import { Currency } from "../../database-models";
 import Modal from "../UI/Modal";
 import { getBetsColumns } from "./BetsColumns";
+import CustomToolbar from '../CustomToolbar/CustomToolbar'
 import './Bets.css'
 const { evaluate } = require('mathjs')
 
@@ -587,13 +588,13 @@ function Bets(props: {
             columnThreshold={2}
             rows={rows}
             slots={{
-              toolbar: isRead ? undefined : EditToolbar,
+              toolbar: isRead ? CustomToolbar : EditToolbar,
             }}
             
             rowModesModel={rowModesModel}
             processRowUpdate={processRowUpdate}
             slotProps={{
-              toolbar: { setRows, setRowModesModel },
+              toolbar: { setRows, setRowModesModel, rows, currencies,  printOptions: { disableToolbarButton: true }},
             }}
             onRowClick={onRowClick}
       

@@ -2,25 +2,46 @@ import axios from 'axios';
 import { Bet, Counteragent, CounterAgentCategory, Currency, Expense, Statistics, User, } from '../database-models';
 import { BetModel, CounteragentModel, CurrencyModel, ExpenseModel, ISelectionsResult, } from '../models';
 import { StatisticType } from '../models/enums';
+import { notifyError } from "../services";
 const { evaluate } = require('mathjs')
 
 const domain = 'http://213.91.236.205:5000';
 // const domain = 'http://localhost:5001'
 
 const instance = axios.create({
-    withCredentials: true,
-    baseURL: domain
+  withCredentials: true,
+  baseURL: domain,
 });
 
-instance.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
+instance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
     if (token) {
-        config.headers['Authorization'] = 'Bearer ' + token;
+      config.headers["Authorization"] = "Bearer " + token;
     }
     return config;
-}, error => {
+  },
+  (error) => {
     return Promise.reject(error);
-});
+  }
+);
+
+instance.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      notifyError("Session has expired");
+      setTimeout(() => {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        window.location.href = "/login";
+      }, 1000);
+    }
+    return Promise.reject(error);
+  }
+);
 
 const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
     try {
