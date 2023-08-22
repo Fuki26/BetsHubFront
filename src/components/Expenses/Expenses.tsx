@@ -492,7 +492,7 @@ export default function Expenses(props: {
                     {'Are you sure you want to delete the expense?'}
                   </DialogTitle>
                   <DialogActions>
-                    <Button onClick={handleDeleteClick} autoFocus>Ok</Button>
+                    <Button onClick={handleDeleteClick} autoFocus>Yes</Button>
                     <Button onClick={handleCloseOnDeleteDialog}>No</Button>
                   </DialogActions>
                 </Dialog>
