@@ -253,8 +253,6 @@ function Bets(props: {
     }
     return "";
   };
-  // const getRowSelectedBehavior = (params : any) => {
-  //   const row = rows.find((r) => r.id === params.id);
   //   if (props.id === 'completed' && row && row.winStatus?.label) {
   //     switch (row.winStatus.label) {
   //       case WinStatus[0]:

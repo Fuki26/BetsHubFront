@@ -99,9 +99,18 @@ const getExpenses = async (): Promise<Array<Expense> | undefined> => {
 }
 
 const getCounterAgents = async (): Promise<Array<Counteragent> | undefined> => {
+
+  const roundMaxRates = (data:any) => {
+    for (const entry of data) {
+      entry.maxRate = Math.round(entry.maxRate * 100) / 100;
+    }
+    return data;
+  }
+  
     try {
         const getCounterAgentsResult = await instance.get(`${domain}/GetAllCounteragents`);
-        return getCounterAgentsResult.data;
+       
+        return roundMaxRates(getCounterAgentsResult.data);
     } catch(e) {
         //alert(JSON.stringify(e));
     }
