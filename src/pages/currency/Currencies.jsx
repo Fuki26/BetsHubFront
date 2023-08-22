@@ -75,7 +75,7 @@ export default function CurrencyTable() {
         id: c.id,
         name: c.name,
         abbreviation: c.abbreviation,
-        conversionRateToBGN: c.conversionRateToBGN,
+        conversionRateToBGN: c.conversionRateToBGN.toFixed(2),
         dateCreated: new Date(c.dateCreated),
         dateChanged: new Date(c.dateChanged),
         actionTypeApplied: undefined,

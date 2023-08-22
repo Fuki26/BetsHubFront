@@ -1027,12 +1027,14 @@ export default function Search() {
             selectedOptions={currencyIds}
             setStateFn={setCurrencyIds}/>
         </Paper>
-      </Paper>
-      <Typography variant='h4'>Bets</Typography>
-      <Typography variant='h4'>Total of totals: {totalOfTotals}</Typography>
-      {
-        filteredRows
-          ? (
+        </Paper>
+        <Typography variant='h4'>Bets</Typography>
+        <Typography variant='h4'>
+          Total of totals: {Number(totalOfTotals).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </Typography>
+        {
+          filteredRows
+            ? (
               <Bets
                 id="search"
                 arePengindBets={false}
