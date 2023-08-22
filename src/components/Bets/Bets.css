@@ -42,3 +42,11 @@
   ); */
 }
 
+.MuiDataGrid-root .MuiDataGrid-cell:focus-within {
+  outline:none!important;
+  border: solid #000 2px 
+}
+.css-xrvqym-MuiDataGrid-root .MuiDataGrid-row.Mui-selected {
+  border: solid #000 2px !important; 
+  background-color: none;
+}
