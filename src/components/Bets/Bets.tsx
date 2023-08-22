@@ -251,6 +251,34 @@ function Bets(props: {
     }
     return "";
   };
+  // const getRowSelectedBehavior = (params : any) => {
+  //   const row = rows.find((r) => r.id === params.id);
+  //   if (props.id === 'completed' && row && row.winStatus?.label) {
+  //     switch (row.winStatus.label) {
+  //       case WinStatus[0]:
+  //         return {sx={{"&.Mui-selected": {
+  //           backgroundColor: "rebeccapurple",
+  //           color: "yellow",
+  //           "&:hover": {
+  //             backgroundColor: "purple"
+  //           }
+  //         }"}}} 
+  //       case WinStatus[1]:
+  //         return "row-win-status-winner";
+  //       case WinStatus[2]:
+  //         return "row-win-status-loser";
+  //       case WinStatus[3]:
+  //         return "row-win-status-halfwin";
+  //       case WinStatus[4]:
+  //         return "row-win-status-halfloss";
+  //       case WinStatus[5]:
+  //         return "row-win-status-void";
+  //       default:
+  //         return "";
+  //     }
+  //   }
+  //   return "";
+  // };
 
   const handleCancelClick = (id: GridRowId) => () => {
     setCopiedRowIds(null);
