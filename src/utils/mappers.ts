@@ -7,7 +7,7 @@ export const betToBetModelMapper = (bet: Bet) => {
 
   if (bet.currencyAmounts) {
     bet.currencyAmounts.forEach((currencyAmount: CurrencyAmount) => {
-      currencyAmounts[`amount${currencyAmount.abbreviation}`] = currencyAmount.amount;
+      currencyAmounts[`amount${currencyAmount.abbreviation}`] = Number(currencyAmount.amount.toFixed(2));
     });
   }
 
@@ -49,7 +49,7 @@ export const betToBetModelMapper = (bet: Bet) => {
     ...currencyAmounts,
     odd: bet.odd,
     dateFinished: bet.dateFinished ? new Date(bet.dateFinished) : null,
-    profits: bet.profits,
+    profits: bet.profits?.toFixed(2),
     notes: bet.notes,
     amounts: bet.currencyAmounts,
     totalAmount: bet.totalAmount,
