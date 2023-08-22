@@ -8,6 +8,8 @@ const roles = [
   { value: 1, label: "RegularAdministrator" },
 ];
 
+
+
 const Register = ({ submit }) => {
   const [open, setOpen] = useState(false);
   const [username, setUsername] = useState("");
@@ -16,6 +18,7 @@ const Register = ({ submit }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState(roles[0].value);
   const [submitted, setSubmitted] = useState(false);
+ 
 
   const validateEmail = (email) => {
     const re =
@@ -41,6 +44,8 @@ const Register = ({ submit }) => {
       setSubmitted(false);
     } catch (error) {}
   };
+
+  
 
   return (
     <Box>
@@ -103,13 +108,16 @@ const Register = ({ submit }) => {
                     : ""
                 }
               />
-              <FormControl fullWidth>
-                <InputLabel id="role-label">Role</InputLabel>
-                <Select
+              <FormControl  variant="outlined" fullWidth>
+                <InputLabel  htmlFor="role" >
+                  Role
+                </InputLabel>
+                <Select variant='outlined'
                   labelId="role-label"
                   id="role"
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
+                  label="Role"
                 >
                   {roles.map((role) => (
                     <MenuItem key={role.value} value={role.value}>
@@ -118,6 +126,9 @@ const Register = ({ submit }) => {
                   ))}
                 </Select>
               </FormControl>
+
+
+
             </Box>
             <Button type="submit" color="primary">
               Submit

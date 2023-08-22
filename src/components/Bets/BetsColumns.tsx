@@ -467,7 +467,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
             }
     
             return params.row && params.row.totalAmount
-              ? params.row.totalAmount
+              ? params.row.totalAmount.toFixed(2)
               : 0;
           },
         },
