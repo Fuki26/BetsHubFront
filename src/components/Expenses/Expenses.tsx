@@ -202,7 +202,7 @@ export default function Expenses(props: {
           const newRowData: ExpenseModel = {
             ...currentRow,
             counterAgent: currentRow.counterAgent,
-            amount: newRow.amount,
+            amount: newRow.amount.toFixed(2),
             description: newRow.description,
             dateCreated: newRow.dateCreated,
           };
@@ -383,11 +383,15 @@ export default function Expenses(props: {
       },
     },
     {
-        field: 'amount',
-        headerName: 'AmountBGN',
-        type: 'number',
-        editable: true,
-        width: 70,
+      field: 'amount',
+      headerName: 'AmountBGN',
+      type: 'number',
+      editable: true,
+      width: 150,
+      align: "center",
+      valueFormatter: (params) => {
+        return params.value ? Number(params.value.toFixed(2)) : '0.00';
+      },
     },
     {
         field: 'description',
@@ -401,7 +405,9 @@ export default function Expenses(props: {
         headerName: 'Date created',
         type: 'date',
         editable: false,
-        width: 100,
+        width: 150,
+        
+       
     },
   ];
 

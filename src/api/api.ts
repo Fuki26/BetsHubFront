@@ -45,18 +45,12 @@ instance.interceptors.response.use(
 );
 
 const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
-  const formatCurrencyAmounts=(data:any)=> {
-    for (const entry of data) {
-        for (const currency of entry.currencyAmounts || []) {
-            currency.amount = Math.round(currency.amount * 100) / 100;
-        }
-    }
-    return data;
-}
-    try {
+
+  try {
         const getBetsResult = 
             await instance.get(`${domain}/GetAllBets?StartIndex=0&Count=5000&BetStatus=0`);
-        return formatCurrencyAmounts(getBetsResult.data)
+        return getBetsResult.data
+
     } catch(e) {
         //alert(JSON.stringify(e));
     }
@@ -65,7 +59,6 @@ const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
 const getCompletedBets = async (): Promise<Array<Bet> | undefined> => {
     try {
         const getBetsResult = await instance.get(`${domain}/GetAllBets?StartIndex=0&Count=5000&BetStatus=1`);
-        console.log(JSON.stringify(getBetsResult.data))
         return getBetsResult.data;
     } catch(e) {
         //alert(JSON.stringify(e));
@@ -100,17 +93,10 @@ const getExpenses = async (): Promise<Array<Expense> | undefined> => {
 
 const getCounterAgents = async (): Promise<Array<Counteragent> | undefined> => {
 
-  const roundMaxRates = (data:any) => {
-    for (const entry of data) {
-      entry.maxRate = Math.round(entry.maxRate * 100) / 100;
-    }
-    return data;
-  }
-  
     try {
         const getCounterAgentsResult = await instance.get(`${domain}/GetAllCounteragents`);
        
-        return roundMaxRates(getCounterAgentsResult.data);
+        return getCounterAgentsResult.data
     } catch(e) {
         //alert(JSON.stringify(e));
     }

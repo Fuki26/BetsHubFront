@@ -349,13 +349,13 @@ export default function Hub() {
       field: "profit",
       headerName: "Profit",
       type: "number",
-      width: 70,
+      width: 100,
     },
     {
       field: "turnOver",
       headerName: "Turnover",
       type: "number",
-      width: 70,
+      width: 100,
     },
     {
       field: "winRate",
@@ -525,10 +525,6 @@ export default function Hub() {
             possibleMarkets={possibleMarkets}
             allSelections={possibleSelections ? possibleSelections : {}}
           />
-          {/* </Grid> */}
-          {/* <Grid item xs={1}> */}
-          {/* </Grid> */}
-          {/* </Grid> */}
         </Collapse>
       </Grid>
     </Grid>
@@ -536,38 +532,42 @@ export default function Hub() {
 ) : null}
 
           </Paper>
-      </Paper>
+        </Paper>
 
-      {expensesRows ? (
-        <>
-          <Typography variant="h4">
-            Expenses
-            <IconButton
-              onClick={handleExpandClickExpenses}
-              aria-expanded={isExpensesTableExpanded}
-              aria-label="show more"
-              sx={{
-                transform: isExpensesTableExpanded
-                  ? "rotate(0deg)"
-                  : "rotate(180deg)",
-                transition: "transform 0.3s",
-              }}
-            >
-              <ExpandMoreIcon />
-            </IconButton>
-          </Typography>
-          <Collapse in={isExpensesTableExpanded} timeout="auto" unmountOnExit>
-            <Expenses
-              isRead={false}
-              setIsLoading={setIsLoading}
-              defaultRows={expensesRows}
-              possibleCounterAgents={possibleCounterAgents}
-            />
-          </Collapse>
-        </>
-      ) : null}
-    </Paper>
+        {expensesRows ? (
+          <>
+            <Grid item xs={12} sx={{ maxWidth: "90vw !important" }}>
+
+
+              <Typography variant="h4">
+                Expenses
+                <IconButton
+                  onClick={handleExpandClickExpenses}
+                  aria-expanded={isExpensesTableExpanded}
+                  aria-label="show more"
+                  sx={{
+                    transform: isExpensesTableExpanded
+                      ? "rotate(0deg)"
+                      : "rotate(180deg)",
+                    transition: "transform 0.3s",
+                  }}
+                >
+                  <ExpandMoreIcon />
+                </IconButton>
+              </Typography>
+              <Collapse sx={{ maxWidth: "90vw !important" }} in={isExpensesTableExpanded} timeout="auto" unmountOnExit>
+                <Expenses
+                  isRead={false}
+                  setIsLoading={setIsLoading}
+                  defaultRows={expensesRows}
+                  possibleCounterAgents={possibleCounterAgents}
+                />
+              </Collapse>
+            </Grid>
+          </>
+        ) : null}
+      </Paper>
     </>
-    
+
   );
 }
