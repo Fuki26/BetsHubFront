@@ -531,7 +531,13 @@ function Bets(props: {
         position: "top-center",
       }
     );
-    return newRow;
+
+    if(!currentRow.actionTypeApplied) {
+      currentRow.actionTypeApplied = newRow.actionTypeApplied;
+      return currentRow;
+    } else{
+      return newRow;
+    }
   };
 
   let columns: Array<GridColDef> = getBetsColumns({ 
