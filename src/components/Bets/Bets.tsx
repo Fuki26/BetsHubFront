@@ -47,7 +47,8 @@ const insertCurrenciesIntoColumns = (columns: any, abbreviations: string[]) => {
     headerName: a,
     type: "text",
     editable: true,
-    width: 70,
+    width: 100,
+    align:"left"
   }));
   columns.splice(idx + 1, 0, ...currencyColumns);
 };

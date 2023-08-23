@@ -446,14 +446,16 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           headerName: "Stake",
           type: "number",
           editable: true,
-          width: 70,
+          width: 100,
+          align:"right"
         },
         {
           field: "psLimit",
           headerName: "PS Limit",
           type: "number",
           editable: true,
-          width: 70,
+          width: 100,
+          align:"center"
         },
         {
           field: "totalAmount",
@@ -490,7 +492,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           headerName: "P/L",
           type: "number",
           editable: false,
-          width: 70,
+          width: 100,
         },
         {
           field: "notes",
