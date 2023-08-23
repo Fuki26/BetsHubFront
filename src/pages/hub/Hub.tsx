@@ -489,54 +489,49 @@ export default function Hub() {
           <Paper>
             {pendingRows ? (
               <>
-                <Grid container>
-                  <Grid item xs={12} sx={{ maxWidth: "90vw !important" }}>
-                    <Typography variant="h4">
-                      PENDING
-                      <IconButton
-                        onClick={handleExpandClick}
-                        aria-expanded={isPendingTableExpanded}
-                        aria-label="show more"
-                        sx={{
-                          transform: isPendingTableExpanded
-                            ? "rotate(0deg)"
-                            : "rotate(180deg)",
-                          transition: "transform 0.3s",
-                        }}
-                      >
-                        <ExpandMoreIcon />
-                      </IconButton>
-                    </Typography>
-                    <Collapse
-                      in={isPendingTableExpanded}
-                      timeout="auto"
-                      unmountOnExit
+                <Grid item xs={12} sx={{ maxWidth: "90vw !important" }}>
+                  <Typography variant="h4">
+                    PENDING
+                    <IconButton
+                      onClick={handleExpandClick}
+                      aria-expanded={isPendingTableExpanded}
+                      aria-label="show more"
+                      sx={{
+                        transform: isPendingTableExpanded
+                          ? "rotate(0deg)"
+                          : "rotate(180deg)",
+                        transition: "transform 0.3s",
+                      }}
                     >
-                      <Bets
-                        id="pending"
-                        arePengindBets={true}
-                        savedBet={savedPendingBet}
-                        isRead={false}
-                        selectBetIdFn={selectBetId}
-                        setIsLoading={setIsLoading}
-                        defaultRows={pendingRows}
-                        currencies={currencies}
-                        possibleCounteragents={possibleCounterAgents}
-                        possibleSports={possibleSports}
-                        possibleTournaments={possibleTournaments}
-                        possibleMarkets={possibleMarkets}
-                        allSelections={possibleSelections ? possibleSelections : {}}
-                      />
-                    </Collapse>
-                  </Grid>
-
+                      <ExpandMoreIcon />
+                    </IconButton>
+                  </Typography>
+                  <Collapse
+                    in={isPendingTableExpanded}
+                    timeout="auto"
+                    unmountOnExit
+                  >
+                    <Bets
+                      id="pending"
+                      arePengindBets={true}
+                      savedBet={savedPendingBet}
+                      isRead={false}
+                      selectBetIdFn={selectBetId}
+                      setIsLoading={setIsLoading}
+                      defaultRows={pendingRows}
+                      currencies={currencies}
+                      possibleCounteragents={possibleCounterAgents}
+                      possibleSports={possibleSports}
+                      possibleTournaments={possibleTournaments}
+                      possibleMarkets={possibleMarkets}
+                      allSelections={possibleSelections ? possibleSelections : {}}
+                    />
+                  </Collapse>
                 </Grid>
-
               </>
             ) : null}
           {filteredCompletedRows ? (
   <>
-    <Grid container>
       <Grid item xs={12} sx={{ maxWidth: "90vw !important" }}>
         <Typography variant="h4">
           COMPLETED
@@ -574,7 +569,6 @@ export default function Hub() {
           />
         </Collapse>
       </Grid>
-    </Grid>
   </>
 ) : null}
 
