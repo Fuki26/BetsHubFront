@@ -1038,6 +1038,7 @@ export default function Search() {
               <Bets
                 id="search"
                 arePengindBets={false}
+                savedBet={(bets: Array<BetModel>, bet: BetModel) => {}}
                 isRead={true} 
                 selectBetIdFn={selectBetId}
                 setIsLoading={setIsLoading} 
