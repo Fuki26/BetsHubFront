@@ -476,6 +476,7 @@ export default function Hub() {
             rows={currentStatistcs || []}
             pageSizeOptions={[]}
             autoPageSize={false}
+            hideFooterPagination
           />
         </Paper>
         <Paper>
