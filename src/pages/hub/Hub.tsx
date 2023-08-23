@@ -334,6 +334,51 @@ export default function Hub() {
     return id;
   };
 
+  const savedPendingBet = async (bets: Array<BetModel>, bet: BetModel) => {
+    setPendingRows((previousRowsModel) => {
+      if(!bets) {
+        return [];
+      }
+      
+      return bets!.filter((row) => {
+        return row.id !== bet.id;
+      });
+    });
+
+    setCompletedRows((previousRowsModel) => {
+      if(!previousRowsModel) {
+        return [
+          bet,
+        ];
+      }
+
+      const existingBet = previousRowsModel.find((b) => b.id === bet.id);
+      if(!existingBet) {
+        previousRowsModel.push(bet);
+      }
+      
+      return previousRowsModel;
+    });
+
+    if(completedRows) {
+      setFilteredCompletedRows(
+        completedRows.filter((b) => {
+          const now = new Date();
+          return (
+            b.dateFinished &&
+            b.dateFinished.getFullYear() === now.getFullYear() &&
+            b.dateFinished.getMonth() === now.getMonth() &&
+            b.dateFinished.getDate() === now.getDate()
+          );
+        })
+      );
+    } else {
+      setFilteredCompletedRows([]);
+    }
+    
+    return;
+  }
+
   const statisticsColumns: Array<GridColDef<any>> = [
     {
       field: "id",
@@ -470,6 +515,7 @@ export default function Hub() {
                       <Bets
                         id="pending"
                         arePengindBets={true}
+                        savedBet={savedPendingBet}
                         isRead={false}
                         selectBetIdFn={selectBetId}
                         setIsLoading={setIsLoading}
@@ -514,6 +560,7 @@ export default function Hub() {
           <Bets
             id="completed"
             arePengindBets={false}
+            savedBet={savedPendingBet}
             isRead={true}
             selectBetIdFn={selectBetId}
             setIsLoading={setIsLoading}

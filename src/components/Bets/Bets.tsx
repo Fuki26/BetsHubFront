@@ -11,6 +11,7 @@ import {
   GridRowParams,
   GridCellParams,
   GridToolbarContainer,
+  GridCallbackDetails,
 } from "@mui/x-data-grid";
 import {
   Button,
@@ -56,6 +57,7 @@ function Bets(props: {
   id: string;
   isRead: boolean;
   arePengindBets: boolean;
+  savedBet: (bets: Array<BetModel>, bet: BetModel) => void;
   selectBetIdFn: (id: number) => void;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 
@@ -604,11 +606,27 @@ function Bets(props: {
   }
 
   insertCurrenciesIntoColumns(columns, abbreviations);
+
+  const onRowModesModelChange = (rowModesModel: GridRowModesModel, details: GridCallbackDetails) => {
+    for(var i = 0; i <= rows.length - 1; i++) {
+      const currentRow = rows[i];
+      if(currentRow.winStatus && currentRow.winStatus.id !== '0'
+        && currentRow.betStatus && currentRow.counterAgent && currentRow.dateCreated
+        && currentRow.dateFinished && currentRow.liveStatus && currentRow.market
+        && currentRow.notes && currentRow.odd && currentRow.sport && currentRow.tournament) {
+          props.savedBet(rows, currentRow);
+      }
+    }
+
+    return;
+  }
+
   return (
     <Paper sx={{ paddingTop: "1%" }}>
       {rows ? (
         <>
           <DataGrid
+            onRowModesModelChange={onRowModesModelChange}
             columns={columns}
             initialState={{
               columns: {
