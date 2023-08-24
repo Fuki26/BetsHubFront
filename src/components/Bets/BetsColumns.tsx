@@ -61,7 +61,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           headerName: "Date created",
           type: "date",
           editable: false,
-          width: 100,
+          width: 180,
           renderCell: (params) => {
             const row = rows ? rows.find((r) => r.id === params.id) : undefined;
     
@@ -82,7 +82,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           field: "winStatus",
           headerName: "Win status",
           editable: true,
-          width: 100,
+          width: 150,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
             if (!row) {
@@ -146,7 +146,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           field: "liveStatus",
           headerName: "Live status",
           editable: true,
-          width: 100,
+          width: 150,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
             if (!row) {
@@ -208,7 +208,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           field: "counterAgent",
           headerName: "Counteragent",
           editable: true,
-          width: 150,
+          width: 180,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
             if (!row) {
@@ -446,7 +446,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           headerName: "Stake",
           type: "number",
           editable: true,
-          width: 100,
+          width: 120,
           align:"right"
         },
         {
@@ -454,7 +454,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           headerName: "PS Limit",
           type: "number",
           editable: true,
-          width: 100,
+          width: 150,
           align:"center"
         },
         {
@@ -462,7 +462,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           headerName: "Total amount",
           type: "number",
           editable: false,
-          width: 120,
+          width: 180,
           valueGetter: (params) => {
             if (!currencies || currencies.length === 0) {
               return 0;
@@ -485,7 +485,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           headerName: "Date finished",
           type: "date",
           editable: false,
-          width: 100,
+          width: 180,
         },
         {
           field: "profits",

@@ -27,9 +27,9 @@ export default function CurrencyTable() {
   });
 
   const columns = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "name", headerName: "Name", width: 80 },
-    { field: "abbreviation", headerName: "Abbreviation", width: 120, align:"center" },
+    { field: "id", headerName: "ID", width: 95 },
+    { field: "name", headerName: "Name", width: 110 },
+    { field: "abbreviation", headerName: "Abbreviation", width: 140, align:"center" },
     {
       field: "conversionRateToBGN",
       headerName: "Conversion Rate to BGN",
@@ -42,7 +42,7 @@ export default function CurrencyTable() {
       headerName: "Date created",
       type: "date",
       editable: false,
-      width: 100,
+      width: 150,
       renderCell: (params) => {
         const row = rows ? rows.find((r) => r.id === params.id) : undefined;
 
@@ -64,7 +64,7 @@ export default function CurrencyTable() {
       headerName: "Date changed",
       type: "date",
       editable: false,
-      width: 230,
+      width: 160,
       renderCell: (params) => {
         const row = rows ? rows.find((r) => r.id === params.id) : undefined;
 

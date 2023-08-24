@@ -363,7 +363,8 @@ export default function Counteragents(props: {}) {
       field: 'counteragentCategory',
       headerName: 'Counteragent category',
       editable: true,
-      width:150,
+      width:220,
+      align:"center",
       renderCell: (params: GridRenderCellParams<CounteragentModel>) => {
         const row = rows?.find((r) => r.id === params.row.id);
         if(!row) {
@@ -435,7 +436,7 @@ export default function Counteragents(props: {}) {
       field: 'user',
       headerName: 'User',
       editable: true,
-      width: 150,
+      width: 100,
       renderCell: (params: GridRenderCellParams<CounteragentModel>) => {
         const row = rows?.find((r) => r.id === params.row.id);
         if(!row) {
@@ -489,7 +490,7 @@ export default function Counteragents(props: {}) {
             }}
             value={row.user}
             sx={{
-              width: 300,
+              width: 150,
             }}
           />
         );
@@ -508,14 +509,15 @@ export default function Counteragents(props: {}) {
       headerName: 'Max rate',
       type: 'number',
       editable: true,
-      width: 70,
+      width: 130,
+      align:"center"
     },
     {
       field: "dateCreated",
       headerName: "Date created",
       type: "date",
       editable: false,
-      width: 120,
+      width: 150,
       renderCell: (params) => {
         const row = rows ? rows.find((r) => r.id === params.id) : undefined;
 
@@ -537,12 +539,12 @@ export default function Counteragents(props: {}) {
       headerName: "Date changed",
       type: "date",
       editable: false,
-      width: 120,
+      width: 170,
       renderCell: (params) => {
         const row = rows ? rows.find((r) => r.id === params.id) : undefined;
 
         if (!row) {
-          throw Error(`Row did not found.`);
+         return ""
         }
 
         return (
