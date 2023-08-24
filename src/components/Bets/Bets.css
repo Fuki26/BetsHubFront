@@ -57,7 +57,6 @@ div.row-win-status-void.MuiDataGrid-row.Mui-selected[aria-selected="true"] {
   background-color: #cccccc;
 }
 .css-ov6d4e-MuiInputBase-root-MuiFilledInput-root.Mui-focused {
-  
    border-color: #ffffff00 !important; 
    box-shadow: #6365f100 !important; 
 }
@@ -65,5 +64,5 @@ div.row-win-status-void.MuiDataGrid-row.Mui-selected[aria-selected="true"] {
 
 .MuiDataGrid-row.Mui-selected>div{
   max-height: 100% !important;
-min-height: 100% !important;
+  min-height: 100% !important;
 }
