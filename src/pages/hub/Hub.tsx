@@ -4,6 +4,8 @@ import {
   CircularProgress,
   FormControlLabel,
   Checkbox,
+  Button,
+  Switch,
   Grid,
   Paper,
   Radio,
@@ -45,6 +47,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 export default function Hub() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isSticky, setIsSticky]=React.useState<boolean>(false);
+  const [isOpenedCalendar, setIsOpenedCalendar]=React.useState<boolean>(true);
 
   const [selectedBetId, setSelectedBetId] = React.useState<number | undefined>(
     undefined
@@ -455,10 +458,10 @@ export default function Hub() {
       </>
     ) : null}
 
-    <Paper sx={{ padding: "5%" }}>
-     
-        <Paper style={{ display: "flex", zIndex: "1", marginBottom: "10%", top: "60px", position: isSticky ? "sticky" : "static" }}>
-          <Paper className="statistics" style={{ marginRight: "10vw", }}>
+      <Paper sx={{ padding: "5%" }}>
+
+        <Paper className="parent-statistics" style={{ maxWidth: "70vw !important", display: "flex", zIndex: "1", marginBottom: "10%", top: "60px", position: isSticky ? "sticky" : "static" }}>
+          <Paper className="statistics" style={{ marginRight: "10%", }}>
             <Typography variant="h4">Statistics</Typography>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
               <RadioGroup
@@ -482,21 +485,28 @@ export default function Hub() {
                   console.log(isSticky)
                 }} control={<Checkbox />} label="Sticky" />
             </div>
-            <DataGrid style={{height:"50%"}} columns={statisticsColumns}
+            <DataGrid style={{ height: "50%" }} columns={statisticsColumns}
               rows={currentStatistcs || []}
               pageSizeOptions={[]}
               autoPageSize={false}
               hideFooterPagination
             />
           </Paper>
-          <Paper>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateCalendar onChange={selectedDateFn} />
-            </LocalizationProvider>
+          <Paper className="calendar-container">
+            <div className="switch-calendar">
+              <FormControlLabel onClick={() => {
+                setIsOpenedCalendar(!isOpenedCalendar)
+              }} control={<Switch defaultChecked />} label="Calendar" />
+            </div>
+            <div style={{ display: isOpenedCalendar ? "flex" : "none" }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateCalendar onChange={selectedDateFn} />
+              </LocalizationProvider>
+            </div>
           </Paper>
         </Paper>
 
-      <Paper style={{ display: "flex", flexWrap: "nowrap" }}>
+      <Paper  style={{ display: "flex", flexWrap: "nowrap" }}>
           <Paper>
             {pendingRows ? (
               <>
@@ -589,8 +599,6 @@ export default function Hub() {
         {expensesRows ? (
           <>
             <Grid item xs={12} sx={{ maxWidth: "90vw !important" }}>
-
-
               <Typography variant="h4">
                 Expenses
                 <IconButton

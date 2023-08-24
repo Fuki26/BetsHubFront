@@ -5,6 +5,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
+import {Tooltip } from '@mui/material';
 import { getCurrencies, upsertCurrency, deleteCurrency } from "../../api";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
@@ -33,11 +34,53 @@ export default function CurrencyTable() {
       field: "conversionRateToBGN",
       headerName: "Conversion Rate to BGN",
       type: "number",
-      width: 180,
+      width: 230,
       align:"center"
     },
-    { field: "dateCreated", headerName: "Date Created", width: 230 },
-    { field: "dateChanged", headerName: "Date Changed", width: 230 },
+    {
+      field: "dateCreated",
+      headerName: "Date created",
+      type: "date",
+      editable: false,
+      width: 100,
+      renderCell: (params) => {
+        const row = rows ? rows.find((r) => r.id === params.id) : undefined;
+
+        if (!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <Tooltip
+            title={`${row.dateCreated.toLocaleDateString()} `}
+          >
+            <span>{row.dateCreated.toLocaleDateString()}</span>
+          </Tooltip>
+        );
+      },
+    },
+    {
+      field: "dateChanged",
+      headerName: "Date changed",
+      type: "date",
+      editable: false,
+      width: 230,
+      renderCell: (params) => {
+        const row = rows ? rows.find((r) => r.id === params.id) : undefined;
+
+        if (!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <Tooltip
+            title={`${row.dateCreated.toLocaleDateString()} `}
+          >
+            <span>{row.dateCreated.toLocaleDateString()}</span>
+          </Tooltip>
+        );
+      },
+    },
     {
       field: "Modify",
       headerName: "Modify",

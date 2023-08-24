@@ -2,8 +2,8 @@ import * as React from 'react';
 import { toast } from 'react-toastify';
 import { isMobile } from 'react-device-detect';
 import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
-  GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams , } from '@mui/x-data-grid';
-import { Autocomplete, Button, CircularProgress, Dialog, DialogActions, DialogTitle, Paper, TextField, Typography, } from '@mui/material';
+  GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams } from '@mui/x-data-grid';
+import { Autocomplete, Button, CircularProgress, Dialog, DialogActions, DialogTitle, Paper, TextField, Typography, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
@@ -511,19 +511,50 @@ export default function Counteragents(props: {}) {
       width: 70,
     },
     {
-      field: 'dateCreated',
-      headerName: 'Date created',
-      type: 'date',
+      field: "dateCreated",
+      headerName: "Date created",
+      type: "date",
       editable: false,
       width: 120,
+      renderCell: (params) => {
+        const row = rows ? rows.find((r) => r.id === params.id) : undefined;
+
+        if (!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <Tooltip
+            title={`${row.dateCreated.toLocaleDateString()} `}
+          >
+            <span>{row.dateCreated.toLocaleDateString()}</span>
+          </Tooltip>
+        );
+      },
     },
     {
-      field: 'dateChanged',
-      headerName: 'Date changed',
-      type: 'date',
+      field: "dateChanged",
+      headerName: "Date changed",
+      type: "date",
       editable: false,
       width: 120,
+      renderCell: (params) => {
+        const row = rows ? rows.find((r) => r.id === params.id) : undefined;
+
+        if (!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <Tooltip
+            title={`${row.dateCreated.toLocaleDateString()} `}
+          >
+            <span>{row.dateCreated.toLocaleDateString()}</span>
+          </Tooltip>
+        );
+      },
     },
+    
   ];
 
   if(!isMobile) {

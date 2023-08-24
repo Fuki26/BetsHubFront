@@ -55,7 +55,21 @@
 @media (max-width: 768px) {
 
   .statistics {
-    width: 60%;
+    width: 100%;
+    margin-right: 0;
     margin-top: 60px;
+    /* flex-direction: column-reverse; */
   }
+  .parent-statistics{
+    flex-direction: column-reverse;
+  }
+  .calendar-container{
+    margin-top: 50px;
+  }
+  
+}
+@media (min-width: 760px) {
+.switch-calendar{
+  display: none;
+}
 }
