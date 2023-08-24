@@ -384,7 +384,7 @@ function Bets(props: {
           totalAmount: undefined,
           odd: clickedRow.odd,
           dateFinished: undefined,
-          profits: clickedRow.profits,
+          profits:clickedRow.profits,
           notes: clickedRow.notes,
 
           actionTypeApplied: undefined,
@@ -459,7 +459,7 @@ function Bets(props: {
         totalAmount: Number(newRow.totalAmount?.toFixed(2)),
         odd: newRow.odd,
         dateFinished: new Date(),
-        profits: newRow.profits,
+        profits: Number(newRow.profits?.toFixed(1)),
         notes: newRow.notes,
 
         selection: newRow.selection,
