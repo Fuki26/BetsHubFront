@@ -3,6 +3,7 @@ import {
   // Box,
   CircularProgress,
   FormControlLabel,
+  Checkbox,
   Grid,
   Paper,
   Radio,
@@ -43,6 +44,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 export default function Hub() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isSticky, setIsSticky]=React.useState<boolean>(false);
 
   const [selectedBetId, setSelectedBetId] = React.useState<number | undefined>(
     undefined
@@ -455,36 +457,44 @@ export default function Hub() {
 
     <Paper sx={{ padding: "5%" }}>
      
-      <Paper style={{ display: "flex", marginBottom: "10%"}}>
-        <Paper style={{ width: "60%"}}>
-          <Typography variant="h4">Statistics</Typography>
-          <RadioGroup
-            aria-labelledby="demo-controlled-radio-buttons-group"
-            name="controlled-radio-buttons-group"
-            value={statisticsType}
-            onChange={(event) => {
-            const value: string = (event.target as HTMLInputElement).value;
-            setStatisticsType(
-            value === "Flat" ? StatisticType.Flat : StatisticType.Real
-            );
-            }}
-          >
-            <FormControlLabel value="Flat" control={<Radio />} label="Flat" />
-            <FormControlLabel value="Real" control={<Radio />} label="Real" />
-          </RadioGroup>
-          <DataGrid columns={statisticsColumns} 
-            rows={currentStatistcs || []}
-            pageSizeOptions={[]}
-            autoPageSize={false}
-            hideFooterPagination
-          />
+        <Paper style={{ display: "flex", zIndex: "1", marginBottom: "10%", top: "60px", position: isSticky ? "sticky" : "static" }}>
+          <Paper className="statistics" style={{ marginRight: "10vw", }}>
+            <Typography variant="h4">Statistics</Typography>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+              <RadioGroup
+                aria-labelledby="demo-controlled-radio-buttons-group"
+                name="controlled-radio-buttons-group"
+                value={statisticsType}
+                onChange={(event) => {
+                  const value: string = (event.target as HTMLInputElement).value;
+                  setStatisticsType(
+                    value === "Flat" ? StatisticType.Flat : StatisticType.Real
+                  );
+                }}
+              >
+                <FormControlLabel value="Flat" control={<Radio />} label="Flat" />
+                <FormControlLabel value="Real" control={<Radio />} label="Real" />
+              </RadioGroup>
+
+              <FormControlLabel
+                onChange={() => {
+                  setIsSticky(!isSticky)
+                  console.log(isSticky)
+                }} control={<Checkbox />} label="Sticky" />
+            </div>
+            <DataGrid style={{height:"50%"}} columns={statisticsColumns}
+              rows={currentStatistcs || []}
+              pageSizeOptions={[]}
+              autoPageSize={false}
+              hideFooterPagination
+            />
+          </Paper>
+          <Paper>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateCalendar onChange={selectedDateFn} />
+            </LocalizationProvider>
+          </Paper>
         </Paper>
-        <Paper>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateCalendar onChange={selectedDateFn} />
-          </LocalizationProvider>
-        </Paper>
-      </Paper>
 
       <Paper style={{ display: "flex", flexWrap: "nowrap" }}>
           <Paper>

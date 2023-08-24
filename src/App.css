@@ -52,3 +52,10 @@
 .css-kbvnd4-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused{
   box-shadow: none !important;
 }
+@media (max-width: 768px) {
+
+  .statistics {
+    width: 60%;
+    margin-top: 60px;
+  }
+}
