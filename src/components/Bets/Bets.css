@@ -64,6 +64,6 @@ div.row-win-status-void.MuiDataGrid-row.Mui-selected[aria-selected="true"] {
 /* Override the styles of the targeted cell within the specific parent */
 
 .MuiDataGrid-row.Mui-selected>div{
-  max-height: 45px !important;
-min-height: 45px !important;
+  max-height: 100% !important;
+min-height: 100% !important;
 }
