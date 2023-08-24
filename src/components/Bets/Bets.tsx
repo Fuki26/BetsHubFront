@@ -384,9 +384,8 @@ function Bets(props: {
           totalAmount: undefined,
           odd: clickedRow.odd,
           dateFinished: undefined,
-          profits:clickedRow.profits,
+          profits:Number(clickedRow.profits?.toFixed(2)),
           notes: clickedRow.notes,
-
           actionTypeApplied: undefined,
           isSavedInDatabase: false,
         } as BetModel,
@@ -459,7 +458,7 @@ function Bets(props: {
         totalAmount: Number(newRow.totalAmount?.toFixed(2)),
         odd: newRow.odd,
         dateFinished: new Date(),
-        profits: Number(newRow.profits?.toFixed(1)),
+        profits: Number(newRow.profits?.toFixed(2)),
         notes: newRow.notes,
 
         selection: newRow.selection,
