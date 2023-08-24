@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { isMobile } from 'react-device-detect';
 import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
   GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams , } from '@mui/x-data-grid';
-import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, Paper, TextField, } from '@mui/material';
+import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, Paper, TextField,Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
@@ -401,14 +401,28 @@ export default function Expenses(props: {
         width: 150,
     },
     {
-        field: 'dateCreated',
-        headerName: 'Date created',
-        type: 'date',
-        editable: false,
-        width: 150,
-        
-       
+      field: "dateCreated",
+      headerName: "Date created",
+      type: "date",
+      editable: false,
+      width: 100,
+      renderCell: (params) => {
+        const row = rows ? rows.find((r) => r.id === params.id) : undefined;
+
+        if (!row) {
+          throw Error(`Row did not found.`);
+        }
+
+        return (
+          <Tooltip
+            title={`${row.dateCreated.toLocaleDateString()} `}
+          >
+            <span>{row.dateCreated.toLocaleDateString()}</span>
+          </Tooltip>
+        );
+      },
     },
+    
   ];
 
   if(!isMobile) {
@@ -481,6 +495,7 @@ export default function Expenses(props: {
                   slotProps={{
                     toolbar: { setRows, setRowModesModel },
                   }}
+                  
                   editMode='row'
                   sx={
                     { 

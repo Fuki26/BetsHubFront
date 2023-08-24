@@ -71,7 +71,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
     
             return (
               <Tooltip
-                title={`${row.dateCreated.toLocaleDateString()} - ${row.dateCreated.toLocaleTimeString()}`}
+                title={`${row.dateCreated.toLocaleDateString()} `}
               >
                 <span>{row.dateCreated.toLocaleDateString()}</span>
               </Tooltip>
