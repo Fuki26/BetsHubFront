@@ -493,14 +493,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           type: "number",
           editable: false,
           width: 100,
-          valueGetter: (params) => {
-            const row = rows.find((r) => r.id === params.row.id);
-            if (!row ) {
-              return 0; // Set a default value or handle the case when profits are not a number
-            }
-            
-            return Number(row.profits).toFixed(2);
-          },
+          
         },
         
         {

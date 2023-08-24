@@ -32,10 +32,12 @@ div.row-win-status-winner:hover {
 }
 
 .MuiDataGrid-root .MuiDataGrid-cell:focus-within {
-  outline:none!important;
-  border: solid #000 2px 
+  outline: none !important;
+  border: solid #000 2px !important;
+  
 }
 .css-xrvqym-MuiDataGrid-root .MuiDataGrid-row.Mui-selected {
+  outline: none !important;
   border: solid #000 2px !important; 
 }
 
@@ -53,4 +55,15 @@ div.row-win-status-halfloss.MuiDataGrid-row.Mui-selected[aria-selected="true"] {
 }
 div.row-win-status-void.MuiDataGrid-row.Mui-selected[aria-selected="true"] {
   background-color: #cccccc;
+}
+.css-ov6d4e-MuiInputBase-root-MuiFilledInput-root.Mui-focused {
+  
+   border-color: #ffffff00 !important; 
+   box-shadow: #6365f100 !important; 
+}
+/* Override the styles of the targeted cell within the specific parent */
+
+.MuiDataGrid-row.Mui-selected>div{
+  max-height: 45px !important;
+min-height: 45px !important;
 }
