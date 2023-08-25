@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 import './Search.css';
 import Bets from '../../components/Bets/Bets';
 import { BetModel, ExpenseModel, IDropdownValue, ISelectionsResult, StatisticItemModel } from '../../models';
-import { getBetStatistics, getCounterAgents, 
+import { getBetStatistics, getCompletedBets, getCounterAgents, 
   getCurrencies, getExpenses, getMarkets, 
   getPendingBets, getSports, getTournaments } from '../../api';
 import { Currency, Expense, Statistics } from '../../database-models';
@@ -198,12 +198,15 @@ export default function Search() {
 
         //#region Bets
 
-        let bets: Array<BetModel> = (await getPendingBets())!.map(betToBetModelMapper);
-        setRows(bets);
-        const filteredRows: Array<BetModel> = bets.filter((b) => {
-          if(b.dateFinished) {
-            return b.dateFinished.getTime() > dateFrom.getTime()
-              && b.dateFinished.getTime() < now.getTime();
+        let pendingBets: Array<BetModel> = (await getPendingBets())!.map(betToBetModelMapper);
+        let completedBets: Array<BetModel> = (await getCompletedBets())!.map(betToBetModelMapper);
+        const allBets: Array<BetModel> = pendingBets.concat(completedBets);
+
+        setRows(allBets);
+        const filteredRows: Array<BetModel> = allBets.filter((b) => {
+          if(b.dateCreated) {
+            return b.dateCreated.getTime() > dateFrom.getTime()
+              && b.dateCreated.getTime() < now.getTime();
           } else {
             return false;
           }
@@ -474,18 +477,18 @@ export default function Search() {
           //#region DateFrom - DateTo filter
 
           let matchDateFinished = false;
-          if(currentRow.dateFinished) {
+          if(currentRow.dateCreated) {
             if(dateFrom && dateTo) {
-              if(currentRow.dateFinished?.getTime() > dateFrom.getTime() 
-                && currentRow.dateFinished?.getTime() < dateTo.getTime()) {
+              if(currentRow.dateCreated?.getTime() > dateFrom.getTime() 
+                && currentRow.dateCreated?.getTime() < dateTo.getTime()) {
                 matchDateFinished = true;
               }
             } else if(dateFrom && !dateTo) {
-              if(currentRow.dateFinished?.getTime() > dateFrom.getTime()) {
+              if(currentRow.dateCreated?.getTime() > dateFrom.getTime()) {
                 matchDateFinished = true;
               }
             } else if(!dateFrom && dateTo) {
-              if(currentRow.dateFinished?.getTime() < dateTo.getTime()) {
+              if(currentRow.dateCreated?.getTime() < dateTo.getTime()) {
                 matchDateFinished = true;
               }
             } else {
@@ -835,16 +838,18 @@ export default function Search() {
   
   let totalOfTotals = 0;
   if(rows) {
-    totalOfTotals = rows.reduce(
-      (accumulator, currentValue: BetModel) => {
-        if(currentValue.totalAmount) {
-          return accumulator + currentValue.totalAmount;
-        } else {
-          return accumulator;
-        }
-      },
-      0
-    );
+    totalOfTotals = filteredRows 
+      ? filteredRows.reduce(
+          (accumulator, currentValue: BetModel) => {
+            if(currentValue.totalAmount) {
+              return accumulator + currentValue.totalAmount;
+            } else {
+              return accumulator;
+            }
+          },
+          0
+        )
+      : 0;
   }
   
 
