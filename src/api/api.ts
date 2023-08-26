@@ -48,7 +48,7 @@ const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
 
   try {
         const getBetsResult = 
-            await instance.get(`${domain}/GetAllBets?StartIndex=0&Count=5000&BetStatus=0`);
+            await instance.get(`${domain}/GetAllBets?StartIndex=0&BetStatus=0`);
         return getBetsResult.data
 
     } catch(e) {
@@ -58,7 +58,7 @@ const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
 
 const getCompletedBets = async (): Promise<Array<Bet> | undefined> => {
     try {
-        const getBetsResult = await instance.get(`${domain}/GetAllBets?StartIndex=0&Count=5000&BetStatus=1`);
+        const getBetsResult = await instance.get(`${domain}/GetAllBets?StartIndex=0&BetStatus=1`);
         return getBetsResult.data;
     } catch(e) {
         //alert(JSON.stringify(e));
