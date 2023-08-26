@@ -138,6 +138,8 @@ export default function Search() {
   
   //#region Filters
 
+  const [ betId, setBetId] = React.useState<number | undefined>(undefined);
+  const [ expenseId, setExpenseId] = React.useState<number | undefined>(undefined);
   const [ dateFrom, setDateFrom] = React.useState<Date | undefined>(undefined);
   const [ dateTo, setDateTo] = React.useState<Date | undefined>(undefined);
   const [ stakeFrom, setStakeFrom] = React.useState<number | undefined>(undefined);
@@ -387,6 +389,13 @@ export default function Search() {
             continue;
           }
 
+          if(betId) {
+            if(currentRow.id === betId) {
+              bets.push(currentRow);
+            } 
+            continue;
+          }
+
           //#region Counteragent category filter
 
           if(counteragentCategoriesIds.length > 0) {
@@ -617,7 +626,7 @@ export default function Search() {
         return [];
       }
     });
-  }, [ dateFrom, dateTo, stakeFrom, stakeTo, oddFrom, oddTo, psLimitFrom, psLimitTo, 
+  }, [ betId, dateFrom, dateTo, stakeFrom, stakeTo, oddFrom, oddTo, psLimitFrom, psLimitTo, 
     counteragentCategoriesIds, counteragentIds, sportIds, marketIds, tournamentIds, liveStatusIds, currencyIds, 
       rows, filterType, ]);
 
@@ -629,6 +638,13 @@ export default function Search() {
           const currentRow = expenseRows[i];
           if(filterType !== FilterType.Expenses && filterType !== FilterType.Both) {
             expenses.push(currentRow);
+            continue;
+          }
+
+          if(expenseId) {
+            if(currentRow.id === expenseId) {
+              expenses.push(currentRow);
+            } 
             continue;
           }
 
@@ -694,7 +710,7 @@ export default function Search() {
         return [];
       }
     });
-  }, [ dateFrom, dateTo, counteragentCategoriesIds, counteragentIds, expenseRows, filterType, ]);
+  }, [ expenseId, dateFrom, dateTo, counteragentCategoriesIds, counteragentIds, expenseRows, filterType, ]);
   
   useEffect(() => {
     (async () => {
@@ -962,6 +978,24 @@ export default function Search() {
         </RadioGroup>
       </Paper>
       <Paper className='margin-top-5'> 
+        <Paper className='margin-top-1'>
+          <TextField id="betId" label="Bet id" variant="outlined" type="number" onChange={(e) => {
+            const betId = parseInt(e.target.value);
+            if(!isNaN(betId)) {
+              setBetId(betId);
+            } else {
+              setBetId(undefined);
+            }
+          }}/>
+          <TextField id="expenseId" label="Expense id" variant="outlined" type="number" onChange={(e) => {
+            const expenseId = parseInt(e.target.value);
+            if(!isNaN(expenseId)) {
+              setExpenseId(expenseId);
+            } else {
+              setExpenseId(undefined);
+            }
+          }}/>
+        </Paper>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker label="From" value={dayjs(dateFrom)} onChange={(newValue) => {
               setDateFrom(newValue ? new Date(newValue?.toISOString()) : undefined);
