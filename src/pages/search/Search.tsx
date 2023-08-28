@@ -390,10 +390,9 @@ export default function Search() {
           }
 
           if(betId) {
-            if(currentRow.id === betId) {
-              bets.push(currentRow);
+            if(currentRow.id !== betId) {
+              continue;
             } 
-            continue;
           }
 
           //#region Counteragent category filter
@@ -497,27 +496,39 @@ export default function Search() {
 
           //#region DateFrom - DateTo filter
 
-          let matchDateFinished = false;
+          let matchDateCreated = false;
           if(currentRow.dateCreated) {
+            const rowDate = new Date(Date.UTC(currentRow.dateCreated.getFullYear(), 
+              currentRow.dateCreated.getMonth(), currentRow.dateCreated.getDate()));
+              
             if(dateFrom && dateTo) {
-              if(currentRow.dateCreated?.getTime() > dateFrom.getTime() 
-                && currentRow.dateCreated?.getTime() < dateTo.getTime()) {
-                matchDateFinished = true;
+              const dateFromDate = new Date(Date.UTC(dateFrom.getFullYear(), 
+                dateFrom.getMonth(), dateFrom.getDate()));
+              const dateToDate = new Date(Date.UTC(dateTo.getFullYear(), 
+                dateTo.getMonth(), dateTo.getDate()));
+
+              if(rowDate.getTime() >= dateFromDate.getTime() 
+                && rowDate.getTime() <= dateToDate.getTime()) {
+                  matchDateCreated = true;
               }
             } else if(dateFrom && !dateTo) {
-              if(currentRow.dateCreated?.getTime() > dateFrom.getTime()) {
-                matchDateFinished = true;
+              const dateFromDate = new Date(Date.UTC(dateFrom.getFullYear(), 
+                dateFrom.getMonth(), dateFrom.getDate()));
+              if(rowDate.getTime() >= dateFromDate.getTime()) {
+                matchDateCreated = true;
               }
             } else if(!dateFrom && dateTo) {
-              if(currentRow.dateCreated?.getTime() < dateTo.getTime()) {
-                matchDateFinished = true;
+              const dateToDate = new Date(Date.UTC(dateTo.getFullYear(), 
+                dateTo.getMonth(), dateTo.getDate()));
+              if(rowDate.getTime() <= dateToDate.getTime()) {
+                matchDateCreated = true;
               }
             } else {
-                matchDateFinished = true;
+              matchDateCreated = true;
             }
           }
 
-          if(!matchDateFinished) {
+          if(!matchDateCreated) {
             continue;
           }
 
@@ -642,10 +653,9 @@ export default function Search() {
           }
 
           if(expenseId) {
-            if(currentRow.id === expenseId) {
-              expenses.push(currentRow);
-            } 
-            continue;
+            if(currentRow.id !== expenseId) {
+              continue;
+            }
           }
 
           //#region Counteragent Category filter
@@ -678,17 +688,29 @@ export default function Search() {
 
           let matchDateCreated = false;
           if(currentRow.dateCreated) {
+            const rowDate = new Date(Date.UTC(currentRow.dateCreated.getFullYear(), 
+              currentRow.dateCreated.getMonth(), currentRow.dateCreated.getDate()));
+
             if(dateFrom && dateTo) {
-              if(currentRow.dateCreated.getTime() > dateFrom.getTime() 
-                && currentRow.dateCreated.getTime() < dateTo.getTime()) {
+              const dateFromDate = new Date(Date.UTC(dateFrom.getFullYear(), 
+                dateFrom.getMonth(), dateFrom.getDate()));
+              const dateToDate = new Date(Date.UTC(dateTo.getFullYear(), 
+                dateTo.getMonth(), dateTo.getDate()));
+
+              if(rowDate.getTime() >= dateFromDate.getTime() 
+                && rowDate.getTime() <= dateToDate.getTime()) {
                   matchDateCreated = true;
               }
             } else if(dateFrom && !dateTo) {
-              if(currentRow.dateCreated.getTime() > dateFrom.getTime()) {
+              const dateFromDate = new Date(Date.UTC(dateFrom.getFullYear(), 
+                dateFrom.getMonth(), dateFrom.getDate()));
+              if(rowDate.getTime() >= dateFromDate.getTime()) {
                 matchDateCreated = true;
               }
             } else if(!dateFrom && dateTo) {
-              if(currentRow.dateCreated.getTime() < dateTo.getTime()) {
+              const dateToDate = new Date(Date.UTC(dateTo.getFullYear(), 
+                dateTo.getMonth(), dateTo.getDate()));
+              if(rowDate.getTime() <= dateToDate.getTime()) {
                 matchDateCreated = true;
               }
             } else {
