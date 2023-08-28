@@ -398,6 +398,23 @@ const deleteUser = async (userName: string) => {
     }
 };
 
+const promoteUserToGA = async (userName: string) => {
+  try {
+    return await instance.post(
+      `${domain}/Auth/PromoteToGA`,
+      { userName },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (e) {
+    console.log(JSON.stringify(e));
+    throw e;
+  }
+};
+
 const getUserSessions = async (userName: string) => {
   try{
     var sessions =  await instance.get(
@@ -435,6 +452,7 @@ export {
   verifyTfa,
   getTfaSetup,
   registerUser,
+  promoteUserToGA,
   resetPassword,
   deleteUser,
   getUserSessions,
