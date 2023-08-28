@@ -390,7 +390,7 @@ export default function Expenses(props: {
       width: 150,
       align: "center",
       valueFormatter: (params) => {
-        return params.value ? Number(params.value.toFixed(2)) : '0.00';
+               return params.value ? params.value : '0.00';
       },
     },
     {
