@@ -499,6 +499,7 @@ function Bets(props: {
               ...newRowData,
               id: rowData.data.id,
               totalAmount: rowData.data.totalAmount,
+              profits: rowData.data.profits,
 
               actionTypeApplied: undefined,
               isSavedInDatabase: true,
@@ -542,7 +543,10 @@ function Bets(props: {
       currentRow.actionTypeApplied = newRow.actionTypeApplied;
       return currentRow;
     } else{
-      return newRow;
+      return { 
+        ...newRow,
+        profits: currentRow.profits,
+      };
     }
   };
 
