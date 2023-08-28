@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Register from "../../components/Register/Register";
 import UserCard from "../../components/UserCard/UserCard";
 import { notifySuccess, notifyError } from "../../services";
-import { registerUser, getTfaSetup, deleteUser} from "../../api";
+import { registerUser, getTfaSetup, deleteUser, promoteUserToGA} from "../../api";
 import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
 import {
   Autocomplete,
@@ -44,6 +44,16 @@ const Users = () => {
   const handleDeleteUser = async (userName) => {
     try {
       await deleteUser(userName);
+      fetchUsers();
+      setSelectedUser(null);
+    } catch (err) {
+      notifyError(`Error while deleting user: ${err}`);
+    }
+  };
+
+  const promoteUser = async (userName) => {
+    try {
+      await promoteUserToGA(userName);
       fetchUsers();
       setSelectedUser(null);
     } catch (err) {
@@ -118,7 +128,7 @@ const Users = () => {
           onChange={(_, value) => setSelectedUser(value)}
           renderInput={(params) => <TextField {...params} label="Select a user" fullWidth />}
         />
-        {selectedUser && <UserCard user={selectedUser} qrCodeUrl={qrCodeUrl} deleteUser={handleDeleteUser} />}
+        {selectedUser && <UserCard user={selectedUser} promoteUser={promoteUser} qrCodeUrl={qrCodeUrl} deleteUser={handleDeleteUser} />}
       </Paper>
     </Box>
   );

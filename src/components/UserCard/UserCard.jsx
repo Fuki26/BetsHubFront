@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import './userCard.css'
 import {
   Card,
   CardContent,
   Typography,
   Grid,
-  Avatar,
   Link,
   Dialog,
   DialogActions,
@@ -14,10 +13,9 @@ import {
   DialogTitle,
   Button,
 } from "@mui/material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SessionTable from "../../components/SessionTable/SessionTable";
 
-const UserCard = ({ user, qrCodeUrl, deleteUser }) => {
+const UserCard = ({ user, qrCodeUrl, deleteUser, promoteUser }) => {
   const [openDeleteUser, setOpenDeleteUser] = useState(false);
 
   const handleOpenDeleteUser = () => {
@@ -27,6 +25,10 @@ const UserCard = ({ user, qrCodeUrl, deleteUser }) => {
   const handleCloseDeleteUser = () => {
     setOpenDeleteUser(false);
   };
+
+  const handlePromoteUser = async () =>{
+    await promoteUser(user.userName);
+  }
 
   const handleDelete = async () => {
     await deleteUser(user.userName);
@@ -38,13 +40,23 @@ const UserCard = ({ user, qrCodeUrl, deleteUser }) => {
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={8}>
-            <Grid container alignItems="center">
-              <Avatar>
-                <AccountCircleIcon fontSize="large" />
-              </Avatar>
-              <Typography variant="h5" style={{ marginLeft: "15px" }}>
-                {user.userName}
-              </Typography>
+          <Grid container alignItems="center" spacing={2}>
+              <Grid item>
+                <Typography variant="subtitle1">
+                  Role: {user?.role?.name}
+                </Typography>
+              </Grid>
+              {user?.role?.name === "RA" && (
+                <Grid item>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={handlePromoteUser}
+                  >
+                    Promote to GA
+                  </Button>
+                </Grid>
+              )}
             </Grid>
             <Typography variant="subtitle1">Email: {user.email}</Typography>
             <Typography variant="subtitle1">
