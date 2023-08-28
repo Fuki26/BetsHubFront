@@ -39,7 +39,7 @@ export default function Expenses(props: {
     const { setRows, setRowModesModel } = props;
   
     if(!possibleCounterAgents || possibleCounterAgents.length === 0) {
-      alert('There are not any possible contraagents in the system. You cannot create an expsense.');
+      // alert('There are not any possible contraagents in the system. You cannot create an expsense.');
       return null;
     }
 

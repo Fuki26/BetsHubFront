@@ -102,6 +102,32 @@ export default function Hub() {
     Array<ExpenseModel> | undefined
   >(undefined);
 
+  const sortExpenses = () => {
+    let sortedExpenses: Array<ExpenseModel> = [];
+    if(expensesRows && date) {
+      const selectedDateExpenses: Array<ExpenseModel> = expensesRows.filter((expense) => {
+        return date.getFullYear() === expense.dateCreated.getFullYear()
+          && date.getMonth() === expense.dateCreated.getMonth()
+          && date.getDate() === expense.dateCreated.getDate();
+      });
+
+      const notSelectedDateExpenses: Array<ExpenseModel> = expensesRows.filter((expense) => {
+        return date.getFullYear() !== expense.dateCreated.getFullYear()
+          || date.getMonth() !== expense.dateCreated.getMonth()
+          || date.getDate() !== expense.dateCreated.getDate();
+      });
+
+      const sortedNotSelectedDateExpenses 
+        = notSelectedDateExpenses
+          .sort((a, b) => a.dateCreated.getTime() - b.dateCreated.getTime());
+
+      sortedExpenses = selectedDateExpenses.concat(sortedNotSelectedDateExpenses);
+    } else if (expensesRows) {
+      sortedExpenses = expensesRows;
+    }
+    setExpensesRows(sortedExpenses);
+  }
+
   useEffect(() => {
     (async () => {
       try {
@@ -277,6 +303,8 @@ export default function Hub() {
         }
       }
     );
+
+    sortExpenses();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);
 
