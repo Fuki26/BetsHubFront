@@ -65,4 +65,8 @@ div.row-win-status-void.MuiDataGrid-row.Mui-selected[aria-selected="true"] {
 .MuiDataGrid-row.Mui-selected>div{
   max-height: 100% !important;
   min-height: 100% !important;
+
+}
+.MuiDataGrid-row >div{
+  background-color: transparent !important;
 }
