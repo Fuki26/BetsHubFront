@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 import { Autocomplete, Checkbox, CircularProgress, FormControl, FormControlLabel, 
   Paper, Radio, RadioGroup, TextField, Typography} from '@mui/material';
   import { DataGrid, GridColDef } from '@mui/x-data-grid';
@@ -128,60 +129,94 @@ const AutocompleteComponent = (props: {
 }
 
 export default function Search() {
-  const [ isLoading, setIsLoading, ] = React.useState<boolean>(false);
-  
-  const [ selectedBetId, setSelectedBetId, ] = React.useState<number | undefined>(undefined);
-  const [ areExpensesShown, setAreExpensesShown, ] = React.useState<boolean>(false);
-  const [ statisticsType, setStatisticsType, ] = React.useState<StatisticType>(StatisticType.Flat);
-  const [ filterType, setFilterType, ] = React.useState<FilterType>(FilterType.Both);
-  const [ currentStatistcs, setCurrentStatistcs, ] = React.useState<Array<StatisticItemModel> | undefined>(undefined);
-  
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+  const [selectedBetId, setSelectedBetId] = React.useState<number | undefined>(
+    undefined
+  );
+  const [areExpensesShown, setAreExpensesShown] = React.useState<boolean>(true);
+  const [statisticsType, setStatisticsType] = React.useState<StatisticType>(
+    StatisticType.Flat
+  );
+  const [filterType, setFilterType] = React.useState<FilterType>(
+    FilterType.Both
+  );
+  const [currentStatistcs, setCurrentStatistcs] = React.useState<
+    Array<StatisticItemModel> | undefined
+  >(undefined);
+
   //#region Filters
 
-  const [ betId, setBetId] = React.useState<number | undefined>(undefined);
-  const [ expenseId, setExpenseId] = React.useState<number | undefined>(undefined);
-  const [ dateFrom, setDateFrom] = React.useState<Date | undefined>(undefined);
-  const [ dateTo, setDateTo] = React.useState<Date | undefined>(undefined);
-  const [ stakeFrom, setStakeFrom] = React.useState<number | undefined>(undefined);
-  const [ stakeTo, setStakeTo] = React.useState<number | undefined>(undefined);
-  const [ oddFrom, setOddFrom] = React.useState<number | undefined>(undefined);
-  const [ oddTo, setOddTo] = React.useState<number | undefined>(undefined);
-  const [ psLimitFrom, setPsLimitFrom] = React.useState<number | undefined>(undefined);
-  const [ psLimitTo, setPsLimitTo] = React.useState<number | undefined>(undefined);
+  const [betId, setBetId] = React.useState<number | undefined>(undefined);
+  const [expenseId, setExpenseId] = React.useState<number | undefined>(
+    undefined
+  );
+  const [dateFrom, setDateFrom] = React.useState<Date | undefined>(undefined);
+  const [dateTo, setDateTo] = React.useState<Date | undefined>(undefined);
+  const [stakeFrom, setStakeFrom] = React.useState<number | undefined>(
+    undefined
+  );
+  const [stakeTo, setStakeTo] = React.useState<number | undefined>(undefined);
+  const [oddFrom, setOddFrom] = React.useState<number | undefined>(undefined);
+  const [oddTo, setOddTo] = React.useState<number | undefined>(undefined);
+  const [psLimitFrom, setPsLimitFrom] = React.useState<number | undefined>(
+    undefined
+  );
+  const [psLimitTo, setPsLimitTo] = React.useState<number | undefined>(
+    undefined
+  );
 
-  const [ counteragentCategoriesIds, setCounteragentCategoriesIds ] = React.useState<Array<string>>([]);
-  const [ counteragentIds, setCounteragentIds ] = React.useState<Array<string>>([]);
-  const [ sportIds, setSportIds ] = React.useState<Array<string>>([]);
-  const [ marketIds, setMarketIds ] = React.useState<Array<string>>([]);
-  const [ tournamentIds, setTournamentIds ] = React.useState<Array<string>>([]);
-  const [ liveStatusIds, setLiveStatusIds ] = React.useState<Array<string>>([]);
-  const [ currencyIds, setCurrencyIds ] = React.useState<Array<string>>([]);
+  const [counteragentCategoriesIds, setCounteragentCategoriesIds] =
+    React.useState<Array<string>>([]);
+  const [counteragentIds, setCounteragentIds] = React.useState<Array<string>>(
+    []
+  );
+  const [sportIds, setSportIds] = React.useState<Array<string>>([]);
+  const [marketIds, setMarketIds] = React.useState<Array<string>>([]);
+  const [tournamentIds, setTournamentIds] = React.useState<Array<string>>([]);
+  const [liveStatusIds, setLiveStatusIds] = React.useState<Array<string>>([]);
+  const [currencyIds, setCurrencyIds] = React.useState<Array<string>>([]);
 
   //#endregion Filters
 
-  const [ rows, setRows] = React.useState<Array<BetModel> | undefined>(undefined);
-  const [ filteredRows, setFilteredRows] = React.useState<Array<BetModel> | undefined>(undefined);
+  const [rows, setRows] = React.useState<Array<BetModel> | undefined>(
+    undefined
+  );
+  const [filteredRows, setFilteredRows] = React.useState<
+    Array<BetModel> | undefined
+  >(undefined);
 
-  const [ expenseRows, setExpenseRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
-  const [ filteredExpenseRowsRows, setFilteredExpenseRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
+  const [expenseRows, setExpenseRows] = React.useState<
+    Array<ExpenseModel> | undefined
+  >(undefined);
+  const [filteredExpenseRowsRows, setFilteredExpenseRows] = React.useState<
+    Array<ExpenseModel> | undefined
+  >(undefined);
 
-  const [ allCounterAgents, setAllCounterAgents ] = 
-    React.useState<Array<IDropdownValue> | undefined>(undefined);
-  const [ allSports, setAllSports ] = 
-  React.useState<Array<IDropdownValue> | undefined>(undefined);
-  const [ allTournaments, setAllTournaments ] = 
-    React.useState<Array<IDropdownValue> | undefined>(undefined);
-  const [ allMarkets, setAllMarkets ] = 
-    React.useState<Array<IDropdownValue> | undefined>(undefined);
-  const [ allSelections, setAllSelections ] = 
-    React.useState<ISelectionsResult | undefined>(undefined);
-  const [ allCurrencies, setAllCurrencies ] = 
-    React.useState<Array<Currency> | undefined>(undefined);
+  const [allCounterAgents, setAllCounterAgents] = React.useState<
+    Array<IDropdownValue> | undefined
+  >(undefined);
+  const [allSports, setAllSports] = React.useState<
+    Array<IDropdownValue> | undefined
+  >(undefined);
+  const [allTournaments, setAllTournaments] = React.useState<
+    Array<IDropdownValue> | undefined
+  >(undefined);
+  const [allMarkets, setAllMarkets] = React.useState<
+    Array<IDropdownValue> | undefined
+  >(undefined);
+  const [allSelections, setAllSelections] = React.useState<
+    ISelectionsResult | undefined
+  >(undefined);
+  const [allCurrencies, setAllCurrencies] = React.useState<
+    Array<Currency> | undefined
+  >(undefined);
 
+  const [databaseCurrencies, setDatabaseCurrencies] = React.useState<
+    Array<Currency> | undefined
+  >(undefined);
 
-  const [ databaseCurrencies, setDatabaseCurrencies ] = 
-    React.useState<Array<Currency> | undefined>(undefined);
-  
+  const { auth } = useAuth();
 
   useEffect(() => {
     (async () => {
@@ -201,29 +236,36 @@ export default function Search() {
 
         //#region Bets
 
-        let pendingBets: Array<BetModel> = (await getPendingBets())!.map(betToBetModelMapper);
-        let completedBets: Array<BetModel> = (await getCompletedBets())!.map(betToBetModelMapper);
+        let pendingBets: Array<BetModel> = (await getPendingBets())!.map(
+          betToBetModelMapper
+        );
+        let completedBets: Array<BetModel> = (await getCompletedBets())!.map(
+          betToBetModelMapper
+        );
         const allBets: Array<BetModel> = pendingBets.concat(completedBets);
 
         setRows(allBets);
-        const filteredRows: Array<BetModel> = filterType === FilterType.Bets || filterType === FilterType.Both
-          ? allBets.filter((b) => {
-              if(b.dateCreated) {
-                return b.dateCreated.getTime() > dateFrom.getTime()
-                  && b.dateCreated.getTime() < now.getTime();
-              } else {
-                return false;
-              }
-            })
-          : allBets;
+        const filteredRows: Array<BetModel> =
+          filterType === FilterType.Bets || filterType === FilterType.Both
+            ? allBets.filter((b) => {
+                if (b.dateCreated) {
+                  return (
+                    b.dateCreated.getTime() > dateFrom.getTime() &&
+                    b.dateCreated.getTime() < now.getTime()
+                  );
+                } else {
+                  return false;
+                }
+              })
+            : allBets;
         setFilteredRows(filteredRows);
 
         //#endregion Bets
 
         //#region Expenses
 
-        let expenses: Array<ExpenseModel> = (await getExpenses())!
-          .map((expense: Expense): ExpenseModel => {
+        let expenses: Array<ExpenseModel> = (await getExpenses())!.map(
+          (expense: Expense): ExpenseModel => {
             return {
               id: expense.id,
               amount: expense.amount,
@@ -235,82 +277,75 @@ export default function Search() {
                     label: expense.counteragent.name,
                   }
                 : undefined,
-              counterAgentCategory: expense.counteragent && expense.counteragent.counteragentCategory
-                  ? { 
-                      id: expense.counteragent.counteragentCategory.id.toString(), 
-                      label: expense.counteragent.counteragentCategory.name! 
+              counterAgentCategory:
+                expense.counteragent &&
+                expense.counteragent.counteragentCategory
+                  ? {
+                      id: expense.counteragent.counteragentCategory.id.toString(),
+                      label: expense.counteragent.counteragentCategory.name!,
                     }
                   : undefined,
 
               actionTypeApplied: undefined,
               isSavedInDatabase: true,
             };
-          });
+          }
+        );
 
         setExpenseRows(expenses);
-        if(filterType === FilterType.Expenses || filterType === FilterType.Both) {
-          setFilteredExpenseRows(expenses.filter((expense) => {
-            if(expense.dateCreated) {
-              return expense.dateCreated.getTime() > dateFrom.getTime()
-                && expense.dateCreated.getTime() < now.getTime();
-            } else {
-              return false;
-            }
-          }));
+        if (
+          filterType === FilterType.Expenses ||
+          filterType === FilterType.Both
+        ) {
+          setFilteredExpenseRows(
+            expenses.filter((expense) => {
+              if (expense.dateCreated) {
+                return (
+                  expense.dateCreated.getTime() > dateFrom.getTime() &&
+                  expense.dateCreated.getTime() < now.getTime()
+                );
+              } else {
+                return false;
+              }
+            })
+          );
         } else {
           setFilteredExpenseRows(expenses);
         }
-        
 
         //#endregion Expenses
 
         //#region Counteragents
 
         const getCounterAgentsResult = await getCounterAgents();
-        const counterAgents: Array<IDropdownValue> = 
-          getCounterAgentsResult
-            ? getCounterAgentsResult.map((couterAgent) => {
-                return {
-                  id: couterAgent.id.toString(),
-                  label: couterAgent.name,
-                };
-              })
-            : [];
+        const counterAgents: Array<IDropdownValue> = getCounterAgentsResult
+          ? getCounterAgentsResult.map((couterAgent) => {
+              return {
+                id: couterAgent.id.toString(),
+                label: couterAgent.name,
+              };
+            })
+          : [];
         setAllCounterAgents(counterAgents);
 
         //#endregion Counteragents
-
 
         //#region Selections
 
         // const getSelectionsResult = await getSelections();
         const getSelectionsResult = {
-          '1': [
-            'Selection 1',
+          "1": ["Selection 1"],
+          "2": ["Selection 1", "Selection 2"],
+          "3": ["Selection 1", "Selection 2", "Selection 3"],
+          "4": ["Selection 1", "Selection 2", "Selection 3", "Selection 4"],
+          "5": [
+            "Selection 1",
+            "Selection 2",
+            "Selection 3",
+            "Selection 4",
+            "Selection 5",
           ],
-          '2': [
-            'Selection 1',
-            'Selection 2',
-          ],
-          '3': [
-            'Selection 1',
-            'Selection 2',
-            'Selection 3',
-          ],
-          '4': [
-            'Selection 1',
-            'Selection 2',
-            'Selection 3',
-            'Selection 4',
-          ],
-          '5': [
-            'Selection 1',
-            'Selection 2',
-            'Selection 3',
-            'Selection 4',
-            'Selection 5'
-          ],
-        }
+        };
         setAllSelections(getSelectionsResult);
 
         //#endregion Selections
@@ -318,31 +353,29 @@ export default function Search() {
         //#region Sports
 
         const getSportsResult = await getSports();
-        const sports: Array<IDropdownValue> =
-          getSportsResult
-            ? getSportsResult.map((sport) => {
-                return {
-                  id: sport,
-                  label: sport,
-                };
-              })
-            : [];
+        const sports: Array<IDropdownValue> = getSportsResult
+          ? getSportsResult.map((sport) => {
+              return {
+                id: sport,
+                label: sport,
+              };
+            })
+          : [];
         setAllSports(sports);
 
         //#endregion Sports
-              
+
         //#region Tournaments
 
         const getTournamentsResult = await getTournaments();
-        const tournaments: Array<IDropdownValue> =
-        getTournamentsResult
-            ? getTournamentsResult.map((tournament) => {
-                return {
-                  id: tournament,
-                  label: tournament,
-                };
-              })
-            : [];
+        const tournaments: Array<IDropdownValue> = getTournamentsResult
+          ? getTournamentsResult.map((tournament) => {
+              return {
+                id: tournament,
+                label: tournament,
+              };
+            })
+          : [];
         setAllTournaments(tournaments);
 
         //#endregion Tournaments
@@ -350,27 +383,27 @@ export default function Search() {
         //#region Markets
 
         const getMarketsResult = await getMarkets();
-        const markets: Array<IDropdownValue> =
-          getMarketsResult
-              ? getMarketsResult.map((market) => {
-                  return {
-                    id: market,
-                    label: market,
-                  };
-                })
-              : [];
+        const markets: Array<IDropdownValue> = getMarketsResult
+          ? getMarketsResult.map((market) => {
+              return {
+                id: market,
+                label: market,
+              };
+            })
+          : [];
         setAllMarkets(markets);
 
         //#endregion Markets
 
         //#region Currencies
 
-        let getCurrenciesResult: Array<Currency> | undefined = await getCurrencies();
+        let getCurrenciesResult: Array<Currency> | undefined =
+          await getCurrencies();
         setDatabaseCurrencies(getCurrenciesResult);
         setAllCurrencies(getCurrenciesResult);
 
         //#endregion
-      
+
         setIsLoading(false);
       } catch (e) {
         console.error(e);
@@ -380,28 +413,34 @@ export default function Search() {
 
   useEffect(() => {
     setFilteredRows((previousRowsModel: Array<BetModel> | undefined) => {
-      if(rows) {
+      if (rows) {
         const bets: Array<BetModel> = [];
-        for(var i = 0; i <= rows?.length - 1; i++) {
+        for (var i = 0; i <= rows?.length - 1; i++) {
           const currentRow = rows[i];
-          if(filterType !== FilterType.Bets && filterType !== FilterType.Both) {
+          if (
+            filterType !== FilterType.Bets &&
+            filterType !== FilterType.Both
+          ) {
             bets.push(currentRow);
             continue;
           }
 
-          if(betId) {
-            if(currentRow.id !== betId) {
+          if (betId) {
+            if (currentRow.id !== betId) {
               continue;
-            } 
+            }
           }
 
           //#region Counteragent category filter
 
-          if(counteragentCategoriesIds.length > 0) {
-            const matchCounteragentCategories = !!currentRow.counterAgentCategory && 
-              counteragentCategoriesIds.indexOf(currentRow.counterAgentCategory.id) !== -1;
+          if (counteragentCategoriesIds.length > 0) {
+            const matchCounteragentCategories =
+              !!currentRow.counterAgentCategory &&
+              counteragentCategoriesIds.indexOf(
+                currentRow.counterAgentCategory.id
+              ) !== -1;
 
-            if(!matchCounteragentCategories) {
+            if (!matchCounteragentCategories) {
               continue;
             }
           }
@@ -410,11 +449,12 @@ export default function Search() {
 
           //#region Counteragent filter
 
-          if(counteragentIds.length > 0) {
-            const matchCounteragents = !!currentRow.counterAgent && 
+          if (counteragentIds.length > 0) {
+            const matchCounteragents =
+              !!currentRow.counterAgent &&
               counteragentIds.indexOf(currentRow.counterAgent.id) !== -1;
 
-            if(!matchCounteragents) {
+            if (!matchCounteragents) {
               continue;
             }
           }
@@ -423,11 +463,12 @@ export default function Search() {
 
           //#region Sport filter
 
-          if(sportIds.length > 0) {
-            const matchSports = !!currentRow.sport && 
+          if (sportIds.length > 0) {
+            const matchSports =
+              !!currentRow.sport &&
               sportIds.indexOf(currentRow.sport.id) !== -1;
 
-            if(!matchSports) {
+            if (!matchSports) {
               continue;
             }
           }
@@ -436,11 +477,12 @@ export default function Search() {
 
           //#region Market filter
 
-          if(marketIds.length > 0) {
-            const matchMarkets = !!currentRow.market && 
+          if (marketIds.length > 0) {
+            const matchMarkets =
+              !!currentRow.market &&
               marketIds.indexOf(currentRow.market.id) !== -1;
 
-            if(!matchMarkets) {
+            if (!matchMarkets) {
               continue;
             }
           }
@@ -449,11 +491,12 @@ export default function Search() {
 
           //#region Tournament filter
 
-          if(tournamentIds.length > 0) {
-            const matchTournaments = !!currentRow.tournament && 
+          if (tournamentIds.length > 0) {
+            const matchTournaments =
+              !!currentRow.tournament &&
               tournamentIds.indexOf(currentRow.tournament.id) !== -1;
 
-            if(!matchTournaments) {
+            if (!matchTournaments) {
               continue;
             }
           }
@@ -462,11 +505,12 @@ export default function Search() {
 
           //#region Live status filter
 
-          if(liveStatusIds.length > 0) {
-            const matchLiveStatuses = !!currentRow.liveStatus && 
+          if (liveStatusIds.length > 0) {
+            const matchLiveStatuses =
+              !!currentRow.liveStatus &&
               liveStatusIds.indexOf(currentRow.liveStatus.id) !== -1;
 
-            if(!matchLiveStatuses) {
+            if (!matchLiveStatuses) {
               continue;
             }
           }
@@ -475,52 +519,81 @@ export default function Search() {
 
           //#region Currency filter
 
-          if(currencyIds.length > 0) {
-            if(!currentRow.amounts || currentRow.amounts.length === 0) {
+          if (currencyIds.length > 0) {
+            if (!currentRow.amounts || currentRow.amounts.length === 0) {
               continue;
             }
 
-            const matchCurrencies = (currentRow.amounts as any)
-              .some((a: any) => {
-                return currencyIds.indexOf(a.currencyId.toString()) !== -1
-                  && a.amount > 0;
-              });
+            const matchCurrencies = (currentRow.amounts as any).some(
+              (a: any) => {
+                return (
+                  currencyIds.indexOf(a.currencyId.toString()) !== -1 &&
+                  a.amount > 0
+                );
+              }
+            );
 
-            if(!matchCurrencies) {
+            if (!matchCurrencies) {
               continue;
             }
           }
 
           //#endregion Currency filter
 
-
           //#region DateFrom - DateTo filter
 
           let matchDateCreated = false;
-          if(currentRow.dateCreated) {
-            const rowDate = new Date(Date.UTC(currentRow.dateCreated.getFullYear(), 
-              currentRow.dateCreated.getMonth(), currentRow.dateCreated.getDate()));
-              
-            if(dateFrom && dateTo) {
-              const dateFromDate = new Date(Date.UTC(dateFrom.getFullYear(), 
-                dateFrom.getMonth(), dateFrom.getDate()));
-              const dateToDate = new Date(Date.UTC(dateTo.getFullYear(), 
-                dateTo.getMonth(), dateTo.getDate()));
+          if (currentRow.dateCreated) {
+            const rowDate = new Date(
+              Date.UTC(
+                currentRow.dateCreated.getFullYear(),
+                currentRow.dateCreated.getMonth(),
+                currentRow.dateCreated.getDate()
+              )
+            );
 
-              if(rowDate.getTime() >= dateFromDate.getTime() 
-                && rowDate.getTime() <= dateToDate.getTime()) {
-                  matchDateCreated = true;
-              }
-            } else if(dateFrom && !dateTo) {
-              const dateFromDate = new Date(Date.UTC(dateFrom.getFullYear(), 
-                dateFrom.getMonth(), dateFrom.getDate()));
-              if(rowDate.getTime() >= dateFromDate.getTime()) {
+            if (dateFrom && dateTo) {
+              const dateFromDate = new Date(
+                Date.UTC(
+                  dateFrom.getFullYear(),
+                  dateFrom.getMonth(),
+                  dateFrom.getDate()
+                )
+              );
+              const dateToDate = new Date(
+                Date.UTC(
+                  dateTo.getFullYear(),
+                  dateTo.getMonth(),
+                  dateTo.getDate()
+                )
+              );
+
+              if (
+                rowDate.getTime() >= dateFromDate.getTime() &&
+                rowDate.getTime() <= dateToDate.getTime()
+              ) {
                 matchDateCreated = true;
               }
-            } else if(!dateFrom && dateTo) {
-              const dateToDate = new Date(Date.UTC(dateTo.getFullYear(), 
-                dateTo.getMonth(), dateTo.getDate()));
-              if(rowDate.getTime() <= dateToDate.getTime()) {
+            } else if (dateFrom && !dateTo) {
+              const dateFromDate = new Date(
+                Date.UTC(
+                  dateFrom.getFullYear(),
+                  dateFrom.getMonth(),
+                  dateFrom.getDate()
+                )
+              );
+              if (rowDate.getTime() >= dateFromDate.getTime()) {
+                matchDateCreated = true;
+              }
+            } else if (!dateFrom && dateTo) {
+              const dateToDate = new Date(
+                Date.UTC(
+                  dateTo.getFullYear(),
+                  dateTo.getMonth(),
+                  dateTo.getDate()
+                )
+              );
+              if (rowDate.getTime() <= dateToDate.getTime()) {
                 matchDateCreated = true;
               }
             } else {
@@ -528,7 +601,7 @@ export default function Search() {
             }
           }
 
-          if(!matchDateCreated) {
+          if (!matchDateCreated) {
             continue;
           }
 
@@ -537,20 +610,29 @@ export default function Search() {
           //#region StakeFrom - StakeTo filter
 
           let matchStake = true;
-          if(typeof currentRow.stake !== 'undefined') {
-            if(typeof stakeFrom !== 'undefined' && typeof stakeTo !== 'undefined'
-                && (currentRow.stake < stakeFrom || currentRow.stake > stakeTo)) {
+          if (typeof currentRow.stake !== "undefined") {
+            if (
+              typeof stakeFrom !== "undefined" &&
+              typeof stakeTo !== "undefined" &&
+              (currentRow.stake < stakeFrom || currentRow.stake > stakeTo)
+            ) {
               matchStake = false;
-            } else if(typeof stakeFrom !== 'undefined' && typeof stakeTo === 'undefined' 
-              && currentRow.stake < stakeFrom) {
+            } else if (
+              typeof stakeFrom !== "undefined" &&
+              typeof stakeTo === "undefined" &&
+              currentRow.stake < stakeFrom
+            ) {
               matchStake = false;
-            } else if(typeof stakeFrom === 'undefined' && typeof stakeTo !== 'undefined' 
-              && currentRow.stake > stakeTo) {
+            } else if (
+              typeof stakeFrom === "undefined" &&
+              typeof stakeTo !== "undefined" &&
+              currentRow.stake > stakeTo
+            ) {
               matchStake = false;
             }
           }
 
-          if(!matchStake) {
+          if (!matchStake) {
             continue;
           }
 
@@ -559,20 +641,29 @@ export default function Search() {
           //#region OddFrom - OddTo filter
 
           let matchOdd = true;
-          if(typeof currentRow.odd !== 'undefined') {
-            if(typeof oddFrom !== 'undefined' && typeof oddTo !== 'undefined'
-                && (currentRow.odd < oddFrom || currentRow.odd > oddTo)) {
-                  matchOdd = false;
-            } else if(typeof oddFrom !== 'undefined' && typeof oddTo === 'undefined' 
-              && currentRow.odd < oddFrom) {
+          if (typeof currentRow.odd !== "undefined") {
+            if (
+              typeof oddFrom !== "undefined" &&
+              typeof oddTo !== "undefined" &&
+              (currentRow.odd < oddFrom || currentRow.odd > oddTo)
+            ) {
               matchOdd = false;
-            } else if(typeof oddFrom === 'undefined' && typeof oddTo !== 'undefined' 
-              && currentRow.odd > oddTo) {
+            } else if (
+              typeof oddFrom !== "undefined" &&
+              typeof oddTo === "undefined" &&
+              currentRow.odd < oddFrom
+            ) {
+              matchOdd = false;
+            } else if (
+              typeof oddFrom === "undefined" &&
+              typeof oddTo !== "undefined" &&
+              currentRow.odd > oddTo
+            ) {
               matchOdd = false;
             }
           }
 
-          if(!matchOdd) {
+          if (!matchOdd) {
             continue;
           }
 
@@ -581,20 +672,30 @@ export default function Search() {
           //#region PsLimitFrom - PsLimitTo filter
 
           let matchPsLimit = true;
-          if(typeof currentRow.psLimit !== 'undefined') {
-            if(typeof psLimitFrom !== 'undefined' && typeof psLimitTo !== 'undefined'
-                && (currentRow.psLimit < psLimitFrom || currentRow.psLimit > psLimitTo)) {
-                  matchPsLimit = false;
-            } else if(typeof psLimitFrom !== 'undefined' && typeof psLimitTo === 'undefined' 
-              && currentRow.psLimit < psLimitFrom) {
+          if (typeof currentRow.psLimit !== "undefined") {
+            if (
+              typeof psLimitFrom !== "undefined" &&
+              typeof psLimitTo !== "undefined" &&
+              (currentRow.psLimit < psLimitFrom ||
+                currentRow.psLimit > psLimitTo)
+            ) {
               matchPsLimit = false;
-            } else if(typeof psLimitFrom === 'undefined' && typeof psLimitTo !== 'undefined' 
-              && currentRow.psLimit > psLimitTo) {
+            } else if (
+              typeof psLimitFrom !== "undefined" &&
+              typeof psLimitTo === "undefined" &&
+              currentRow.psLimit < psLimitFrom
+            ) {
+              matchPsLimit = false;
+            } else if (
+              typeof psLimitFrom === "undefined" &&
+              typeof psLimitTo !== "undefined" &&
+              currentRow.psLimit > psLimitTo
+            ) {
               matchPsLimit = false;
             }
           }
 
-          if(!matchPsLimit) {
+          if (!matchPsLimit) {
             continue;
           }
 
@@ -603,27 +704,33 @@ export default function Search() {
           bets.push(currentRow);
         }
 
-        if(databaseCurrencies && currencyIds.length > 0) {
-          const filteredCurrencies: Array<Currency> 
-            = databaseCurrencies.filter((c) => currencyIds.indexOf(c.id.toString()) !== -1);
+        if (databaseCurrencies && currencyIds.length > 0) {
+          const filteredCurrencies: Array<Currency> = databaseCurrencies.filter(
+            (c) => currencyIds.indexOf(c.id.toString()) !== -1
+          );
 
           setAllCurrencies(filteredCurrencies);
 
-          for(var i = 0; i <= bets.length - 1; i++) {
+          for (var i = 0; i <= bets.length - 1; i++) {
             const currentBet = bets[i];
-            if(!currentBet.amounts) {
+            if (!currentBet.amounts) {
               continue;
             }
 
             let totalAmount = 0;
-            for(var j = 0; j <= currentBet.amounts.length - 1; j++) {
+            for (var j = 0; j <= currentBet.amounts.length - 1; j++) {
               const currentAmount: any = currentBet.amounts[j];
-              if(currencyIds.indexOf(currentAmount.currencyId.toString()) === -1) {
+              if (
+                currencyIds.indexOf(currentAmount.currencyId.toString()) === -1
+              ) {
                 continue;
               }
-              
-              const databaseCurrency = databaseCurrencies.find((dC) => dC.id === currentAmount.currencyId)
-              totalAmount += currentAmount.amount * databaseCurrency!.conversionRateToBGN;
+
+              const databaseCurrency = databaseCurrencies.find(
+                (dC) => dC.id === currentAmount.currencyId
+              );
+              totalAmount +=
+                currentAmount.amount * databaseCurrency!.conversionRateToBGN;
             }
 
             currentBet.totalAmount = totalAmount;
@@ -631,129 +738,190 @@ export default function Search() {
         } else {
           setAllCurrencies(databaseCurrencies);
         }
-        
+
         return bets;
       } else {
         return [];
       }
     });
-  }, [ betId, dateFrom, dateTo, stakeFrom, stakeTo, oddFrom, oddTo, psLimitFrom, psLimitTo, 
-    counteragentCategoriesIds, counteragentIds, sportIds, marketIds, tournamentIds, liveStatusIds, currencyIds, 
-      rows, filterType, ]);
+  }, [
+    betId,
+    dateFrom,
+    dateTo,
+    stakeFrom,
+    stakeTo,
+    oddFrom,
+    oddTo,
+    psLimitFrom,
+    psLimitTo,
+    counteragentCategoriesIds,
+    counteragentIds,
+    sportIds,
+    marketIds,
+    tournamentIds,
+    liveStatusIds,
+    currencyIds,
+    rows,
+    filterType,
+  ]);
 
   useEffect(() => {
-    setFilteredExpenseRows((previousRowsModel: Array<ExpenseModel> | undefined) => {
-      if(expenseRows) {
-        const expenses: Array<ExpenseModel> = [];
-        for(var i = 0; i <= expenseRows.length - 1; i++) {
-          const currentRow = expenseRows[i];
-          if(filterType !== FilterType.Expenses && filterType !== FilterType.Both) {
-            expenses.push(currentRow);
-            continue;
-          }
-
-          if(expenseId) {
-            if(currentRow.id !== expenseId) {
+    setFilteredExpenseRows(
+      (previousRowsModel: Array<ExpenseModel> | undefined) => {
+        if (expenseRows) {
+          const expenses: Array<ExpenseModel> = [];
+          for (var i = 0; i <= expenseRows.length - 1; i++) {
+            const currentRow = expenseRows[i];
+            if (
+              filterType !== FilterType.Expenses &&
+              filterType !== FilterType.Both
+            ) {
+              expenses.push(currentRow);
               continue;
             }
-          }
 
-          //#region Counteragent Category filter
-
-          if(counteragentCategoriesIds.length > 0) {
-            const matchCounteragentCategories = !!currentRow.counterAgentCategory && 
-              counteragentCategoriesIds.indexOf(currentRow.counterAgentCategory.id) !== -1;
-
-            if(!matchCounteragentCategories) {
-              continue;
+            if (expenseId) {
+              if (currentRow.id !== expenseId) {
+                continue;
+              }
             }
-          }
 
-          //#endregion Counteragent Category filter
+            //#region Counteragent Category filter
 
-          //#region Counteragent filter
+            if (counteragentCategoriesIds.length > 0) {
+              const matchCounteragentCategories =
+                !!currentRow.counterAgentCategory &&
+                counteragentCategoriesIds.indexOf(
+                  currentRow.counterAgentCategory.id
+                ) !== -1;
 
-          if(counteragentIds.length > 0) {
-            const matchCounteragents = !!currentRow.counterAgent && 
-              counteragentIds.indexOf(currentRow.counterAgent.id) !== -1;
-
-            if(!matchCounteragents) {
-              continue;
+              if (!matchCounteragentCategories) {
+                continue;
+              }
             }
-          }
 
-          //#endregion Counteragent filter
+            //#endregion Counteragent Category filter
 
-          //#region DateFrom - DateTo filter
+            //#region Counteragent filter
 
-          let matchDateCreated = false;
-          if(currentRow.dateCreated) {
-            const rowDate = new Date(Date.UTC(currentRow.dateCreated.getFullYear(), 
-              currentRow.dateCreated.getMonth(), currentRow.dateCreated.getDate()));
+            if (counteragentIds.length > 0) {
+              const matchCounteragents =
+                !!currentRow.counterAgent &&
+                counteragentIds.indexOf(currentRow.counterAgent.id) !== -1;
 
-            if(dateFrom && dateTo) {
-              const dateFromDate = new Date(Date.UTC(dateFrom.getFullYear(), 
-                dateFrom.getMonth(), dateFrom.getDate()));
-              const dateToDate = new Date(Date.UTC(dateTo.getFullYear(), 
-                dateTo.getMonth(), dateTo.getDate()));
+              if (!matchCounteragents) {
+                continue;
+              }
+            }
 
-              if(rowDate.getTime() >= dateFromDate.getTime() 
-                && rowDate.getTime() <= dateToDate.getTime()) {
+            //#endregion Counteragent filter
+
+            //#region DateFrom - DateTo filter
+
+            let matchDateCreated = false;
+            if (currentRow.dateCreated) {
+              const rowDate = new Date(
+                Date.UTC(
+                  currentRow.dateCreated.getFullYear(),
+                  currentRow.dateCreated.getMonth(),
+                  currentRow.dateCreated.getDate()
+                )
+              );
+
+              if (dateFrom && dateTo) {
+                const dateFromDate = new Date(
+                  Date.UTC(
+                    dateFrom.getFullYear(),
+                    dateFrom.getMonth(),
+                    dateFrom.getDate()
+                  )
+                );
+                const dateToDate = new Date(
+                  Date.UTC(
+                    dateTo.getFullYear(),
+                    dateTo.getMonth(),
+                    dateTo.getDate()
+                  )
+                );
+
+                if (
+                  rowDate.getTime() >= dateFromDate.getTime() &&
+                  rowDate.getTime() <= dateToDate.getTime()
+                ) {
                   matchDateCreated = true;
-              }
-            } else if(dateFrom && !dateTo) {
-              const dateFromDate = new Date(Date.UTC(dateFrom.getFullYear(), 
-                dateFrom.getMonth(), dateFrom.getDate()));
-              if(rowDate.getTime() >= dateFromDate.getTime()) {
+                }
+              } else if (dateFrom && !dateTo) {
+                const dateFromDate = new Date(
+                  Date.UTC(
+                    dateFrom.getFullYear(),
+                    dateFrom.getMonth(),
+                    dateFrom.getDate()
+                  )
+                );
+                if (rowDate.getTime() >= dateFromDate.getTime()) {
+                  matchDateCreated = true;
+                }
+              } else if (!dateFrom && dateTo) {
+                const dateToDate = new Date(
+                  Date.UTC(
+                    dateTo.getFullYear(),
+                    dateTo.getMonth(),
+                    dateTo.getDate()
+                  )
+                );
+                if (rowDate.getTime() <= dateToDate.getTime()) {
+                  matchDateCreated = true;
+                }
+              } else {
                 matchDateCreated = true;
               }
-            } else if(!dateFrom && dateTo) {
-              const dateToDate = new Date(Date.UTC(dateTo.getFullYear(), 
-                dateTo.getMonth(), dateTo.getDate()));
-              if(rowDate.getTime() <= dateToDate.getTime()) {
-                matchDateCreated = true;
-              }
-            } else {
-              matchDateCreated = true;
             }
+
+            if (!matchDateCreated) {
+              continue;
+            }
+
+            //#endregion DateFrom - DateTo filter
+
+            expenses.push(currentRow);
           }
 
-          if(!matchDateCreated) {
-            continue;
-          }
-
-          //#endregion DateFrom - DateTo filter
-
-          expenses.push(currentRow);
+          return expenses;
+        } else {
+          return [];
         }
-
-        return expenses;
-      } else {
-        return [];
       }
-    });
-  }, [ expenseId, dateFrom, dateTo, counteragentCategoriesIds, counteragentIds, expenseRows, filterType, ]);
-  
+    );
+  }, [
+    expenseId,
+    dateFrom,
+    dateTo,
+    counteragentCategoriesIds,
+    counteragentIds,
+    expenseRows,
+    filterType,
+  ]);
+
   useEffect(() => {
     (async () => {
       try {
-        if(!selectedBetId) {
+        if (!selectedBetId) {
           return;
         }
-        
+
         let betStatistics: Statistics | undefined = await getBetStatistics({
           id: selectedBetId,
           type: statisticsType,
         });
 
-        if(!betStatistics) {
+        if (!betStatistics) {
           return;
         }
 
         const statisticsModel: Array<StatisticItemModel> = [
           {
             id: 1,
-            periodType: 'today',
+            periodType: "today",
             profit: betStatistics.current.profit,
             turnOver: betStatistics.current.turnOver,
             winRate: betStatistics.current.winRate,
@@ -761,7 +929,7 @@ export default function Search() {
           },
           {
             id: 2,
-            periodType: 'last 3m',
+            periodType: "last 3m",
             profit: betStatistics.threeMonths.profit,
             turnOver: betStatistics.threeMonths.turnOver,
             winRate: betStatistics.threeMonths.winRate,
@@ -769,7 +937,7 @@ export default function Search() {
           },
           {
             id: 3,
-            periodType: 'last 6m',
+            periodType: "last 6m",
             profit: betStatistics.sixMonths.profit,
             turnOver: betStatistics.sixMonths.turnOver,
             winRate: betStatistics.sixMonths.winRate,
@@ -781,167 +949,171 @@ export default function Search() {
       } catch (e) {
         console.error(e);
       }
-    })()
-  }, [ selectedBetId, statisticsType]);
+    })();
+  }, [selectedBetId, statisticsType]);
 
   const selectBetId = async (id: number) => {
     setSelectedBetId(id);
   };
 
-  const distinctCounteragentCategories: Array<IDropdownValue> = 
-    (
-        filteredRows
-          ? [
-              ...new Set(
-                filteredRows
-                  .filter((b: BetModel) => !!b.counterAgentCategory)
-                  .map((b) => b.counterAgentCategory!.id)
-              )
-            ]
-          : []
-    ).map((counterAgentCategoryId: string) => { 
-            const model = 
-              filteredRows!.find((r) => r.counterAgentCategory
-                && r.counterAgentCategory.id === counterAgentCategoryId)
+  const distinctCounteragentCategories: Array<IDropdownValue> = (
+    filteredRows
+      ? [
+          ...new Set(
+            filteredRows
+              .filter((b: BetModel) => !!b.counterAgentCategory)
+              .map((b) => b.counterAgentCategory!.id)
+          ),
+        ]
+      : []
+  ).map((counterAgentCategoryId: string) => {
+    const model = filteredRows!.find(
+      (r) =>
+        r.counterAgentCategory &&
+        r.counterAgentCategory.id === counterAgentCategoryId
+    );
 
-            return { 
-              id: model?.counterAgentCategory?.id, 
-              label: model?.counterAgentCategory?.label,
-            } as IDropdownValue; 
-          });
+    return {
+      id: model?.counterAgentCategory?.id,
+      label: model?.counterAgentCategory?.label,
+    } as IDropdownValue;
+  });
 
-  const distinctCounteragents: Array<IDropdownValue> = (filteredRows
-    ? [
-        ...new Set(
-          filteredRows
-            .filter((b: BetModel) => !!b.counterAgent)
-            .map((b) => b.counterAgent!.id)
-        )
-      ]
-    : []).map((counterAgentId: string) => { 
-            const model = 
-              filteredRows!.find((r) => r.counterAgent && r.counterAgent.id === counterAgentId)
+  const distinctCounteragents: Array<IDropdownValue> = (
+    filteredRows
+      ? [
+          ...new Set(
+            filteredRows
+              .filter((b: BetModel) => !!b.counterAgent)
+              .map((b) => b.counterAgent!.id)
+          ),
+        ]
+      : []
+  ).map((counterAgentId: string) => {
+    const model = filteredRows!.find(
+      (r) => r.counterAgent && r.counterAgent.id === counterAgentId
+    );
 
-            return { 
-              id: model?.counterAgent?.id, 
-              label: model?.counterAgent?.label,
-            } as IDropdownValue; 
-          });
+    return {
+      id: model?.counterAgent?.id,
+      label: model?.counterAgent?.label,
+    } as IDropdownValue;
+  });
 
-  const distinctSports: Array<IDropdownValue> = (filteredRows
-    ? [
-        ...new Set(
-          filteredRows
-            .filter((b: BetModel) => !!b.sport)
-            .map((b: BetModel) => b.sport!.id)
-        )
-      ]
-    : [])
-  .map((b) => { return { id: b, label: b } as IDropdownValue; } );
+  const distinctSports: Array<IDropdownValue> = (
+    filteredRows
+      ? [
+          ...new Set(
+            filteredRows
+              .filter((b: BetModel) => !!b.sport)
+              .map((b: BetModel) => b.sport!.id)
+          ),
+        ]
+      : []
+  ).map((b) => {
+    return { id: b, label: b } as IDropdownValue;
+  });
 
-  const distinctMarkets: Array<IDropdownValue> = (filteredRows
-    ? [
-        ...new Set(
-          filteredRows
-            .filter((b: BetModel) => !!b.market)
-            .map((b: BetModel) => b.market!.id)
-        )
-      ]
-    : [])
-  .map((b) => { return { id: b, label: b } as IDropdownValue; } );
+  const distinctMarkets: Array<IDropdownValue> = (
+    filteredRows
+      ? [
+          ...new Set(
+            filteredRows
+              .filter((b: BetModel) => !!b.market)
+              .map((b: BetModel) => b.market!.id)
+          ),
+        ]
+      : []
+  ).map((b) => {
+    return { id: b, label: b } as IDropdownValue;
+  });
 
-  const distinctTournaments: Array<IDropdownValue> = (filteredRows
-    ? [
-        ...new Set(
-          filteredRows
-            .filter((b: BetModel) => !!b.tournament)
-            .map((b: BetModel) => b.tournament!.id)
-        )
-      ]
-    : [])
-  .map((b) => { return { id: b, label: b } as IDropdownValue; } );
+  const distinctTournaments: Array<IDropdownValue> = (
+    filteredRows
+      ? [
+          ...new Set(
+            filteredRows
+              .filter((b: BetModel) => !!b.tournament)
+              .map((b: BetModel) => b.tournament!.id)
+          ),
+        ]
+      : []
+  ).map((b) => {
+    return { id: b, label: b } as IDropdownValue;
+  });
 
-  const distinctLiveStatuses: Array<IDropdownValue> = (filteredRows
-    ? [
-        ...new Set(
-          filteredRows
-            .filter((b: BetModel) => !!b.liveStatus)
-            .map((b) => b.liveStatus!.id)
-        )
-      ]
-    : []).map((liveStatusId) => { 
-            const model = 
-              filteredRows!.find((r) => r.liveStatus && r.liveStatus.id === liveStatusId)
+  const distinctLiveStatuses: Array<IDropdownValue> = (
+    filteredRows
+      ? [
+          ...new Set(
+            filteredRows
+              .filter((b: BetModel) => !!b.liveStatus)
+              .map((b) => b.liveStatus!.id)
+          ),
+        ]
+      : []
+  ).map((liveStatusId) => {
+    const model = filteredRows!.find(
+      (r) => r.liveStatus && r.liveStatus.id === liveStatusId
+    );
 
-            return { 
-              id: model?.liveStatus?.id, 
-              label: model?.liveStatus?.label,
-            } as IDropdownValue; 
-          });
+    return {
+      id: model?.liveStatus?.id,
+      label: model?.liveStatus?.label,
+    } as IDropdownValue;
+  });
 
   const distinctCurrencies: Array<IDropdownValue> = databaseCurrencies
-        ? databaseCurrencies.map((currency) => {
-            return {
-              id: currency.id.toString(),
-              label: currency.abbreviation,
-            };
-          })
-        : [];
+    ? databaseCurrencies.map((currency) => {
+        return {
+          id: currency.id.toString(),
+          label: currency.abbreviation,
+        };
+      })
+    : [];
 
-
-  
   let totalOfTotals = 0;
-  if(rows) {
-    totalOfTotals = filteredRows 
-      ? filteredRows.reduce(
-          (accumulator, currentValue: BetModel) => {
-            if(currentValue.totalAmount) {
-              return accumulator + currentValue.totalAmount;
-            } else {
-              return accumulator;
-            }
-          },
-          0
-        )
+  if (rows) {
+    totalOfTotals = filteredRows
+      ? filteredRows.reduce((accumulator, currentValue: BetModel) => {
+          if (currentValue.totalAmount) {
+            return accumulator + currentValue.totalAmount;
+          } else {
+            return accumulator;
+          }
+        }, 0)
       : 0;
   }
-  
 
   return (
     <>
-     {
-      isLoading
-        ? (
-            <>
-            <div className='background-color-blur'>
-            <CircularProgress color="success" 
-                size={250}
-                disableShrink={true}
-                style={{
-                  position: 'fixed', 
-                  top: '0', 
-                  right: '0',
-                  bottom: '0',
-                  left: '0',
-                  margin: 'auto',
-                  zIndex: 9999999999999,
-                  transition: 'none',
-                }}
+      {isLoading ? (
+        <>
+          <div className="background-color-blur">
+            <CircularProgress
+              color="success"
+              size={250}
+              disableShrink={true}
+              style={{
+                position: "fixed",
+                top: "0",
+                right: "0",
+                bottom: "0",
+                left: "0",
+                margin: "auto",
+                zIndex: 9999999999999,
+                transition: "none",
+              }}
+            />
+          </div>
+        </>
+      ) : null}
+      <Paper sx={{ padding: "5%" }}>
+        <Typography variant="h1" className="typography">
+          Search
+        </Typography>
 
-              />
-            </div>
-             
-            </>
-            
-          )
-        : null
-    }
-    <Paper sx={{ padding: '5%', }}>
-      <Typography variant='h1' className='typography'>
-        Search
-      </Typography>
-    
-      <FormControl component="fieldset">
+        {/* <FormControl component="fieldset">
         <FormControlLabel
           value="end"
           control={<Checkbox />}
@@ -951,221 +1123,287 @@ export default function Search() {
             setAreExpensesShown(checked);
           }}
         />
-      </FormControl>
-      {
-        currentStatistcs
-          ? (
-              <Paper>
-                <Typography variant='h4'>Statistics</Typography>
-                <RadioGroup
-                  aria-labelledby="demo-controlled-radio-buttons-group"
-                  name="controlled-radio-buttons-group"
-                  value={statisticsType}
-                  onChange={(event) => {
-                    const value: string = (event.target as HTMLInputElement).value;
-                    setStatisticsType(value === 'Flat' 
-                      ? StatisticType.Flat
-                      : StatisticType.Real);
-                  }}
-                >
-                  <FormControlLabel value="Flat" control={<Radio />} label="Flat" />
-                  <FormControlLabel value="Real" control={<Radio />} label="Real" />
-                </RadioGroup>
-                <DataGrid
-                  columns={statisticsColumns}
-                  rows={currentStatistcs}
-                />
-              </Paper>
-            )
-          : null
-      }
-      <Paper>
-        <Typography variant='h4'>Filter type</Typography>
-        <RadioGroup
-          aria-labelledby="demo-controlled-radio-buttons-group"
-          name="controlled-radio-buttons-group"
-          value={filterType}
-          onChange={(event) => {
-            const value: string = (event.target as HTMLInputElement).value;
-            setFilterType(value === 'Bets'
-              ? FilterType.Bets
-              : value === 'Expenses'
-                ? FilterType.Expenses
-                : FilterType.Both);
-          }}
-        >
-          <FormControlLabel value="Bets" control={<Radio />} label="Bets" />
-          <FormControlLabel value="Expenses" control={<Radio />} label="Expenses" />
-          <FormControlLabel value="Both" control={<Radio />} label="Both" />
-        </RadioGroup>
-      </Paper>
-      <Paper className='margin-top-5'> 
-        <Paper className='margin-top-1'>
-          <TextField id="betId" label="Bet id" variant="outlined" type="number" onChange={(e) => {
-            const betId = parseInt(e.target.value);
-            if(!isNaN(betId)) {
-              setBetId(betId);
-            } else {
-              setBetId(undefined);
-            }
-          }}/>
-          <TextField id="expenseId" label="Expense id" variant="outlined" type="number" onChange={(e) => {
-            const expenseId = parseInt(e.target.value);
-            if(!isNaN(expenseId)) {
-              setExpenseId(expenseId);
-            } else {
-              setExpenseId(undefined);
-            }
-          }}/>
+      </FormControl> */}
+        {currentStatistcs ? (
+          <Paper>
+            <Typography variant="h4">Statistics</Typography>
+            <RadioGroup
+              aria-labelledby="demo-controlled-radio-buttons-group"
+              name="controlled-radio-buttons-group"
+              value={statisticsType}
+              onChange={(event) => {
+                const value: string = (event.target as HTMLInputElement).value;
+                setStatisticsType(
+                  value === "Flat" ? StatisticType.Flat : StatisticType.Real
+                );
+              }}
+            >
+              <FormControlLabel value="Flat" control={<Radio />} label="Flat" />
+              <FormControlLabel value="Real" control={<Radio />} label="Real" />
+            </RadioGroup>
+            <DataGrid columns={statisticsColumns} rows={currentStatistcs} />
+          </Paper>
+        ) : null}
+        <Paper>
+          <Typography variant="h4">Filter type</Typography>
+          <RadioGroup
+            aria-labelledby="demo-controlled-radio-buttons-group"
+            name="controlled-radio-buttons-group"
+            value={filterType}
+            onChange={(event) => {
+              const value: string = (event.target as HTMLInputElement).value;
+              setFilterType(
+                value === "Bets"
+                  ? FilterType.Bets
+                  : value === "Expenses"
+                  ? FilterType.Expenses
+                  : FilterType.Both
+              );
+            }}
+          >
+            <FormControlLabel value="Bets" control={<Radio />} label="Bets" />
+            <FormControlLabel
+              value="Expenses"
+              control={<Radio />}
+              label="Expenses"
+            />
+            <FormControlLabel value="Both" control={<Radio />} label="Both" />
+          </RadioGroup>
         </Paper>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker label="From" value={dayjs(dateFrom)} onChange={(newValue) => {
-              setDateFrom(newValue ? new Date(newValue?.toISOString()) : undefined);
-            }} />
-            <DatePicker label="To" value={dayjs(dateTo)} onChange={(newValue) => {
-              setDateTo(newValue ? new Date(newValue?.toISOString()) : undefined);
-            }}/>
-        </LocalizationProvider>
-        <Paper className='margin-top-1'>
-          <TextField id="stake-from" label="Stake from" variant="outlined" type="number" onChange={(e) => {
-              const stakeFrom = parseInt(e.target.value);
-              if(!isNaN(stakeFrom)) {
-                setStakeFrom(stakeFrom);
-              } else {
-                setStakeFrom(undefined);
-              }
-          }} />
-          <TextField id="stake-to" label="Stake to" variant="outlined" type="number" onChange={(e) => {
-              const stakeTo = parseInt(e.target.value);
-              if(!isNaN(stakeTo)) {
-                setStakeTo(stakeTo);
-              } else {
-                setStakeTo(undefined);
-              }
-          }} />
+        <Paper className="margin-top-5">
+          <Paper className="margin-top-1">
+            <TextField
+              id="betId"
+              label="Bet id"
+              variant="outlined"
+              type="number"
+              onChange={(e) => {
+                const betId = parseInt(e.target.value);
+                if (!isNaN(betId)) {
+                  setBetId(betId);
+                } else {
+                  setBetId(undefined);
+                }
+              }}
+            />
+            <TextField
+              id="expenseId"
+              label="Expense id"
+              variant="outlined"
+              type="number"
+              onChange={(e) => {
+                const expenseId = parseInt(e.target.value);
+                if (!isNaN(expenseId)) {
+                  setExpenseId(expenseId);
+                } else {
+                  setExpenseId(undefined);
+                }
+              }}
+            />
+          </Paper>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="From"
+              value={dayjs(dateFrom)}
+              onChange={(newValue) => {
+                setDateFrom(
+                  newValue ? new Date(newValue?.toISOString()) : undefined
+                );
+              }}
+            />
+            <DatePicker
+              label="To"
+              value={dayjs(dateTo)}
+              onChange={(newValue) => {
+                setDateTo(
+                  newValue ? new Date(newValue?.toISOString()) : undefined
+                );
+              }}
+            />
+          </LocalizationProvider>
+          <Paper className="margin-top-1">
+            <TextField
+              id="stake-from"
+              label="Stake from"
+              variant="outlined"
+              type="number"
+              onChange={(e) => {
+                const stakeFrom = parseInt(e.target.value);
+                if (!isNaN(stakeFrom)) {
+                  setStakeFrom(stakeFrom);
+                } else {
+                  setStakeFrom(undefined);
+                }
+              }}
+            />
+            <TextField
+              id="stake-to"
+              label="Stake to"
+              variant="outlined"
+              type="number"
+              onChange={(e) => {
+                const stakeTo = parseInt(e.target.value);
+                if (!isNaN(stakeTo)) {
+                  setStakeTo(stakeTo);
+                } else {
+                  setStakeTo(undefined);
+                }
+              }}
+            />
+          </Paper>
+          <Paper className="margin-top-1">
+            <TextField
+              id="odd-from"
+              label="Odd from"
+              variant="outlined"
+              type="number"
+              onChange={(e) => {
+                const oddFrom = parseInt(e.target.value);
+                if (!isNaN(oddFrom)) {
+                  setOddFrom(oddFrom);
+                } else {
+                  setOddFrom(undefined);
+                }
+              }}
+            />
+            <TextField
+              id="odd-to"
+              label="Odd to"
+              variant="outlined"
+              type="number"
+              onChange={(e) => {
+                const oddTo = parseInt(e.target.value);
+                if (!isNaN(oddTo)) {
+                  setOddTo(oddTo);
+                } else {
+                  setOddTo(undefined);
+                }
+              }}
+            />
+          </Paper>
+          <Paper className="margin-top-1">
+            <TextField
+              id="psLimit-from"
+              label="PsLimit from"
+              variant="outlined"
+              type="number"
+              onChange={(e) => {
+                const psLimitFrom = parseInt(e.target.value);
+                if (!isNaN(psLimitFrom)) {
+                  setPsLimitFrom(psLimitFrom);
+                } else {
+                  setPsLimitFrom(undefined);
+                }
+              }}
+            />
+            <TextField
+              id="psLimit-to"
+              label="PsLimit to"
+              variant="outlined"
+              type="number"
+              onChange={(e) => {
+                const psLimitTo = parseInt(e.target.value);
+                if (!isNaN(psLimitTo)) {
+                  setPsLimitTo(psLimitTo);
+                } else {
+                  setPsLimitTo(undefined);
+                }
+              }}
+            />
+          </Paper>
+          <Paper className="search-filters-container">
+            <AutocompleteComponent
+              id="counteragentCategories-autocomplete"
+              label="CounteragentCategory"
+              options={distinctCounteragentCategories}
+              selectedOptions={counteragentCategoriesIds}
+              setStateFn={setCounteragentCategoriesIds}
+            />
+            <AutocompleteComponent
+              id="counteragents-autocomplete"
+              label="Counteragent"
+              options={distinctCounteragents}
+              selectedOptions={counteragentIds}
+              setStateFn={setCounteragentIds}
+            />
+            <AutocompleteComponent
+              id="sports-autocomplete"
+              label="Sport"
+              options={distinctSports}
+              selectedOptions={sportIds}
+              setStateFn={setSportIds}
+            />
+            <AutocompleteComponent
+              id="markets-autocomplete"
+              label="Market"
+              options={distinctMarkets}
+              selectedOptions={marketIds}
+              setStateFn={setMarketIds}
+            />
+            <AutocompleteComponent
+              id="tournaments-autocomplete"
+              label="Tournament"
+              options={distinctTournaments}
+              selectedOptions={tournamentIds}
+              setStateFn={setTournamentIds}
+            />
+            <AutocompleteComponent
+              id="liveStatuses-autocomplete"
+              label="LiveStatus"
+              options={distinctLiveStatuses}
+              selectedOptions={liveStatusIds}
+              setStateFn={setLiveStatusIds}
+            />
+            <AutocompleteComponent
+              id="currencies-autocomplete"
+              label="Currency"
+              options={distinctCurrencies}
+              selectedOptions={currencyIds}
+              setStateFn={setCurrencyIds}
+            />
+          </Paper>
         </Paper>
-        <Paper className='margin-top-1'>
-          <TextField id="odd-from" label="Odd from" variant="outlined" type="number" onChange={(e) => {
-              const oddFrom = parseInt(e.target.value);
-              if(!isNaN(oddFrom)) {
-                setOddFrom(oddFrom);
-              } else {
-                setOddFrom(undefined);
-              }
-          }} />
-          <TextField id="odd-to" label="Odd to" variant="outlined" type="number" onChange={(e) => {
-              const oddTo = parseInt(e.target.value);
-              if(!isNaN(oddTo)) {
-                setOddTo(oddTo);
-              } else {
-                setOddTo(undefined);
-              }
-          }} />
-        </Paper>
-        <Paper className='margin-top-1'>
-          <TextField id="psLimit-from" label="PsLimit from" variant="outlined" type="number" onChange={(e) => {
-              const psLimitFrom = parseInt(e.target.value);
-              if(!isNaN(psLimitFrom)) {
-                setPsLimitFrom(psLimitFrom);
-              } else {
-                setPsLimitFrom(undefined);
-              }
-          }} />
-          <TextField id="psLimit-to" label="PsLimit to" variant="outlined" type="number" onChange={(e) => {
-              const psLimitTo = parseInt(e.target.value);
-              if(!isNaN(psLimitTo)) {
-                setPsLimitTo(psLimitTo);
-              } else {
-                setPsLimitTo(undefined);
-              }
-          }} />
-        </Paper>
-        <Paper className='search-filters-container'>
-          <AutocompleteComponent 
-            id='counteragentCategories-autocomplete'
-            label='CounteragentCategory'
-            options={distinctCounteragentCategories} 
-            selectedOptions={counteragentCategoriesIds}
-            setStateFn={setCounteragentCategoriesIds}/>
-          <AutocompleteComponent 
-            id='counteragents-autocomplete'
-            label='Counteragent'
-            options={distinctCounteragents} 
-            selectedOptions={counteragentIds}
-            setStateFn={setCounteragentIds}/>
-          <AutocompleteComponent 
-            id='sports-autocomplete'
-            label='Sport'
-            options={distinctSports} 
-            selectedOptions={sportIds}
-            setStateFn={setSportIds}/>
-          <AutocompleteComponent 
-            id='markets-autocomplete'
-            label='Market'
-            options={distinctMarkets} 
-            selectedOptions={marketIds}
-            setStateFn={setMarketIds}/>
-          <AutocompleteComponent 
-            id='tournaments-autocomplete'
-            label='Tournament'
-            options={distinctTournaments} 
-            selectedOptions={tournamentIds}
-            setStateFn={setTournamentIds}/>
-          <AutocompleteComponent 
-            id='liveStatuses-autocomplete'
-            label='LiveStatus'
-            options={distinctLiveStatuses} 
-            selectedOptions={liveStatusIds}
-            setStateFn={setLiveStatusIds}/>
-          <AutocompleteComponent 
-            id='currencies-autocomplete'
-            label='Currency'
-            options={distinctCurrencies} 
-            selectedOptions={currencyIds}
-            setStateFn={setCurrencyIds}/>
-        </Paper>
-        </Paper>
-        <Typography variant='h4'>Bets</Typography>
-        <Typography variant='h4'>
-          Total of totals: {Number(totalOfTotals).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        <Typography variant="h4">Bets</Typography>
+        <Typography variant="h4">
+          Total of totals:{" "}
+          {Number(totalOfTotals).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
         </Typography>
-        {
-          filteredRows
-            ? (
-              <Bets
-                id="search"
-                arePengindBets={false}
-                savedBet={(bets: Array<BetModel>, bet: BetModel) => {}}
-                isRead={true} 
-                selectBetIdFn={selectBetId}
-                setIsLoading={setIsLoading} 
-                defaultRows={filteredRows}
-                possibleCounteragents={allCounterAgents}
-                possibleSports={allSports}
-                possibleTournaments={allTournaments}
-                possibleMarkets={allMarkets}
-                allSelections={allSelections ? allSelections : {}}
-                currencies={allCurrencies}
-              />
-            )
-          : null
-      }
-      <Typography variant='h4'>Expenses</Typography>
-      {
-        filteredExpenseRowsRows && allCounterAgents && allCounterAgents.length > 0
-          && areExpensesShown
-          ? (
-              <Expenses 
-                isRead={false}
-                setIsLoading={setIsLoading}
-                defaultRows={filteredExpenseRowsRows}
-                possibleCounterAgents={allCounterAgents}
-              />
-            )
-          : null
-      }
-    </Paper>
+        {filteredRows ? (
+          <Bets
+            id="search"
+            arePengindBets={false}
+            savedBet={(bets: Array<BetModel>, bet: BetModel) => {}}
+            isRead={true}
+            selectBetIdFn={selectBetId}
+            setIsLoading={setIsLoading}
+            defaultRows={filteredRows}
+            possibleCounteragents={allCounterAgents}
+            possibleSports={allSports}
+            possibleTournaments={allTournaments}
+            possibleMarkets={allMarkets}
+            allSelections={allSelections ? allSelections : {}}
+            currencies={allCurrencies}
+          />
+        ) : null}
+        {Number(auth.user?.role) === 1 && (
+          <Typography variant="h4">Expenses</Typography>
+        )}
+        {filteredExpenseRowsRows &&
+        allCounterAgents &&
+        allCounterAgents.length > 0 &&
+        areExpensesShown &&
+        Number(auth.user?.role) === 1 ? (
+          <Expenses
+            isRead={false}
+            setIsLoading={setIsLoading}
+            defaultRows={filteredExpenseRowsRows}
+            possibleCounterAgents={allCounterAgents}
+          />
+        ) : null}
+      </Paper>
     </>
-   
   );
 }
