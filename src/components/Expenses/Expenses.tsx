@@ -48,23 +48,23 @@ export default function Expenses(props: {
     const counterAgent = possibleCounterAgents[0];
     const handleAddNewClick = () => {
       const id = Math.round(Math.random() * 1000000);
-      setRows((oldRows) => [...oldRows, 
-        { 
-          id,
-          counterAgent: { id: counterAgent.id, label: counterAgent.label, },
-          amount: 0,
-          description: '',
-          dateCreated: new Date(),
-      
-          actionTypeApplied: undefined,
-          isSavedInDatabase: false,
-        }
-      ]);
+      const newExpense = {
+        id,
+        counterAgent: { id: counterAgent.id, label: counterAgent.label },
+        amount: 0,
+        description: '',
+        dateCreated: new Date(),
+        actionTypeApplied: undefined,
+        isSavedInDatabase: false,
+      };
+    
+      setRows((oldRows) => [newExpense, ...oldRows]);
       setRowModesModel((oldModel) => ({
+        [id]: { mode: GridRowModes.Edit },
         ...oldModel,
-        [id]: { mode: GridRowModes.Edit, },
       }));
     };
+    
   
     return !isMobile
       ? (
