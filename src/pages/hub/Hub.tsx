@@ -513,7 +513,7 @@ export default function Hub() {
                   console.log(isSticky)
                 }} control={<Checkbox />} label="Sticky" />
             </div>
-            <DataGrid style={{ height: "50%" }} columns={statisticsColumns}
+            <DataGrid style={{ height: "auto" }} columns={statisticsColumns}
               rows={currentStatistcs || []}
               pageSizeOptions={[]}
               autoPageSize={false}
