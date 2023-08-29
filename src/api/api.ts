@@ -402,7 +402,7 @@ const promoteUserToGA = async (userName: string) => {
   try {
     return await instance.post(
       `${domain}/Auth/PromoteToGA`,
-      { userName },
+      userName,
       {
         headers: {
           "Content-Type": "application/json",
