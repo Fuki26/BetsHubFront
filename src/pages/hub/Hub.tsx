@@ -645,6 +645,7 @@ export default function Hub() {
               </Typography>
               <Collapse sx={{ maxWidth: "90vw !important" }} in={isExpensesTableExpanded} timeout="auto" unmountOnExit>
                 <Expenses
+                  displayExportToolbar={false}
                   isRead={false}
                   setIsLoading={setIsLoading}
                   defaultRows={expensesRows}

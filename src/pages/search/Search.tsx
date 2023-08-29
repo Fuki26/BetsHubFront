@@ -1397,6 +1397,7 @@ export default function Search() {
         areExpensesShown &&
         Number(auth.user?.role) === 1 ? (
           <Expenses
+            displayExportToolbar={true}
             isRead={false}
             setIsLoading={setIsLoading}
             defaultRows={filteredExpenseRowsRows}
