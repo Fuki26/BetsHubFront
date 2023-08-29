@@ -11,12 +11,14 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
 import { EditToolbarProps, Enums, ExpenseModel, IDropdownValue, } from '../../models';
 import { deleteExpense, upsertExpense } from '../../api';
+import ExpensesToolbar from '../ExpensesToolbar/ExpensesToolbar';
 
 export default function Expenses(props: { 
   isRead: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   defaultRows: Array<ExpenseModel> | null;
   possibleCounterAgents: Array<IDropdownValue> | undefined;
+  displayExportToolbar: boolean | null;
 }) {
   const { isRead, setIsLoading, defaultRows, possibleCounterAgents, } = props;
 
@@ -486,14 +488,14 @@ export default function Expenses(props: {
                   columnThreshold={2}
                   rows={rows}   
                   slots={{
-                    toolbar: isRead
-                      ? undefined
+                    toolbar: props.displayExportToolbar
+                      ? ExpensesToolbar
                       : editToolbar,
                   }}
                   rowModesModel={rowModesModel}
                   processRowUpdate={processRowUpdate}
                   slotProps={{
-                    toolbar: { setRows, setRowModesModel },
+                    toolbar: { setRows, setRowModesModel, rows },
                   }}
                   
                   editMode='row'
