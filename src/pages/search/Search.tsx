@@ -1113,7 +1113,7 @@ export default function Search() {
           Search
         </Typography>
 
-        {/* <FormControl component="fieldset">
+        <FormControl component="fieldset">
         <FormControlLabel
           value="end"
           control={<Checkbox />}
@@ -1123,7 +1123,7 @@ export default function Search() {
             setAreExpensesShown(checked);
           }}
         />
-      </FormControl> */}
+      </FormControl>
         {currentStatistcs ? (
           <Paper>
             <Typography variant="h4">Statistics</Typography>
