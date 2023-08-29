@@ -28,7 +28,7 @@ div.row-win-status-winner:hover {
   background:#cccccc;
 }
 .row-win-status-void:hover {
-  background:#cccccc;
+  background:#cccccc !important;
 }
 
 .MuiDataGrid-root .MuiDataGrid-cell:focus-within {
