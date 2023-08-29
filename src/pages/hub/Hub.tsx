@@ -488,7 +488,7 @@ export default function Hub() {
 
       <Paper sx={{ padding: "5%" }}>
 
-        <Paper className="parent-statistics" style={{ maxWidth: "70vw !important", display: "flex", zIndex: "1", marginBottom: "10%", top: "60px", position: isSticky ? "sticky" : "static" }}>
+        <Paper className="parent-statistics" style={{ maxWidth: "70vw !important", display: "flex", zIndex: "1", top: "60px", position: isSticky ? "sticky" : "static" }}>
           <Paper className="statistics" style={{ marginRight: "10%", }}>
             <Typography variant="h4">Statistics</Typography>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
