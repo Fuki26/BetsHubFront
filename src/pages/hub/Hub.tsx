@@ -445,7 +445,7 @@ export default function Hub() {
       field: "yield",
       headerName: "Yield",
       type: "number",
-      width: 70,
+      width: 100,
     },
   ];
 
