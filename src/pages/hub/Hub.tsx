@@ -487,9 +487,8 @@ export default function Hub() {
     ) : null}
 
       <Paper sx={{ padding: "5%" ,width:"100% !important"}}>
-
         <Paper className="parent-statistics" style={{ maxWidth: "70vw !important", display: "flex", zIndex: "1", top: "60px", position: isSticky ? "sticky" : "static" }}>
-          <Paper className="statistics" style={{ marginRight: "10%", }}>
+          <Paper className="statistics" style={{ marginRight: "auto", }}>
             <Typography variant="h4">Statistics</Typography>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
               <RadioGroup
