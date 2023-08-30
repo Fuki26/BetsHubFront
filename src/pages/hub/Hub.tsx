@@ -165,17 +165,17 @@ export default function Hub() {
         setPendingRows(pendingBets);
         setCompletedRows(completedBets);
         setCurrencies(currencies);
-        setFilteredPendingRows(
-          pendingBets.filter((b) => {
-            const now = new Date();
-            return (
-              b.dateFinished &&
-              b.dateFinished.getFullYear() === now.getFullYear() &&
-              b.dateFinished.getMonth() === now.getMonth() &&
-              b.dateFinished.getDate() === now.getDate()
-            );
-          })
-        );
+        // setFilteredPendingRows(
+        //   pendingBets.filter((b) => {
+        //     const now = new Date();
+        //     return (
+        //       b.dateFinished &&
+        //       b.dateFinished.getFullYear() === now.getFullYear() &&
+        //       b.dateFinished.getMonth() === now.getMonth() &&
+        //       b.dateFinished.getDate() === now.getDate()
+        //     );
+        //   })
+        // );
         setFilteredCompletedRows(
           completedBets.filter((b) => {
             const now = new Date();
@@ -260,26 +260,26 @@ export default function Hub() {
   }, []);
 
   useEffect(() => {
-    setFilteredPendingRows((previousRowsModel: Array<BetModel> | undefined) => {
-      if (pendingRows && date) {
-        const bets: Array<BetModel> = [];
-        for (var i = 0; i <= pendingRows?.length - 1; i++) {
-          const currentRow = pendingRows[i];
-          if (
-            currentRow.dateFinished &&
-            currentRow.dateFinished.getFullYear() === date.getFullYear() &&
-            currentRow.dateFinished.getMonth() === date.getMonth() &&
-            currentRow.dateFinished.getDate() === date.getDate()
-          ) {
-            bets.push(currentRow);
-          }
-        }
+    // setFilteredPendingRows((previousRowsModel: Array<BetModel> | undefined) => {
+    //   if (pendingRows && date) {
+    //     const bets: Array<BetModel> = [];
+    //     for (var i = 0; i <= pendingRows?.length - 1; i++) {
+    //       const currentRow = pendingRows[i];
+    //       if (
+    //         currentRow.dateFinished &&
+    //         currentRow.dateFinished.getFullYear() === date.getFullYear() &&
+    //         currentRow.dateFinished.getMonth() === date.getMonth() &&
+    //         currentRow.dateFinished.getDate() === date.getDate()
+    //       ) {
+    //         bets.push(currentRow);
+    //       }
+    //     }
 
-        return bets;
-      } else {
-        return [];
-      }
-    });
+    //     return bets;
+    //   } else {
+    //     return [];
+    //   }
+    // });
 
     setFilteredCompletedRows(
       (previousRowsModel: Array<BetModel> | undefined) => {
