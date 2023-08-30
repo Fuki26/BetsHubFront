@@ -134,7 +134,7 @@ export default function Search() {
   const [selectedBetId, setSelectedBetId] = React.useState<number | undefined>(
     undefined
   );
-  const [areExpensesShown, setAreExpensesShown] = React.useState<boolean>(true);
+  const [areExpensesShown, setAreExpensesShown] = React.useState<boolean>(false);
   const [statisticsType, setStatisticsType] = React.useState<StatisticType>(
     StatisticType.Flat
   );
@@ -1127,6 +1127,7 @@ export default function Search() {
           labelPlacement="end"
           onChange={(e, checked) => {
             setAreExpensesShown(checked);
+            console.log(checked)
           }}
         />
       </FormControl>
