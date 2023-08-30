@@ -7,7 +7,7 @@ import { json } from 'react-router-dom';
 const { evaluate } = require('mathjs')
 
 const domain = 'http://213.91.236.205:5000';
-// const domain = 'http://localhost:5001'
+//const domain = 'http://localhost:5001'
 
 const instance = axios.create({
   withCredentials: true,
@@ -32,6 +32,8 @@ instance.interceptors.response.use(
     return response;
   },
   (error) => {
+
+    console.log("This is response interceptor error", error, JSON.stringify(error))
     if (error.response && error.response.status === 401) {
       notifyError("Session has expired");
       setTimeout(() => {
