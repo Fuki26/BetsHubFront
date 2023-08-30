@@ -82,8 +82,25 @@ function Bets(props: {
     possibleMarkets,
   } = props;
 
+  const sortBets = (bets: Array<BetModel>): Array<BetModel> => {
+    const notCompletedBets = bets.filter((b) => {
+      return !b.liveStatus || !b.counterAgent || !b.sport 
+        || !b.tournament || !b.market || !b.stake 
+        || !b.psLimit || !b.totalAmount || !b.odd || !b.notes;
+    });
+
+    const completedBets = bets.filter((b) => {
+      return b.liveStatus && b.counterAgent && b.sport && b.tournament
+        && b.market && b.stake && b.psLimit && b.totalAmount && b.odd && b.notes;
+    });
+
+    const allBets = notCompletedBets.concat(completedBets);
+
+    return allBets;
+  }
+
   const [rows, setRows] = useState<Array<BetModel>>(
-    defaultRows ? defaultRows : []
+    defaultRows ? sortBets(defaultRows) : []
   );
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>(
     {}
@@ -102,26 +119,9 @@ function Bets(props: {
 
   const abbreviations = getAbbreviations(currencies);
 
-  const sortBets = (bets: Array<BetModel>): Array<BetModel> => {
-    const notCompletedBets = bets.filter((b) => {
-      return !b.betStatus || !b.counterAgent || !b.dateCreated 
-        || !b.liveStatus || !b.market
-        || !b.notes || !b.odd || !b.sport || !b.tournament;
-    });
-
-    const completedBets = bets.filter((b) => {
-      return b.betStatus && b.counterAgent && b.dateCreated
-        && !b.liveStatus && b.market && b.notes && b.odd && b.sport && b.tournament;
-    });
-
-    const allBets = notCompletedBets.concat(completedBets);
-
-    return allBets;
-  }
-
   useEffect(() => {
     setRows((oldRows) => {
-      return defaultRows ? defaultRows : [];
+      return defaultRows ? sortBets(defaultRows) : [];
     });
   
 
@@ -613,6 +613,10 @@ function Bets(props: {
         && currentRow.notes && currentRow.odd && currentRow.sport && currentRow.tournament) {
           props.savedBet(rows, currentRow);
       }
+
+      setRows((oldRows) => {
+        return oldRows ? sortBets(oldRows) : [];
+      });
     }
 
     return;
