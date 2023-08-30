@@ -486,7 +486,7 @@ export default function Hub() {
       </>
     ) : null}
 
-      <Paper sx={{ padding: "5%" }}>
+      <Paper sx={{ padding: "5%" ,width:"100% !important"}}>
 
         <Paper className="parent-statistics" style={{ maxWidth: "70vw !important", display: "flex", zIndex: "1", top: "60px", position: isSticky ? "sticky" : "static" }}>
           <Paper className="statistics" style={{ marginRight: "10%", }}>
@@ -513,7 +513,7 @@ export default function Hub() {
                   console.log(isSticky)
                 }} control={<Checkbox />} label="Sticky" />
             </div>
-            <DataGrid style={{ height: "80%" }} columns={statisticsColumns}
+            <DataGrid style={{ height: "70%", borderWidth: "0" }} columns={statisticsColumns}
               rows={currentStatistcs || []}
               pageSizeOptions={[]}
               autoPageSize={false}
@@ -535,7 +535,7 @@ export default function Hub() {
         </Paper>
 
       <Paper  style={{ display: "flex", flexWrap: "nowrap" }}>
-          <Paper>
+          <Paper style={{width:"100%"}}>
             {pendingRows ? (
               <>
                 <Grid item xs={12} sx={{ maxWidth: "90vw !important" }}>
