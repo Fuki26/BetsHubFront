@@ -10,7 +10,7 @@ const domain = 'http://213.91.236.205:5000';
 //const domain = 'http://localhost:5001'
 
 const instance = axios.create({
-  withCredentials: true,
+  // withCredentials: true,
   baseURL: domain,
 });
 
