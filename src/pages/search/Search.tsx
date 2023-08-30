@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { UserContext, getUserFromLocalStorate, useAuth } from '../../contexts/AuthContext';
 import { Autocomplete, Checkbox, CircularProgress, FormControl, FormControlLabel, 
   Paper, Radio, RadioGroup, TextField, Typography} from '@mui/material';
   import { DataGrid, GridColDef } from '@mui/x-data-grid';
@@ -413,6 +413,12 @@ export default function Search() {
 
   useEffect(() => {
     setFilteredRows((previousRowsModel: Array<BetModel> | undefined) => {
+      const user: UserContext | undefined = getUserFromLocalStorate();
+      if(counteragentIds.length > 0 && parseInt(user!.role) !== 1) {
+        alert('You should specify counteragent!');
+        return rows ? rows : [];
+      }
+
       if (rows) {
         const bets: Array<BetModel> = [];
         for (var i = 0; i <= rows?.length - 1; i++) {
