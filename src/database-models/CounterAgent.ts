@@ -8,7 +8,5 @@ export type Counteragent = {
     maxRate: number;
     dateCreated: string;
     dateChanged: string;
-    userId: string;
-    user: User;
     deleted: boolean;
 };

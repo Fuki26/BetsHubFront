@@ -43,9 +43,6 @@ export default function Counteragents(props: {}) {
                 counteragentCategory: c.counteragentCategory
                   ? { id: c.counteragentCategory.id.toString(), label: c.counteragentCategory.name! }
                   : undefined,
-                user: c.user
-                  ? { id: c.user.id, label: c.user.userName! }
-                  : undefined,
                 maxRate: c.maxRate,
                 dateCreated: new Date(c.dateCreated),
                 dateChanged: new Date(c.dateChanged),
@@ -112,7 +109,6 @@ export default function Counteragents(props: {}) {
           id,
           name: '',
           counteragentCategory: undefined,
-          user: undefined,
           maxRate: 0,
           dateCreated: new Date(),
           dateChanged: new Date(),
@@ -268,7 +264,6 @@ export default function Counteragents(props: {}) {
           ...currentRow,
           name: newRow.name,
           counteragentCategory: currentRow.counteragentCategory,
-          user: currentRow.user,
           maxRate: newRow.maxRate,
           dateCreated: currentRow.actionTypeApplied === Enums.ActionType.SAVED
             ? new Date()
@@ -281,7 +276,6 @@ export default function Counteragents(props: {}) {
 
         if(!newRowData.name
           || !newRowData.counteragentCategory
-          || !newRowData.user
           || newRowData.maxRate === null) {
           setRowModesModel((previousRowModesModel) => {
             return { ...previousRowModesModel, [currentRow.id!.toString()]: { mode: GridRowModes.Edit } }
@@ -294,8 +288,14 @@ export default function Counteragents(props: {}) {
         }
 
         setIsLoading(true);
-        
-        const rowData = await upsertCounteragent(newRowData);
+        const loggedUser = JSON.parse(localStorage.getItem('user')!);
+        const rowData = await upsertCounteragent({ 
+          ...newRowData,
+          user: {
+            id: loggedUser.username,
+            label: loggedUser.username,
+          },
+        });
 
         setRows((previousRowsModel) => {
           return previousRowsModel!.map((row) => {
@@ -430,78 +430,6 @@ export default function Counteragents(props: {}) {
         }
 
         return row.counteragentCategory;
-      },
-    },
-    {
-      field: 'user',
-      headerName: 'User',
-      editable: true,
-      width: 100,
-      renderCell: (params: GridRenderCellParams<CounteragentModel>) => {
-        const row = rows?.find((r) => r.id === params.row.id);
-        if(!row) {
-          return;
-        }
-
-        return (
-          <>
-            {
-              row.user 
-                ? row.user.label
-                : ''
-            }
-          </>
-        );
-      },
-      renderEditCell: (params: GridRenderEditCellParams<CounteragentModel>) => {
-        const row = rows?.find((r) => r.id === params.row.id);
-        if(!row) {
-          return;
-        }
-
-        return (
-          <Autocomplete
-            // freeSolo
-            options={
-              possibleUsers
-                ? possibleUsers
-                : []
-            }
-            renderInput={(params) => 
-              <TextField {...params}/>
-            }
-            onChange={(e, value: any) => {
-              setRows((previousRowsModel) => {
-                return previousRowsModel?.map((row: CounteragentModel) => {
-                  if(row.id === params.row.id) {
-                    return {
-                      ...row, 
-                      user: value
-                        ? typeof value === 'string'
-                          ? { id: value, label: value }
-                          : value
-                        : undefined
-                    };
-                  } else {
-                    return row;
-                  }
-                });
-              });
-            }}
-            value={row.user}
-            sx={{
-              width: 150,
-            }}
-          />
-        );
-      },
-      valueGetter: (params: GridValueGetterParams<CounteragentModel>) => {
-        const row = rows?.find((r) => r.id === params.row.id);
-        if(!row) {
-          return;
-        }
-
-        return row.user;
       },
     },
     {
