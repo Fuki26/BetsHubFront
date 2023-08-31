@@ -432,15 +432,13 @@ function Bets(props: {
     }
   };
 
-  const processRowUpdate = async (
-    
+  const processRowUpdate = async ( 
     newRow: GridRowModel<BetModel>
   ): Promise<BetModel> => {
     
     const currentRow = rows.find((row) => row.id === newRow.id);
     if (!currentRow) {
       return newRow;
-      
     }
 
     if (
@@ -449,8 +447,12 @@ function Bets(props: {
     ) {
       
       let amounts = Object.fromEntries(Object.entries(newRow).filter(([key, value]) => key.startsWith('amount')));
-
+      let atLeastOneCurrencyIsPopulated = false;
       for (let key in amounts) {
+        if(amounts[key] as number > 0) {
+          atLeastOneCurrencyIsPopulated = true;
+        }
+
         if (
           typeof amounts[key] === "string")
            {
@@ -482,6 +484,42 @@ function Bets(props: {
       };
       setIsLoading(true);
       newRow = newRowData;
+      if((
+            !newRowData.liveStatus || !newRowData.counterAgent || !newRowData.sport
+              || !newRowData.tournament || !newRowData.market || !newRowData.psLimit
+              || !atLeastOneCurrencyIsPopulated && !newRowData.odd
+          )
+        && (currentRow.winStatus && currentRow.winStatus.id !== '0')
+        ) {
+          setIsLoading(false);
+
+          toast(
+            `You should populate all required fields if you changed the win status.`,
+            {
+              position: "top-center",
+            }
+          );
+
+          setRows((previousRowsModel) => {
+            return previousRowsModel.map((row) => {
+              if (row.id === newRow.id) {
+                return {
+                  ...newRowData,
+                  winStatus: {
+                    id: WinStatus.None.toString(),
+                    label: 'None',
+                  }
+                };
+              } else {
+                return row;
+    
+              }
+            });
+          });
+
+        return newRowData;
+      } 
+
       const rowData = await upsertBet(newRowData);
       if (!rowData || !rowData.data) {
         toast(
@@ -608,9 +646,9 @@ function Bets(props: {
     for(var i = 0; i <= rows.length - 1; i++) {
       const currentRow = rows[i];
       if(currentRow.winStatus && currentRow.winStatus.id !== '0'
-        && currentRow.betStatus && currentRow.counterAgent && currentRow.dateCreated
-        && currentRow.dateFinished && currentRow.liveStatus && currentRow.market
-        && currentRow.notes && currentRow.odd && currentRow.sport && currentRow.tournament) {
+        && currentRow.liveStatus && currentRow.counterAgent && currentRow.sport
+        && currentRow.tournament && currentRow.market && currentRow.psLimit
+        && currentRow.totalAmount && currentRow.totalAmount > 0 && currentRow.odd) {
           props.savedBet(rows, currentRow);
       }
 
