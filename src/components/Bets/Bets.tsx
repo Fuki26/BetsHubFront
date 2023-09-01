@@ -1,38 +1,19 @@
-import React,{ useEffect, useState, useCallback } from "react";
-import { toast } from "react-toastify";
-import { isMobile } from "react-device-detect";
-import {
-  DataGrid,
-  GridColDef,
-  GridRowId,
-  GridRowModel,
-  GridRowModes,
-  GridRowModesModel,
-  GridRowParams,
-  GridCellParams,
-  GridToolbarContainer,
-  GridCallbackDetails,
-} from "@mui/x-data-grid";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  Paper,
-} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import {
-  BetModel,
-  EditToolbarProps,
-  Enums,
-  IDropdownValue,
-  ISelectionsResult,
-} from "../../models";
-import { deleteBet, upsertBet, getBetHistory } from "../../api";
-import { BetStatus, WinStatus, LiveStatus } from "../../models/enums";
-import { Currency } from "../../database-models";
-import Modal from "../UI/Modal";
-import { getBetsColumns } from "./BetsColumns";
+import React, { useEffect, useState, useCallback, } from 'react';
+import { toast, } from 'react-toastify';
+import { isMobile, } from 'react-device-detect';
+import { DataGrid, GridColDef, GridRowId, GridRowModel, GridRowModes,
+  GridRowModesModel, GridRowParams, GridCellParams, GridToolbarContainer,
+  GridCallbackDetails, } from '@mui/x-data-grid';
+import { Button, Dialog, DialogActions, DialogTitle,
+  Paper, } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { BetModel, EditToolbarProps, Enums,
+  IDropdownValue, ISelectionsResult,} from '../../models';
+import { deleteBet, upsertBet, getBetHistory, } from '../../api';
+import { BetStatus, WinStatus, LiveStatus, } from '../../models/enums';
+import { Currency, } from '../../database-models';
+import Modal from '../UI/Modal';
+import { getBetsColumns, } from './BetsColumns';
 import CustomToolbar from '../CustomToolbar/CustomToolbar'
 import './Bets.css'
 const { evaluate } = require('mathjs')
@@ -41,6 +22,7 @@ const getAbbreviations = (currencies: Currency[] | undefined) => {
   if (!currencies) return [];
   return currencies.map((cur) => cur.abbreviation);
 };
+
 const insertCurrenciesIntoColumns = (columns: any, abbreviations: string[]) => {
   const idx = columns.findIndex((c: any) => c.field === "psLimit");
   const currencyColumns = abbreviations.map((a) => ({
@@ -53,6 +35,7 @@ const insertCurrenciesIntoColumns = (columns: any, abbreviations: string[]) => {
   }));
   columns.splice(idx + 1, 0, ...currencyColumns);
 };
+
 function Bets(props: {
   id: string;
   isRead: boolean;
@@ -71,16 +54,9 @@ function Bets(props: {
   possibleMarkets: Array<IDropdownValue> | undefined;
 }) {
   const {
-    isRead,
-    selectBetIdFn,
-    setIsLoading,
-    defaultRows,
-    currencies,
-    possibleCounteragents,
-    possibleSports,
-    possibleTournaments,
-    possibleMarkets,
-  } = props;
+    isRead, arePengindBets, selectBetIdFn, setIsLoading,
+    defaultRows, currencies, possibleCounteragents, possibleSports,
+    possibleTournaments, possibleMarkets, } = props;
 
   const sortBets = (bets: Array<BetModel>): Array<BetModel> => {
     const notCompletedBets = bets.filter((b) => {
@@ -102,15 +78,8 @@ function Bets(props: {
   const [rows, setRows] = useState<Array<BetModel>>(
     defaultRows ? sortBets(defaultRows) : []
   );
-  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>(
-    {}
-  );
-  const [copiedRowIds, setCopiedRowIds] = useState<
-    [number, number] | null
-  >(null);
-  const [deleteRowId, setDeleteRowId] = useState<number | undefined>(
-    undefined
-  );
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+  const [deleteRowId, setDeleteRowId] = useState<number | undefined>(undefined);
   const [deleteDialogIsOpened, setOpenDeleteDialog] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [history, setHistory] = useState(null);
@@ -124,7 +93,6 @@ function Bets(props: {
       return defaultRows ? sortBets(defaultRows) : [];
     });
   
-
     setRowModesModel(() => {
       return {};
     });
@@ -132,11 +100,11 @@ function Bets(props: {
 
 
   useEffect(() => {
-    const savedColumnVisibilityModel = JSON.parse(localStorage.getItem(`${props.id}ColumnVisibilityModel`) || '{}');
+    const savedColumnVisibilityModel = 
+      JSON.parse(localStorage.getItem(`${props.id}ColumnVisibilityModel`) || '{}');
     if (savedColumnVisibilityModel) {
       setColumnVisibilityModel(savedColumnVisibilityModel);
     }
-    
   }, []);
 
   const handleColumnVisibilityChange = useCallback((params: any) => {
@@ -231,7 +199,6 @@ function Bets(props: {
   //#region Actions handlers
 
   const handleSaveClick = (id: GridRowId) => () => {
-    setCopiedRowIds(null);
     setRows((previousRowsModel) => {
       return previousRowsModel.map((row: BetModel) => {
         if (row.id === id) {
@@ -271,13 +238,13 @@ function Bets(props: {
           return "";
       }
     }
+
     return "";
   };
 
 
 
   const handleCancelClick = (id: GridRowId) => () => {
-    setCopiedRowIds(null);
     const canceledRow = rows.find((r) => r.id === id);
     if (!canceledRow) {
       return;
@@ -327,7 +294,7 @@ function Bets(props: {
 
     setRowModesModel((previousRowModesModel) => {
       let newRowsModel: GridRowModesModel = {};
-      newRowsModel[id] = { mode: GridRowModes.Edit };
+      // newRowsModel[id] = { mode: GridRowModes.Edit };
       for (var i = 0; i <= rows.length - 1; i++) {
         const currentRow = rows[i];
         if (currentRow.id === id) {
@@ -364,6 +331,7 @@ function Bets(props: {
     await deleteBet({ id: deleteRowId });
     setDeleteRowId(undefined);
     setOpenDeleteDialog(false);
+
     setRows((previousRows) =>
       previousRows.filter((row) => row.id !== deleteRowId)
     );
@@ -401,7 +369,7 @@ function Bets(props: {
           totalAmount: undefined,
           odd: clickedRow.odd,
           dateFinished: undefined,
-          profits:Number(clickedRow.profits?.toFixed(2)),
+          profits: Number(clickedRow.profits?.toFixed(2)),
           notes: clickedRow.notes,
           actionTypeApplied: undefined,
           isSavedInDatabase: false,
@@ -413,22 +381,19 @@ function Bets(props: {
       ...oldModel,
       [randomId]: { mode: GridRowModes.Edit },
     }));
-    setCopiedRowIds([randomId, clickedRow.id]);
   };
 
   const onRowClick = (params: GridRowParams) => {
     const row = rows.find((row) => row.id === params.id);
     if (row) {
       selectBetIdFn(row.id);
-     
-
     }
   };
+
   const onCellEditStop = (params: GridCellParams) => {
     const row = rows.find((row) => row.id === params.id);
     if (row) {
-      handleEditClick(row.id)()
-    
+      handleEditClick(row.id)();
     }
   };
 
@@ -474,22 +439,29 @@ function Bets(props: {
         stake: newRow.stake,
         psLimit: newRow.psLimit,
         ...amounts,
-        totalAmount: Number(newRow.totalAmount?.toFixed(2)),
+        totalAmount: newRow.totalAmount 
+          ? Number(newRow.totalAmount.toFixed(2))
+          : 0,
         odd: newRow.odd,
         dateFinished: new Date(),
-        profits: Number(newRow.profits?.toFixed(2)),
+        profits: newRow.profits 
+          ? newRow.profits
+          : 0,
         notes: newRow.notes,
 
         selection: newRow.selection,
       };
       setIsLoading(true);
       newRow = newRowData;
-      if((
-            !newRowData.liveStatus || !newRowData.counterAgent || !newRowData.sport
-              || !newRowData.tournament || !newRowData.market || !newRowData.psLimit
-              || !atLeastOneCurrencyIsPopulated && !newRowData.odd
-          )
-        && (currentRow.winStatus && currentRow.winStatus.id !== '0')
+      if(arePengindBets 
+            && 
+            (
+              !newRowData.liveStatus || !newRowData.counterAgent || !newRowData.sport
+                || !newRowData.tournament || !newRowData.market || !newRowData.psLimit
+                || !atLeastOneCurrencyIsPopulated && !newRowData.odd
+            ) 
+            && 
+          (currentRow.winStatus && currentRow.winStatus.id !== '0')
         ) {
           setIsLoading(false);
 
@@ -651,11 +623,11 @@ function Bets(props: {
         && currentRow.totalAmount && currentRow.totalAmount > 0 && currentRow.odd) {
           props.savedBet(rows, currentRow);
       }
-
-      setRows((oldRows) => {
-        return oldRows ? sortBets(oldRows) : [];
-      });
     }
+
+    // setRows((oldRows) => {
+    //   return oldRows ? sortBets(oldRows) : [];
+    // });
 
     return;
   }
@@ -665,7 +637,7 @@ function Bets(props: {
       {rows ? (
         <>
           <DataGrid
-            onRowModesModelChange={onRowModesModelChange}
+            // onRowModesModelChange={onRowModesModelChange}
             columns={columns}
             initialState={{
               columns: {
@@ -682,14 +654,12 @@ function Bets(props: {
             slots={{
               toolbar: isRead ? CustomToolbar : EditToolbar,
             }}
-            
             rowModesModel={rowModesModel}
             processRowUpdate={processRowUpdate}
             slotProps={{
               toolbar: { setRows, setRowModesModel, rows, currencies,  printOptions: { disableToolbarButton: true }},
             }}
             onRowClick={onRowClick}
-      
             onCellEditStop={onCellEditStop}
             // editMode="row"
             editMode="cell"
