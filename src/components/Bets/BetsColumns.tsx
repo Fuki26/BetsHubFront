@@ -80,7 +80,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
         },
         {
           field: "winStatus",
-          headerName: "Win status",
+          headerName: "Status",
           editable: true,
           width: 150,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
