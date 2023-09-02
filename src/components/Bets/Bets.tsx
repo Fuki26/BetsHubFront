@@ -2,8 +2,7 @@ import React, { useEffect, useState, useCallback, } from 'react';
 import { toast, } from 'react-toastify';
 import { isMobile, } from 'react-device-detect';
 import { DataGrid, GridColDef, GridRowId, GridRowModel, GridRowModes,
-  GridRowModesModel, GridRowParams, GridCellParams, GridToolbarContainer,
-  GridCallbackDetails, } from '@mui/x-data-grid';
+  GridRowModesModel, GridRowParams, GridCellParams, GridToolbarContainer, GridEventListener, } from '@mui/x-data-grid';
 import { Button, Dialog, DialogActions, DialogTitle,
   Paper, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -57,6 +56,39 @@ function Bets(props: {
     isRead, arePengindBets, selectBetIdFn, setIsLoading,
     defaultRows, currencies, possibleCounteragents, possibleSports,
     possibleTournaments, possibleMarkets, } = props;
+
+  const handleCellKeyDown: GridEventListener<"cellKeyDown"> 
+    = (params, event) => {
+      if (event.key === 'Tab') {
+        event.preventDefault(); // Prevent the default Tab behavior
+  
+        const focusedCell = document.activeElement;
+        const columnIndex = Number(focusedCell!.getAttribute('aria-colindex'));
+        const rowIndex = Number(focusedCell!.getAttribute('aria-rowindex'));
+  
+        // Find the next editable cell
+        let nextColumnIndex = columnIndex + 1;
+        let nextRowIndex = rowIndex;
+  
+        if (nextColumnIndex >= columns.length) {
+          nextColumnIndex = 1; // Skip the 'ID' column
+          nextRowIndex += 1;
+  
+          if (nextRowIndex >= rows.length) {
+            nextRowIndex = 0;
+          }
+        }
+  
+        // Focus the next cell
+        // const nextCell = document.querySelector(
+        //   `[aria-colindex="${nextColumnIndex}"][aria-rowindex="${nextRowIndex}"]`
+        // );
+  
+        // if (nextCell) {
+        //   (nextCell as any).focus();
+        // }
+      }
+  };
 
   const sortBets = (bets: Array<BetModel>): Array<BetModel> => {
     const notCompletedBets = bets.filter((b) => {
@@ -406,13 +438,13 @@ function Bets(props: {
       return newRow;
     }
 
+    let atLeastOneCurrencyIsPopulated = false;
     if (
       currentRow.actionTypeApplied === Enums.ActionType.SAVED ||
       currentRow.actionTypeApplied === Enums.ActionType.EDITED 
     ) {
       
       let amounts = Object.fromEntries(Object.entries(newRow).filter(([key, value]) => key.startsWith('amount')));
-      let atLeastOneCurrencyIsPopulated = false;
       for (let key in amounts) {
         if(amounts[key] as number > 0) {
           atLeastOneCurrencyIsPopulated = true;
@@ -548,6 +580,7 @@ function Bets(props: {
 
       newRow.id = rowData?.data.id;
       newRow.totalAmount = rowData?.data.totalAmount;
+      newRow.profits = rowData?.data.profits;
     } else {
       
       setRowModesModel((previousRowModesModel) => {
@@ -571,6 +604,22 @@ function Bets(props: {
       currentRow.actionTypeApplied = newRow.actionTypeApplied;
       return currentRow;
     } else{
+      if(arePengindBets && (newRow.liveStatus && newRow.counterAgent && newRow.sport
+            && newRow.tournament && newRow.market && newRow.psLimit
+            && atLeastOneCurrencyIsPopulated && newRow.odd) && 
+          (newRow.winStatus && newRow.winStatus.id !== '0')) {
+        setTimeout(() => {
+          props.savedBet(rows, newRow);
+          setRows((previousRowsModel) => {
+            return previousRowsModel.filter((row) => {
+              if(row.id !== newRow!.id) {
+                return row;
+              }
+            });
+          });
+        }, 500);
+      }
+
       return { 
         ...newRow,
         profits: currentRow.profits,
@@ -614,30 +663,12 @@ function Bets(props: {
 
   insertCurrenciesIntoColumns(columns, abbreviations);
 
-  const onRowModesModelChange = (rowModesModel: GridRowModesModel, details: GridCallbackDetails) => {
-    for(var i = 0; i <= rows.length - 1; i++) {
-      const currentRow = rows[i];
-      if(currentRow.winStatus && currentRow.winStatus.id !== '0'
-        && currentRow.liveStatus && currentRow.counterAgent && currentRow.sport
-        && currentRow.tournament && currentRow.market && currentRow.psLimit
-        && currentRow.totalAmount && currentRow.totalAmount > 0 && currentRow.odd) {
-          props.savedBet(rows, currentRow);
-      }
-    }
-
-    // setRows((oldRows) => {
-    //   return oldRows ? sortBets(oldRows) : [];
-    // });
-
-    return;
-  }
-
   return (
     <Paper sx={{ paddingTop: "1%" }}>
       {rows ? (
         <>
           <DataGrid
-            // onRowModesModelChange={onRowModesModelChange}
+            // onCellKeyDown={handleCellKeyDown}
             columns={columns}
             initialState={{
               columns: {

@@ -368,16 +368,6 @@ export default function Hub() {
   };
 
   const savedPendingBet = async (bets: Array<BetModel>, bet: BetModel) => {
-    setPendingRows((previousRowsModel) => {
-      if(!bets) {
-        return [];
-      }
-      
-      return bets!.filter((row) => {
-        return row.id !== bet.id;
-      });
-    });
-
     setCompletedRows((previousRowsModel) => {
       if(!previousRowsModel) {
         return [
