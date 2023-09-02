@@ -252,10 +252,10 @@ function Bets(props: {
 
   const getRowClassName = (params : any) => {
     const row = rows.find((r) => r.id === params.id);
-    if (props.id === 'completed' && row && row.winStatus?.label) {
+    if (row && row.winStatus?.label) {
       switch (row.winStatus.label) {
-        case WinStatus[0]:
-          return "row-win-status-void";
+        // case WinStatus[0]:
+        //   return "row-win-status-void";
         case WinStatus[1]:
           return "row-win-status-winner";
         case WinStatus[2]:
