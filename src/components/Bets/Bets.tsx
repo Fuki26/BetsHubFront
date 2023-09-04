@@ -13,9 +13,9 @@ import { BetStatus, WinStatus, LiveStatus, } from '../../models/enums';
 import { Currency, } from '../../database-models';
 import Modal from '../UI/Modal';
 import { getBetsColumns, } from './BetsColumns';
-import CustomToolbar from '../CustomToolbar/CustomToolbar'
-import './Bets.css'
-const { evaluate } = require('mathjs')
+import CustomToolbar from '../CustomToolbar/CustomToolbar';
+import './Bets.css';
+const { evaluate } = require('mathjs');
 
 const getAbbreviations = (currencies: Currency[] | undefined) => {
   if (!currencies) return [];
@@ -59,34 +59,62 @@ function Bets(props: {
 
   const handleCellKeyDown: GridEventListener<"cellKeyDown"> 
     = (params, event) => {
-      if (event.key === 'Tab') {
+      if (event.key === 'Tab' && params.cellMode === 'edit') {
         event.preventDefault(); // Prevent the default Tab behavior
-  
-        const focusedCell = document.activeElement;
-        const columnIndex = Number(focusedCell!.getAttribute('aria-colindex'));
-        const rowIndex = Number(focusedCell!.getAttribute('aria-rowindex'));
-  
-        // Find the next editable cell
-        let nextColumnIndex = columnIndex + 1;
-        let nextRowIndex = rowIndex;
-  
-        if (nextColumnIndex >= columns.length) {
-          nextColumnIndex = 1; // Skip the 'ID' column
-          nextRowIndex += 1;
-  
-          if (nextRowIndex >= rows.length) {
-            nextRowIndex = 0;
+
+        // [1-...]
+        let columnIndex = document.activeElement!.getAttribute('aria-colindex')
+          ? Number.parseInt(document.activeElement!.getAttribute('aria-colindex')!)
+          : document.activeElement!.parentElement?.getAttribute('aria-colindex')
+            ? Number.parseInt(document.activeElement!.parentElement?.getAttribute('aria-colindex')!)
+            : document.activeElement!.parentElement!.parentElement!.getAttribute('aria-colindex')
+              ? Number.parseInt(document.activeElement!.parentElement!.parentElement!.getAttribute('aria-colindex')!)
+              : document.activeElement!.parentElement!.parentElement!.parentElement!.getAttribute('aria-colindex')
+                ? Number.parseInt(document.activeElement!.parentElement!.parentElement!.parentElement!.getAttribute('aria-colindex')!)
+                : document.activeElement!.parentElement!.parentElement!.parentElement!.parentElement!.getAttribute('aria-colindex')
+                  ? Number.parseInt(document.activeElement!.parentElement!.parentElement!.parentElement!.parentElement!.getAttribute('aria-colindex')!)
+                  : -1;
+
+        const focusColumnsIds = [
+          { currentColumnId: 1, focusColumnId: 3, },
+          { currentColumnId: 2, focusColumnId: 3, },
+          { currentColumnId: 3, focusColumnId: 4, },
+          { currentColumnId: 4, focusColumnId: 5, },
+          { currentColumnId: 5, focusColumnId: 6, },
+          { currentColumnId: 6, focusColumnId: 7, },
+          { currentColumnId: 7, focusColumnId: 8, },
+          { currentColumnId: 8, focusColumnId: 9, },
+          { currentColumnId: 9, focusColumnId: 10, },
+          { currentColumnId: 10, focusColumnId: 11, },
+          { currentColumnId: 11, focusColumnId: 12, },
+          { currentColumnId: 12, focusColumnId: 13, },
+          { currentColumnId: 13, focusColumnId: 14, },
+          { currentColumnId: 14, focusColumnId: 15, },
+          { currentColumnId: 15, focusColumnId: 17, },
+          { currentColumnId: 16, focusColumnId: 17, },
+          { currentColumnId: 17, focusColumnId: 20, },
+          { currentColumnId: 18, focusColumnId: 20, },
+          { currentColumnId: 19, focusColumnId: 20, },
+          { currentColumnId: 20, focusColumnId: 3, },
+        ];
+
+
+        let elementToBeFocused = null;
+        while(!elementToBeFocused) {
+          let columnIndexToBeFocused = focusColumnsIds.find((c) => {
+            return c.currentColumnId === columnIndex;
+          });
+
+          elementToBeFocused = document.querySelector(`[aria-colindex="${columnIndexToBeFocused!.focusColumnId}"] input`);
+          if(elementToBeFocused) {
+            (elementToBeFocused! as any).focus();
+          } else {
+            columnIndex++;
+            if(columnIndex > 20) {
+              columnIndex = 1;
+            }
           }
         }
-  
-        // Focus the next cell
-        // const nextCell = document.querySelector(
-        //   `[aria-colindex="${nextColumnIndex}"][aria-rowindex="${nextRowIndex}"]`
-        // );
-  
-        // if (nextCell) {
-        //   (nextCell as any).focus();
-        // }
       }
   };
 
@@ -668,7 +696,7 @@ function Bets(props: {
       {rows ? (
         <>
           <DataGrid
-            // onCellKeyDown={handleCellKeyDown}
+            onCellKeyDown={handleCellKeyDown}
             columns={columns}
             initialState={{
               columns: {
