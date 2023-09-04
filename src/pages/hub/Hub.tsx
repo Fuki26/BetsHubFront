@@ -377,7 +377,11 @@ export default function Hub() {
 
       const existingBet = previousRowsModel.find((b) => b.id === bet.id);
       if(!existingBet) {
-        previousRowsModel.push(bet);
+        previousRowsModel.push({
+          ...bet, 
+          actionTypeApplied: undefined,
+          isSavedInDatabase: true,
+        });
       }
       
       return previousRowsModel;
