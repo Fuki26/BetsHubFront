@@ -168,6 +168,8 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
                   { id: "1", label: LiveStatus[1] },
                   { id: "2", label: LiveStatus[2] },
                   { id: "3", label: LiveStatus[3] },
+                  { id: "4", label: LiveStatus[4] },
+                  { id: "5", label: LiveStatus[5] },
                 ]}
                 renderInput={(params) => <TextField {...params} />}
                 onChange={(e, value: any) => {
