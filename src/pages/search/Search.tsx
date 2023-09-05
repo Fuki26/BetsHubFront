@@ -414,8 +414,7 @@ export default function Search() {
   useEffect(() => {
     setFilteredRows((previousRowsModel: Array<BetModel> | undefined) => {
       const user: UserContext | undefined = getUserFromLocalStorate();
-      if(counteragentIds.length > 0 && parseInt(user!.role) !== 1) {
-        alert('You should specify counteragent!');
+      if(counteragentIds.length === 0 && parseInt(user!.role) !== 1) {
         return rows ? rows : [];
       }
 
