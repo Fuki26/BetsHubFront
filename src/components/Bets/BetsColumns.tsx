@@ -57,28 +57,6 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           },
         },
         {
-          field: "dateCreated",
-          headerName: "Date created",
-          type: "date",
-          editable: false,
-          width: 180,
-          renderCell: (params) => {
-            const row = rows ? rows.find((r) => r.id === params.id) : undefined;
-    
-            if (!row) {
-              throw Error(`Row did not found.`);
-            }
-    
-            return (
-              <Tooltip
-                title={`${row.dateCreated.toLocaleDateString()} `}
-              >
-                <span>{row.dateCreated.toLocaleDateString()}</span>
-              </Tooltip>
-            );
-          },
-        },
-        {
           field: "winStatus",
           headerName: "Status",
           editable: true,
@@ -140,70 +118,6 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
             }
     
             return row.winStatus;
-          },
-        },
-        {
-          field: "liveStatus",
-          headerName: "Live status",
-          editable: true,
-          width: 150,
-          renderCell: (params: GridRenderCellParams<BetModel>) => {
-            const row = rows.find((r) => r.id === params.row.id);
-            if (!row) {
-              return;
-            }
-    
-            return <>{row.liveStatus ? row.liveStatus.label : ""}</>;
-          },
-          renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
-            const row = rows.find((r) => r.id === params.row.id);
-            if (!row) {
-              return;
-            }
-    
-            return (
-              <Autocomplete
-                options={[
-                  { id: "0", label: LiveStatus[0] },
-                  { id: "1", label: LiveStatus[1] },
-                  { id: "2", label: LiveStatus[2] },
-                  { id: "3", label: LiveStatus[3] },
-                  { id: "4", label: LiveStatus[4] },
-                  { id: "5", label: LiveStatus[5] },
-                ]}
-                renderInput={(params) => <TextField {...params} />}
-                onChange={(e, value: any) => {
-                  setRows((previousRowsModel) => {
-                    return previousRowsModel.map((row: BetModel) => {
-                      if (row.id === params.row.id) {
-                        return {
-                          ...row,
-                          liveStatus: value
-                            ? typeof value === "string"
-                              ? { id: value, label: value }
-                              : value
-                            : undefined,
-                        };
-                      } else {
-                        return row;
-                      }
-                    });
-                  });
-                }}
-                value={row.liveStatus}
-                sx={{
-                  width: 300,
-                }}
-              />
-            );
-          },
-          valueGetter: (params: GridValueGetterParams<BetModel>) => {
-            const row = rows.find((r) => r.id === params.row.id);
-            if (!row) {
-              return;
-            }
-    
-            return row.liveStatus;
           },
         },
         {
@@ -324,8 +238,8 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           },
         },
         {
-          field: "tournament",
-          headerName: "Tournament",
+          field: "liveStatus",
+          headerName: "Live status",
           editable: true,
           width: 150,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
@@ -334,7 +248,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
               return;
             }
     
-            return <>{row.tournament ? row.tournament.label : ""}</>;
+            return <>{row.liveStatus ? row.liveStatus.label : ""}</>;
           },
           renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
@@ -344,22 +258,26 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
     
             return (
               <Autocomplete
-                freeSolo
-                options={possibleTournaments ? possibleTournaments : []}
+                options={[
+                  { id: "0", label: LiveStatus[0] },
+                  { id: "1", label: LiveStatus[1] },
+                  { id: "2", label: LiveStatus[2] },
+                  { id: "3", label: LiveStatus[3] },
+                  { id: "4", label: LiveStatus[4] },
+                  { id: "5", label: LiveStatus[5] },
+                ]}
                 renderInput={(params) => <TextField {...params} />}
                 onChange={(e, value: any) => {
                   setRows((previousRowsModel) => {
                     return previousRowsModel.map((row: BetModel) => {
                       if (row.id === params.row.id) {
-                        const tournament = value
-                          ? typeof value === "string"
-                            ? { id: value, label: value }
-                            : value
-                          : undefined;
-    
                         return {
                           ...row,
-                          tournament,
+                          liveStatus: value
+                            ? typeof value === "string"
+                              ? { id: value, label: value }
+                              : value
+                            : undefined,
                         };
                       } else {
                         return row;
@@ -367,7 +285,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
                     });
                   });
                 }}
-                value={row.tournament}
+                value={row.liveStatus}
                 sx={{
                   width: 300,
                 }}
@@ -380,8 +298,16 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
               return;
             }
     
-            return row.tournament;
+            return row.liveStatus;
           },
+        },
+        {
+          field: "psLimit",
+          headerName: "PS Limit",
+          type: "number",
+          editable: true,
+          width: 150,
+          align:"center"
         },
         {
           field: "market",
@@ -452,12 +378,64 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           align:"right"
         },
         {
-          field: "psLimit",
-          headerName: "PS Limit",
-          type: "number",
+          field: "tournament",
+          headerName: "Tournament",
           editable: true,
           width: 150,
-          align:"center"
+          renderCell: (params: GridRenderCellParams<BetModel>) => {
+            const row = rows.find((r) => r.id === params.row.id);
+            if (!row) {
+              return;
+            }
+    
+            return <>{row.tournament ? row.tournament.label : ""}</>;
+          },
+          renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
+            const row = rows.find((r) => r.id === params.row.id);
+            if (!row) {
+              return;
+            }
+    
+            return (
+              <Autocomplete
+                freeSolo
+                options={possibleTournaments ? possibleTournaments : []}
+                renderInput={(params) => <TextField {...params} />}
+                onChange={(e, value: any) => {
+                  setRows((previousRowsModel) => {
+                    return previousRowsModel.map((row: BetModel) => {
+                      if (row.id === params.row.id) {
+                        const tournament = value
+                          ? typeof value === "string"
+                            ? { id: value, label: value }
+                            : value
+                          : undefined;
+    
+                        return {
+                          ...row,
+                          tournament,
+                        };
+                      } else {
+                        return row;
+                      }
+                    });
+                  });
+                }}
+                value={row.tournament}
+                sx={{
+                  width: 300,
+                }}
+              />
+            );
+          },
+          valueGetter: (params: GridValueGetterParams<BetModel>) => {
+            const row = rows.find((r) => r.id === params.row.id);
+            if (!row) {
+              return;
+            }
+    
+            return row.tournament;
+          },
         },
         {
           field: "totalAmount",
@@ -490,6 +468,28 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           width: 180,
         },
         {
+          field: "dateCreated",
+          headerName: "Date created",
+          type: "date",
+          editable: false,
+          width: 180,
+          renderCell: (params) => {
+            const row = rows ? rows.find((r) => r.id === params.id) : undefined;
+    
+            if (!row) {
+              throw Error(`Row did not found.`);
+            }
+    
+            return (
+              <Tooltip
+                title={`${row.dateCreated.toLocaleDateString()} `}
+              >
+                <span>{row.dateCreated.toLocaleDateString()}</span>
+              </Tooltip>
+            );
+          },
+        },
+        {
           field: "profits",
           headerName: "P/L",
           type: "number",
@@ -497,14 +497,13 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           width: 100,
           
         },
-        
         {
           field: "notes",
           headerName: "Notes",
           type: "string",
           editable: true,
           width: 150,
-        },
+        },        
         {
           field: "actions",
           headerName: "Actions",

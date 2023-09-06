@@ -75,30 +75,35 @@ function Bets(props: {
                   ? Number.parseInt(document.activeElement!.parentElement!.parentElement!.parentElement!.parentElement!.getAttribute('aria-colindex')!)
                   : -1;
 
-        const focusColumnsIds = [
-          { currentColumnId: 1, focusColumnId: 3, },
+        let focusColumnsIds = [
+          { currentColumnId: 1, focusColumnId: 2, },
           { currentColumnId: 2, focusColumnId: 3, },
           { currentColumnId: 3, focusColumnId: 4, },
           { currentColumnId: 4, focusColumnId: 5, },
           { currentColumnId: 5, focusColumnId: 6, },
-          { currentColumnId: 6, focusColumnId: 7, },
-          { currentColumnId: 7, focusColumnId: 8, },
-          { currentColumnId: 8, focusColumnId: 9, },
-          { currentColumnId: 9, focusColumnId: 10, },
-          { currentColumnId: 10, focusColumnId: 11, },
-          { currentColumnId: 11, focusColumnId: 12, },
-          { currentColumnId: 12, focusColumnId: 13, },
-          { currentColumnId: 13, focusColumnId: 14, },
-          { currentColumnId: 14, focusColumnId: 15, },
-          { currentColumnId: 15, focusColumnId: 17, },
-          { currentColumnId: 16, focusColumnId: 17, },
-          { currentColumnId: 17, focusColumnId: 20, },
-          { currentColumnId: 18, focusColumnId: 20, },
-          { currentColumnId: 19, focusColumnId: 20, },
-          { currentColumnId: 20, focusColumnId: 3, },
         ];
 
+        let currentPointer = 6;
+        if(currencies && currencies.length > 0) {
+          for(var i = 0; i <= currencies?.length - 1; i++) {
+            focusColumnsIds.push({ currentColumnId: currentPointer, focusColumnId: currentPointer + 1, },);
+            currentPointer++;
+          }
+        }
 
+        focusColumnsIds = focusColumnsIds.concat([
+          { currentColumnId: currentPointer, focusColumnId: currentPointer + 1, },
+          { currentColumnId: currentPointer + 1, focusColumnId: currentPointer + 2, },
+          { currentColumnId: currentPointer + 2, focusColumnId: currentPointer + 3, },
+          { currentColumnId: currentPointer + 3, focusColumnId: currentPointer + 5, },
+          { currentColumnId: currentPointer + 4, focusColumnId: currentPointer + 5, },
+          { currentColumnId: currentPointer + 5, focusColumnId: currentPointer + 9, },
+          { currentColumnId: currentPointer + 6, focusColumnId: currentPointer + 9, },
+          { currentColumnId: currentPointer + 7, focusColumnId: currentPointer + 9, },
+          { currentColumnId: currentPointer + 8, focusColumnId: currentPointer + 9, },
+          { currentColumnId: currentPointer + 9, focusColumnId: 2, },
+        ]);
+        
         let elementToBeFocused = null;
         while(!elementToBeFocused) {
           let columnIndexToBeFocused = focusColumnsIds.find((c) => {
