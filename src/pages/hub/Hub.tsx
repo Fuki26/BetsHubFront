@@ -32,6 +32,7 @@ import {
   getExpenses,
   getMarkets,
   getPendingBets,
+  getSelections,
   getSports,
   getTournaments,
 } from "../../api";
@@ -140,7 +141,7 @@ export default function Hub() {
           betToBetModelMapper
         );
         const getCounteragentsResult = await getCounterAgents();
-        // const getSelectionsResult = await getSelections();
+        // const getSelectionsResultA = await getSelections();
         const getSelectionsResult = {
           "1": ["Selection 1"],
           "2": ["Selection 1", "Selection 2"],

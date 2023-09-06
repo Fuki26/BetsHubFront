@@ -438,6 +438,66 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           },
         },
         {
+          field: "selection",
+          headerName: "Selection",
+          editable: true,
+          width: 150,
+          renderCell: (params: GridRenderCellParams<BetModel>) => {
+            const row = rows.find((r) => r.id === params.row.id);
+            if (!row) {
+              return;
+            }
+    
+            return <>{row.tournament ? row.tournament.label : ""}</>;
+          },
+          renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
+            const row = rows.find((r) => r.id === params.row.id);
+            if (!row) {
+              return;
+            }
+    
+            return (
+              <Autocomplete
+                freeSolo
+                options={possibleSelections ? possibleSelections : []}
+                renderInput={(params) => <TextField {...params} />}
+                onChange={(e, value: any) => {
+                  setRows((previousRowsModel) => {
+                    return previousRowsModel.map((row: BetModel) => {
+                      if (row.id === params.row.id) {
+                        const selection = value
+                          ? typeof value === "string"
+                            ? { id: value, label: value }
+                            : value
+                          : undefined;
+    
+                        return {
+                          ...row,
+                          selection,
+                        };
+                      } else {
+                        return row;
+                      }
+                    });
+                  });
+                }}
+                value={row.selection}
+                sx={{
+                  width: 300,
+                }}
+              />
+            );
+          },
+          valueGetter: (params: GridValueGetterParams<BetModel>) => {
+            const row = rows.find((r) => r.id === params.row.id);
+            if (!row) {
+              return;
+            }
+    
+            return row.tournament;
+          },
+        },
+        {
           field: "totalAmount",
           headerName: "Total amount",
           type: "number",

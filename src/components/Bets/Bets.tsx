@@ -54,7 +54,7 @@ function Bets(props: {
 }) {
   const {
     isRead, arePengindBets, selectBetIdFn, setIsLoading,
-    defaultRows, currencies, possibleCounteragents, possibleSports,
+    defaultRows, currencies, possibleCounteragents, allSelections, possibleSports,
     possibleTournaments, possibleMarkets, } = props;
 
   const handleCellKeyDown: GridEventListener<"cellKeyDown"> 
