@@ -25,6 +25,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
     possibleCounteragents: Array<IDropdownValue> | undefined,
     possibleSports: Array<IDropdownValue> | undefined,
     possibleTournaments: Array<IDropdownValue> | undefined,
+    possibleSelections: Array<{ id: number; selections: Array<IDropdownValue> | undefined, }>,
     possibleMarkets: Array<IDropdownValue> | undefined,
     currencies: Array<Currency> | undefined,
     rowModesModel: GridRowModesModel,
@@ -38,7 +39,8 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
     handleClickOpenOnDeleteDialog: (id: GridRowId) => () => void,
   }): Array<GridColDef>  => {
     const { rows, setRows, possibleCounteragents, possibleSports, 
-      possibleTournaments, possibleMarkets, currencies, rowModesModel, 
+      possibleTournaments, possibleSelections,
+      possibleMarkets, currencies, rowModesModel, 
       isRead, isMobile, handleSaveClick, handleCancelClick, handleEditClick, 
       handleHistoryClick, handleCopyBetClick, handleClickOpenOnDeleteDialog, } = props;
     const columns: Array<GridColDef> = [
@@ -435,6 +437,74 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
             }
     
             return row.tournament;
+          },
+        },
+        {
+          field: "selection",
+          headerName: "Selection",
+          editable: true,
+          width: 150,
+          renderCell: (params: GridRenderCellParams<BetModel>) => {
+            const row = rows.find((r) => r.id === params.row.id);
+            if (!row) {
+              return;
+            }
+    
+            return <>{row.selection ? row.selection.label : ""}</>;
+          },
+          renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
+            const row = rows.find((r) => r.id === params.row.id);
+            if (!row) {
+              return;
+            }
+    
+            const possibleSelectionsForBet = possibleSelections.find((r) => {
+              return r.id === row.id;
+            });
+
+            return (
+              <Autocomplete
+                freeSolo
+                options={
+                  possibleSelectionsForBet && possibleSelectionsForBet.selections
+                  ? possibleSelectionsForBet.selections
+                  : []
+                }
+                renderInput={(params) => <TextField {...params} />}
+                onChange={(e, value: any) => {
+                  setRows((previousRowsModel) => {
+                    return previousRowsModel.map((row: BetModel) => {
+                      if (row.id === params.row.id) {
+                        const selection = value
+                          ? typeof value === "string"
+                            ? { id: value, label: value }
+                            : value
+                          : undefined;
+    
+                        return {
+                          ...row,
+                          selection,
+                        };
+                      } else {
+                        return row;
+                      }
+                    });
+                  });
+                }}
+                value={row.selection}
+                sx={{
+                  width: 300,
+                }}
+              />
+            );
+          },
+          valueGetter: (params: GridValueGetterParams<BetModel>) => {
+            const row = rows.find((r) => r.id === params.row.id);
+            if (!row) {
+              return;
+            }
+    
+            return row.selection;
           },
         },
         {

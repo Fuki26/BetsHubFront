@@ -48,15 +48,15 @@ function Bets(props: {
   currencies: Array<Currency> | undefined;
 
   possibleCounteragents: Array<IDropdownValue> | undefined;
-  allSelections: ISelectionsResult;
   possibleSports: Array<IDropdownValue> | undefined;
   possibleTournaments: Array<IDropdownValue> | undefined;
+  possibleSelections: Array<{ id: number; selections: Array<IDropdownValue> | undefined, }>;
   possibleMarkets: Array<IDropdownValue> | undefined;
 }) {
   const {
     isRead, arePengindBets, selectBetIdFn, setIsLoading,
     defaultRows, currencies, possibleCounteragents, possibleSports,
-    possibleTournaments, possibleMarkets, } = props;
+    possibleTournaments, possibleSelections, possibleMarkets, } = props;
 
   const handleCellKeyDown: GridEventListener<"cellKeyDown"> 
     = (params, event) => {
@@ -670,6 +670,7 @@ function Bets(props: {
     possibleCounteragents,
     possibleSports,
     possibleTournaments,
+    possibleSelections,
     possibleMarkets,
     currencies,
     rowModesModel,

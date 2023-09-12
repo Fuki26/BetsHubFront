@@ -32,6 +32,7 @@ import {
   getExpenses,
   getMarkets,
   getPendingBets,
+  getSelections,
   getSports,
   getTournaments,
 } from "../../api";
@@ -96,8 +97,8 @@ export default function Hub() {
     Array<IDropdownValue> | undefined
   >(undefined);
   const [possibleSelections, setSelections] = React.useState<
-    ISelectionsResult | undefined
-  >(undefined);
+    Array<{ id: number; selections: Array<IDropdownValue> | undefined, }>
+  >([]);
   const [expensesRows, setExpensesRows] = React.useState<
     Array<ExpenseModel> | undefined
   >(undefined);
@@ -141,20 +142,49 @@ export default function Hub() {
         );
         const getCounteragentsResult = await getCounterAgents();
         // const getSelectionsResult = await getSelections();
-        const getSelectionsResult = {
-          "1": ["Selection 1"],
-          "2": ["Selection 1", "Selection 2"],
-          "3": ["Selection 1", "Selection 2", "Selection 3"],
-          "4": ["Selection 1", "Selection 2", "Selection 3", "Selection 4"],
-          "5": [
-            "Selection 1",
-            "Selection 2",
-            "Selection 3",
-            "Selection 4",
-            "Selection 5",
-          ],
-        };
-        setSelections(getSelectionsResult);
+
+        const mappedSelections: Array<{ id: number; selections: Array<IDropdownValue> | undefined, }>
+          = [
+              {
+                id: 525,
+                selections: [
+                  { id: 'Selection 1', label: 'Selection 1', },
+                  { id: 'Selection 2', label: 'Selection 2', },
+                  { id: 'Selection 3', label: 'Selection 3', }
+                ]
+              },
+              {
+                id: 539,
+                selections: [
+                  { id: 'Selection 1', label: 'Selection 1', },
+                  { id: 'Selection 2', label: 'Selection 2', },
+                  { id: 'Selection 3', label: 'Selection 3', }
+                ]
+              },
+              {
+                id: 542,
+                selections: [
+                  { id: 'Selection 1', label: 'Selection 1', },
+                  { id: 'Selection 2', label: 'Selection 2', },
+                  { id: 'Selection 3', label: 'Selection 3', }
+                ]
+              },
+          ];
+        // for (let key in getSelectionsResult) {
+        //   if (getSelectionsResult.hasOwnProperty(key)) {
+        //     mappedSelections.push({
+        //       id: parseInt(key),
+        //       selections: getSelectionsResult[key].map((selection: string) => {
+        //         return {
+        //           id: selection,
+        //           label: selection,
+        //         }
+        //       })
+        //     })
+        //   }
+        // }
+
+        setSelections(mappedSelections);
         const getSportsResult = await getSports();
         const getTournamentsResult = await getTournaments();
         const getMarketsResult = await getMarkets();
@@ -565,8 +595,8 @@ export default function Hub() {
                       possibleCounteragents={possibleCounterAgents}
                       possibleSports={possibleSports}
                       possibleTournaments={possibleTournaments}
+                      possibleSelections={possibleSelections}
                       possibleMarkets={possibleMarkets}
-                      allSelections={possibleSelections ? possibleSelections : {}}
                     />
                   </Collapse>
                 </Grid>
@@ -606,8 +636,8 @@ export default function Hub() {
             possibleCounteragents={possibleCounterAgents}
             possibleSports={possibleSports}
             possibleTournaments={possibleTournaments}
+            possibleSelections={possibleSelections}
             possibleMarkets={possibleMarkets}
-            allSelections={possibleSelections ? possibleSelections : {}}
           />
         </Collapse>
       </Grid>

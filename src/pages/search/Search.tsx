@@ -1440,8 +1440,8 @@ export default function Search() {
             possibleCounteragents={allCounterAgents}
             possibleSports={allSports}
             possibleTournaments={allTournaments}
+            possibleSelections={[]}
             possibleMarkets={allMarkets}
-            allSelections={allSelections ? allSelections : {}}
             currencies={allCurrencies}
           />
         ) : null}
