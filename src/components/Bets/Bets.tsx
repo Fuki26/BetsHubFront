@@ -39,6 +39,7 @@ function Bets(props: {
   id: string;
   isRead: boolean;
   arePengindBets: boolean;
+  editBetTotalAmountsNotify?: (betId: number, totalAmount: number, ) => void;
   savedBet: (bets: Array<BetModel>, bet: BetModel) => void;
   selectBetIdFn: (id: number) => void;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -614,6 +615,9 @@ function Bets(props: {
       newRow.id = rowData?.data.id;
       newRow.totalAmount = rowData?.data.totalAmount;
       newRow.profits = rowData?.data.profits;
+      if(props.editBetTotalAmountsNotify) {
+        props.editBetTotalAmountsNotify(newRow.id, newRow.totalAmount ? newRow.totalAmount : 0);
+      }
     } else {
       
       setRowModesModel((previousRowModesModel) => {

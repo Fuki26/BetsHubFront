@@ -177,6 +177,8 @@ export default function Search() {
   const [liveStatusIds, setLiveStatusIds] = React.useState<Array<string>>([]);
   const [currencyIds, setCurrencyIds] = React.useState<Array<string>>([]);
 
+  const [totalOfTotals, setTotalOfTotals ] = React.useState<number>(0);
+
   //#endregion Filters
 
   const [rows, setRows] = React.useState<Array<BetModel> | undefined>(
@@ -259,6 +261,16 @@ export default function Search() {
               })
             : allBets;
         setFilteredRows(filteredRows);
+        let calculatedTotalOfTotals = filteredRows
+          ? filteredRows.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.totalAmount) {
+              return accumulator + currentValue.totalAmount;
+              } else {
+              return accumulator;
+              }
+            }, 0)
+          : 0;
+	      setTotalOfTotals(calculatedTotalOfTotals);
 
         //#endregion Bets
 
@@ -415,6 +427,17 @@ export default function Search() {
     setFilteredRows((previousRowsModel: Array<BetModel> | undefined) => {
       const user: UserContext | undefined = getUserFromLocalStorate();
       if(counteragentIds.length === 0 && parseInt(user!.role) !== 1) {
+        let calculatedTotalOfTotals = rows
+          ? rows.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.totalAmount) {
+              return accumulator + currentValue.totalAmount;
+              } else {
+              return accumulator;
+              }
+            }, 0)
+          : 0;
+	      setTotalOfTotals(calculatedTotalOfTotals);
+
         return rows ? rows : [];
       }
 
@@ -744,8 +767,20 @@ export default function Search() {
           setAllCurrencies(databaseCurrencies);
         }
 
+        let calculatedTotalOfTotals = bets
+          ? bets.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.totalAmount) {
+              return accumulator + currentValue.totalAmount;
+              } else {
+              return accumulator;
+              }
+            }, 0)
+          : 0;
+
+        setTotalOfTotals(calculatedTotalOfTotals);
         return bets;
       } else {
+        setTotalOfTotals(0);
         return [];
       }
     });
@@ -1077,17 +1112,32 @@ export default function Search() {
       })
     : [];
 
-  let totalOfTotals = 0;
-  if (rows) {
-    totalOfTotals = filteredRows
-      ? filteredRows.reduce((accumulator, currentValue: BetModel) => {
-          if (currentValue.totalAmount) {
-            return accumulator + currentValue.totalAmount;
-          } else {
-            return accumulator;
-          }
-        }, 0)
-      : 0;
+  const editBetTotalAmountsNotify = (betId: number, totalAmount: number, ) => {
+    if(!rows) {
+      return;
+    }
+
+    const changedRows = rows.map((r) => {
+      if(r.id === betId) {
+        return {
+          ...r,
+          totalAmount,
+        }
+      } else {
+        return r;
+      };
+    });
+    
+    let calculatedTotalOfTotals = changedRows
+        ? changedRows.reduce((accumulator, currentValue: BetModel) => {
+            if (currentValue.totalAmount) {
+              return accumulator + currentValue.totalAmount;
+            } else {
+              return accumulator;
+            }
+          }, 0)
+        : 0;
+    setTotalOfTotals(calculatedTotalOfTotals);
   }
 
   return (
@@ -1382,6 +1432,7 @@ export default function Search() {
             id="search"
             arePengindBets={false}
             savedBet={(bets: Array<BetModel>, bet: BetModel) => {}}
+            editBetTotalAmountsNotify={editBetTotalAmountsNotify}
             isRead={true}
             selectBetIdFn={selectBetId}
             setIsLoading={setIsLoading}
