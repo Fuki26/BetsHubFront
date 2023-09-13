@@ -500,6 +500,7 @@ function Bets(props: {
         counterAgent: currentRow.counterAgent,
         sport: currentRow.sport,
         tournament: currentRow.tournament,
+        selection: currentRow.selection,
         market: currentRow.market,
 
         stake: newRow.stake,
@@ -514,8 +515,6 @@ function Bets(props: {
           ? newRow.profits
           : 0,
         notes: newRow.notes,
-
-        selection: newRow.selection,
       };
       setIsLoading(true);
       newRow = newRowData;

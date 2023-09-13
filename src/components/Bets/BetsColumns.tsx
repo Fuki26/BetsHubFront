@@ -470,7 +470,28 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
                   ? possibleSelectionsForBet.selections
                   : []
                 }
-                renderInput={(params) => <TextField {...params} />}
+                renderInput={(params) => <TextField {...params} 
+                  onChange={(p) => { 
+                    const value = p.target.value;
+                    setRows((previousRowsModel) => {
+                      return previousRowsModel.map((r: BetModel) => {
+                        if (row.id === r.id) {
+                          const selection = value
+                            ? typeof value === "string"
+                              ? { id: value, label: value }
+                              : value
+                            : undefined;
+      
+                          return {
+                            ...row,
+                            selection,
+                          };
+                        } else {
+                          return row;
+                        }
+                      });
+                    });
+                  }}/>}
                 onChange={(e, value: any) => {
                   setRows((previousRowsModel) => {
                     return previousRowsModel.map((row: BetModel) => {
