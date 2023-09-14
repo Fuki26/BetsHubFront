@@ -458,24 +458,25 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
               return;
             }
     
-            const possibleSelectionsForBet = possibleSelections.find((r) => {
-              return r.id === row.id;
-            });
+            let possibleSelectionsForBet: Array<IDropdownValue> = [];
+            if(row.counterAgent) {
+              const c = possibleSelections.find((s) => s.id === parseInt(row.counterAgent!.id));
+              if(c) {
+                possibleSelectionsForBet = c.selections!;
+              }
+            }
+            
 
             return (
               <Autocomplete
                 freeSolo
-                options={
-                  possibleSelectionsForBet && possibleSelectionsForBet.selections
-                  ? possibleSelectionsForBet.selections
-                  : []
-                }
+                options={possibleSelectionsForBet}
                 renderInput={(params) => <TextField {...params} 
                   onChange={(p) => { 
                     const value = p.target.value;
                     setRows((previousRowsModel) => {
                       return previousRowsModel.map((r: BetModel) => {
-                        if (row.id === r.id) {
+                        if (r.id === row.id) {
                           const selection = value
                             ? typeof value === "string"
                               ? { id: value, label: value }
@@ -487,7 +488,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
                             selection,
                           };
                         } else {
-                          return row;
+                          return r;
                         }
                       });
                     });

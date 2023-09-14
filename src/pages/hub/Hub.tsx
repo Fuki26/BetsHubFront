@@ -141,48 +141,22 @@ export default function Hub() {
           betToBetModelMapper
         );
         const getCounteragentsResult = await getCounterAgents();
-        // const getSelectionsResult = await getSelections();
+        const getSelectionsResult = await getSelections();
 
-        const mappedSelections: Array<{ id: number; selections: Array<IDropdownValue> | undefined, }>
-          = [
-              {
-                id: 525,
-                selections: [
-                  { id: 'Selection 1', label: 'Selection 1', },
-                  { id: 'Selection 2', label: 'Selection 2', },
-                  { id: 'Selection 3', label: 'Selection 3', }
-                ]
-              },
-              {
-                id: 539,
-                selections: [
-                  { id: 'Selection 1', label: 'Selection 1', },
-                  { id: 'Selection 2', label: 'Selection 2', },
-                  { id: 'Selection 3', label: 'Selection 3', }
-                ]
-              },
-              {
-                id: 542,
-                selections: [
-                  { id: 'Selection 1', label: 'Selection 1', },
-                  { id: 'Selection 2', label: 'Selection 2', },
-                  { id: 'Selection 3', label: 'Selection 3', }
-                ]
-              },
-          ];
-        // for (let key in getSelectionsResult) {
-        //   if (getSelectionsResult.hasOwnProperty(key)) {
-        //     mappedSelections.push({
-        //       id: parseInt(key),
-        //       selections: getSelectionsResult[key].map((selection: string) => {
-        //         return {
-        //           id: selection,
-        //           label: selection,
-        //         }
-        //       })
-        //     })
-        //   }
-        // }
+        const mappedSelections: Array<{ id: number; selections: Array<IDropdownValue> | undefined, }> = [];
+        for (let key in getSelectionsResult) {
+          if (getSelectionsResult.hasOwnProperty(key)) {
+            mappedSelections.push({
+              id: parseInt(key),
+              selections: getSelectionsResult[key].map((selection: string) => {
+                return {
+                  id: selection,
+                  label: selection,
+                }
+              })
+            })
+          }
+        }
 
         setSelections(mappedSelections);
         const getSportsResult = await getSports();
