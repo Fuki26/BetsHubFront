@@ -584,44 +584,7 @@ function Bets(props: {
         setIsLoading(false);
 
         return newRow;
-      }
-
-      if(currentRow.selection) {
-        let possibleSelectionsForBet: {
-          id: number;
-          selections: Array<IDropdownValue> | undefined;
-        } | undefined = betsSelections.find((r) => {
-          return r.id === rowData.data.id;
-        });
-  
-        if(possibleSelectionsForBet) {
-          const selection = possibleSelectionsForBet.selections?.find((s) => {
-            return s.id === currentRow.selection?.id;
-          });
-
-          if(!selection) {
-            setBetsSelections((p) => {
-              const betSelections = p.find((betSelections) => betSelections.id === rowData.data.id);
-              betSelections!.selections!
-                .push({ id: currentRow.selection!.id, label: currentRow.selection!.label, },);
-  
-              return p;
-            });
-          }
-        } else {
-          setBetsSelections((p) => {
-            p.push({
-              id: rowData.data.id,
-              selections: [
-                { id: currentRow.selection!.id, label: currentRow.selection!.label, }
-              ],
-            });
-
-            return p;
-          });
-        }
-      }
-      
+      } 
 
       setRows((previousRowsModel) => {
         return previousRowsModel.map((row) => {
