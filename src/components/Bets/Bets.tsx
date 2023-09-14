@@ -50,7 +50,7 @@ function Bets(props: {
   possibleCounteragents: Array<IDropdownValue> | undefined;
   possibleSports: Array<IDropdownValue> | undefined;
   possibleTournaments: Array<IDropdownValue> | undefined;
-  possibleSelections: Array<{ id: number; selections: Array<IDropdownValue> | undefined, }>;
+  possibleSelections: Array<IDropdownValue> | undefined;
   possibleMarkets: Array<IDropdownValue> | undefined;
 }) {
   const {
@@ -150,9 +150,6 @@ function Bets(props: {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [history, setHistory] = useState(null);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState<Record<string, boolean>>({});
-  const [betsSelections, setBetsSelections] = 
-    useState<Array<{ id: number; selections: Array<IDropdownValue> | undefined, }>>(possibleSelections);
-
 
   const abbreviations = getAbbreviations(currencies);
 
@@ -671,7 +668,7 @@ function Bets(props: {
     possibleCounteragents,
     possibleSports,
     possibleTournaments,
-    possibleSelections: betsSelections,
+    possibleSelections,
     possibleMarkets,
     currencies,
     rowModesModel,

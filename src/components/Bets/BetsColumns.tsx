@@ -25,7 +25,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
     possibleCounteragents: Array<IDropdownValue> | undefined,
     possibleSports: Array<IDropdownValue> | undefined,
     possibleTournaments: Array<IDropdownValue> | undefined,
-    possibleSelections: Array<{ id: number; selections: Array<IDropdownValue> | undefined, }>,
+    possibleSelections: Array<IDropdownValue> | undefined,
     possibleMarkets: Array<IDropdownValue> | undefined,
     currencies: Array<Currency> | undefined,
     rowModesModel: GridRowModesModel,
@@ -457,41 +457,12 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
             if (!row) {
               return;
             }
-    
-            const possibleSelectionsForBet = possibleSelections.find((r) => {
-              return r.id === row.id;
-            });
 
             return (
               <Autocomplete
                 freeSolo
-                options={
-                  possibleSelectionsForBet && possibleSelectionsForBet.selections
-                  ? possibleSelectionsForBet.selections
-                  : []
-                }
-                renderInput={(params) => <TextField {...params} 
-                  onChange={(p) => { 
-                    const value = p.target.value;
-                    setRows((previousRowsModel) => {
-                      return previousRowsModel.map((r: BetModel) => {
-                        if (row.id === r.id) {
-                          const selection = value
-                            ? typeof value === "string"
-                              ? { id: value, label: value }
-                              : value
-                            : undefined;
-      
-                          return {
-                            ...row,
-                            selection,
-                          };
-                        } else {
-                          return row;
-                        }
-                      });
-                    });
-                  }}/>}
+                options={possibleSelections ? possibleSelections : []}
+                renderInput={(params) => <TextField {...params} />}
                 onChange={(e, value: any) => {
                   setRows((previousRowsModel) => {
                     return previousRowsModel.map((row: BetModel) => {
