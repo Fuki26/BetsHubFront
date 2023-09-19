@@ -1,15 +1,17 @@
 import * as React from 'react';
 import { toast } from 'react-toastify';
 import { isMobile } from 'react-device-detect';
-import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
-  GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams } from '@mui/x-data-grid';
-import { Autocomplete, Button, CircularProgress, Dialog, DialogActions, DialogTitle, Paper, TextField, Typography, Tooltip } from '@mui/material';
+import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams, 
+  GridRenderEditCellParams, GridRowId, GridRowModel, GridRowModes, GridRowModesModel,  
+  GridToolbarContainer, GridValueGetterParams } from '@mui/x-data-grid';
+import { Autocomplete, Button, CircularProgress, Dialog, DialogActions, DialogTitle, 
+  Paper, TextField, Typography, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
-import { CounteragentModel, EditToolbarProps, Enums, IDropdownValue, } from '../../models';
+import { ActionType, CounteragentModel, EditToolbarProps, IDropdownValue, } from '../../models';
 import { deleteCounteragent, getCounterAgents, getCounterAgentsCategories, getUsers, upsertCounteragent, } from '../../api';
 import { Counteragent, CounterAgentCategory, User } from '../../database-models';
 
@@ -160,8 +162,8 @@ export default function Counteragents(props: {}) {
           return {
             ...row, 
             actionTypeApplied: row.isSavedInDatabase 
-              ? Enums.ActionType.EDITED
-              : Enums.ActionType.SAVED,
+              ? ActionType.EDITED
+              : ActionType.SAVED,
           };
         } else {
           return row;
@@ -187,7 +189,7 @@ export default function Counteragents(props: {}) {
           if(row.id === id) {
             return {
               ...row, 
-              actionTypeApplied: Enums.ActionType.CANCELED,
+              actionTypeApplied: ActionType.CANCELED,
             };
           } else {
             return row;
@@ -206,7 +208,7 @@ export default function Counteragents(props: {}) {
         if(row.id === id) {
           return {
             ...row, 
-            actionTypeApplied: Enums.ActionType.EDITED,
+            actionTypeApplied: ActionType.EDITED,
           };
         } else {
           return {
@@ -258,17 +260,17 @@ export default function Counteragents(props: {}) {
   const processRowUpdate = async (newRow: GridRowModel) => {
     const currentRow = rows?.find((row) => row.id === newRow.id);
     
-    if(currentRow?.actionTypeApplied === Enums.ActionType.SAVED
-        || currentRow?.actionTypeApplied === Enums.ActionType.EDITED) {
+    if(currentRow?.actionTypeApplied === ActionType.SAVED
+        || currentRow?.actionTypeApplied === ActionType.EDITED) {
         const newRowData: CounteragentModel = {
           ...currentRow,
           name: newRow.name,
           counteragentCategory: currentRow.counteragentCategory,
           maxRate: newRow.maxRate,
-          dateCreated: currentRow.actionTypeApplied === Enums.ActionType.SAVED
+          dateCreated: currentRow.actionTypeApplied === ActionType.SAVED
             ? new Date()
             : newRow.dateCreated,
-          dateChanged: currentRow.actionTypeApplied === Enums.ActionType.EDITED
+          dateChanged: currentRow.actionTypeApplied === ActionType.EDITED
             ? new Date()
             : newRow.dateChanged,
          
@@ -325,7 +327,7 @@ export default function Counteragents(props: {}) {
     }
     
     
-    toast(currentRow?.actionTypeApplied === Enums.ActionType.CANCELED 
+    toast(currentRow?.actionTypeApplied === ActionType.CANCELED 
       ? 'Canceled' 
       : `Saved counteragent with id ${newRow!.id}`,
     {
@@ -364,7 +366,7 @@ export default function Counteragents(props: {}) {
       headerName: 'Counteragent category',
       editable: true,
       width:220,
-      align:"center",
+      align:'center',
       renderCell: (params: GridRenderCellParams<CounteragentModel>) => {
         const row = rows?.find((r) => r.id === params.row.id);
         if(!row) {
@@ -438,12 +440,12 @@ export default function Counteragents(props: {}) {
       type: 'number',
       editable: true,
       width: 130,
-      align:"center"
+      align:'center'
     },
     {
-      field: "dateCreated",
-      headerName: "Date created",
-      type: "date",
+      field: 'dateCreated',
+      headerName: 'Date created',
+      type: 'date',
       editable: false,
       width: 150,
       renderCell: (params) => {
@@ -463,16 +465,16 @@ export default function Counteragents(props: {}) {
       },
     },
     {
-      field: "dateChanged",
-      headerName: "Date changed",
-      type: "date",
+      field: 'dateChanged',
+      headerName: 'Date changed',
+      type: 'date',
       editable: false,
       width: 170,
       renderCell: (params) => {
         const row = rows ? rows.find((r) => r.id === params.id) : undefined;
 
         if (!row) {
-         return ""
+         return ''
         }
 
         return (
@@ -539,7 +541,7 @@ export default function Counteragents(props: {}) {
     ? (
       <>
       <div className='background-color-blur'>
-      <CircularProgress color="success" 
+      <CircularProgress color='success' 
           size={250}
           disableShrink={true}
           style={{

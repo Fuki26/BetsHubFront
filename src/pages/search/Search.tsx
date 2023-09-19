@@ -19,8 +19,8 @@ import { FilterType, StatisticType } from '../../models/enums';
 import Expenses from '../../components/Expenses/Expenses';
 import { betToBetModelMapper } from '../../utils';
 
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
+const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
+const checkedIcon = <CheckBoxIcon fontSize='small' />;
 
 const statisticsColumns: Array<GridColDef<any>> = [
   {
@@ -346,16 +346,16 @@ export default function Search() {
 
         // const getSelectionsResult = await getSelections();
         const getSelectionsResult = {
-          "1": ["Selection 1"],
-          "2": ["Selection 1", "Selection 2"],
-          "3": ["Selection 1", "Selection 2", "Selection 3"],
-          "4": ["Selection 1", "Selection 2", "Selection 3", "Selection 4"],
-          "5": [
-            "Selection 1",
-            "Selection 2",
-            "Selection 3",
-            "Selection 4",
-            "Selection 5",
+          '1': ['Selection 1'],
+          '2': ['Selection 1', 'Selection 2'],
+          '3': ['Selection 1', 'Selection 2', 'Selection 3'],
+          '4': ['Selection 1', 'Selection 2', 'Selection 3', 'Selection 4'],
+          '5': [
+            'Selection 1',
+            'Selection 2',
+            'Selection 3',
+            'Selection 4',
+            'Selection 5',
           ],
         };
         setAllSelections(getSelectionsResult);
@@ -638,22 +638,22 @@ export default function Search() {
           //#region StakeFrom - StakeTo filter
 
           let matchStake = true;
-          if (typeof currentRow.stake !== "undefined") {
+          if (typeof currentRow.stake !== 'undefined') {
             if (
-              typeof stakeFrom !== "undefined" &&
-              typeof stakeTo !== "undefined" &&
+              typeof stakeFrom !== 'undefined' &&
+              typeof stakeTo !== 'undefined' &&
               (currentRow.stake < stakeFrom || currentRow.stake > stakeTo)
             ) {
               matchStake = false;
             } else if (
-              typeof stakeFrom !== "undefined" &&
-              typeof stakeTo === "undefined" &&
+              typeof stakeFrom !== 'undefined' &&
+              typeof stakeTo === 'undefined' &&
               currentRow.stake < stakeFrom
             ) {
               matchStake = false;
             } else if (
-              typeof stakeFrom === "undefined" &&
-              typeof stakeTo !== "undefined" &&
+              typeof stakeFrom === 'undefined' &&
+              typeof stakeTo !== 'undefined' &&
               currentRow.stake > stakeTo
             ) {
               matchStake = false;
@@ -669,22 +669,22 @@ export default function Search() {
           //#region OddFrom - OddTo filter
 
           let matchOdd = true;
-          if (typeof currentRow.odd !== "undefined") {
+          if (typeof currentRow.odd !== 'undefined') {
             if (
-              typeof oddFrom !== "undefined" &&
-              typeof oddTo !== "undefined" &&
+              typeof oddFrom !== 'undefined' &&
+              typeof oddTo !== 'undefined' &&
               (currentRow.odd < oddFrom || currentRow.odd > oddTo)
             ) {
               matchOdd = false;
             } else if (
-              typeof oddFrom !== "undefined" &&
-              typeof oddTo === "undefined" &&
+              typeof oddFrom !== 'undefined' &&
+              typeof oddTo === 'undefined' &&
               currentRow.odd < oddFrom
             ) {
               matchOdd = false;
             } else if (
-              typeof oddFrom === "undefined" &&
-              typeof oddTo !== "undefined" &&
+              typeof oddFrom === 'undefined' &&
+              typeof oddTo !== 'undefined' &&
               currentRow.odd > oddTo
             ) {
               matchOdd = false;
@@ -700,23 +700,23 @@ export default function Search() {
           //#region PsLimitFrom - PsLimitTo filter
 
           let matchPsLimit = true;
-          if (typeof currentRow.psLimit !== "undefined") {
+          if (typeof currentRow.psLimit !== 'undefined') {
             if (
-              typeof psLimitFrom !== "undefined" &&
-              typeof psLimitTo !== "undefined" &&
+              typeof psLimitFrom !== 'undefined' &&
+              typeof psLimitTo !== 'undefined' &&
               (currentRow.psLimit < psLimitFrom ||
                 currentRow.psLimit > psLimitTo)
             ) {
               matchPsLimit = false;
             } else if (
-              typeof psLimitFrom !== "undefined" &&
-              typeof psLimitTo === "undefined" &&
+              typeof psLimitFrom !== 'undefined' &&
+              typeof psLimitTo === 'undefined' &&
               currentRow.psLimit < psLimitFrom
             ) {
               matchPsLimit = false;
             } else if (
-              typeof psLimitFrom === "undefined" &&
-              typeof psLimitTo !== "undefined" &&
+              typeof psLimitFrom === 'undefined' &&
+              typeof psLimitTo !== 'undefined' &&
               currentRow.psLimit > psLimitTo
             ) {
               matchPsLimit = false;
@@ -961,7 +961,7 @@ export default function Search() {
         const statisticsModel: Array<StatisticItemModel> = [
           {
             id: 1,
-            periodType: "today",
+            periodType: 'today',
             profit: betStatistics.current.profit,
             turnOver: betStatistics.current.turnOver,
             winRate: (betStatistics.current.winRate * 100) + '%',
@@ -969,7 +969,7 @@ export default function Search() {
           },
           {
             id: 2,
-            periodType: "last 3m",
+            periodType: 'last 3m',
             profit: betStatistics.threeMonths.profit,
             turnOver: betStatistics.threeMonths.turnOver,
             winRate: (betStatistics.threeMonths.winRate * 100) + '%',
@@ -977,7 +977,7 @@ export default function Search() {
           },
           {
             id: 3,
-            periodType: "last 6m",
+            periodType: 'last 6m',
             profit: betStatistics.sixMonths.profit,
             turnOver: betStatistics.sixMonths.turnOver,
             winRate: (betStatistics.sixMonths.winRate * 100) + '%',
@@ -1144,36 +1144,36 @@ export default function Search() {
     <>
       {isLoading ? (
         <>
-          <div className="background-color-blur">
+          <div className='background-color-blur'>
             <CircularProgress
-              color="success"
+              color='success'
               size={250}
               disableShrink={true}
               style={{
-                position: "fixed",
-                top: "0",
-                right: "0",
-                bottom: "0",
-                left: "0",
-                margin: "auto",
+                position: 'fixed',
+                top: '0',
+                right: '0',
+                bottom: '0',
+                left: '0',
+                margin: 'auto',
                 zIndex: 9999999999999,
-                transition: "none",
+                transition: 'none',
               }}
             />
           </div>
         </>
       ) : null}
-      <Paper sx={{ padding: "5%" }}>
-        <Typography variant="h1" className="typography">
+      <Paper sx={{ padding: '5%' }}>
+        <Typography variant='h1' className='typography'>
           Search
         </Typography>
 
-        <FormControl component="fieldset">
+        <FormControl component='fieldset'>
         <FormControlLabel
-          value="end"
+          value='end'
           control={<Checkbox />}
-          label="Are expenses shown"
-          labelPlacement="end"
+          label='Are expenses shown'
+          labelPlacement='end'
           onChange={(e, checked) => {
             setAreExpensesShown(checked);
             console.log(checked)
@@ -1182,57 +1182,57 @@ export default function Search() {
       </FormControl>
         {currentStatistcs ? (
           <Paper>
-            <Typography variant="h4">Statistics</Typography>
+            <Typography variant='h4'>Statistics</Typography>
             <RadioGroup
-              aria-labelledby="demo-controlled-radio-buttons-group"
-              name="controlled-radio-buttons-group"
+              aria-labelledby='demo-controlled-radio-buttons-group'
+              name='controlled-radio-buttons-group'
               value={statisticsType}
               onChange={(event) => {
                 const value: string = (event.target as HTMLInputElement).value;
                 setStatisticsType(
-                  value === "Flat" ? StatisticType.Flat : StatisticType.Real
+                  value === 'Flat' ? StatisticType.Flat : StatisticType.Real
                 );
               }}
             >
-              <FormControlLabel value="Flat" control={<Radio />} label="Flat" />
-              <FormControlLabel value="Real" control={<Radio />} label="Real" />
+              <FormControlLabel value='Flat' control={<Radio />} label='Flat' />
+              <FormControlLabel value='Real' control={<Radio />} label='Real' />
             </RadioGroup>
             <DataGrid columns={statisticsColumns} rows={currentStatistcs} />
           </Paper>
         ) : null}
         <Paper>
-          <Typography variant="h4">Filter type</Typography>
+          <Typography variant='h4'>Filter type</Typography>
           <RadioGroup
-            aria-labelledby="demo-controlled-radio-buttons-group"
-            name="controlled-radio-buttons-group"
+            aria-labelledby='demo-controlled-radio-buttons-group'
+            name='controlled-radio-buttons-group'
             value={filterType}
             onChange={(event) => {
               const value: string = (event.target as HTMLInputElement).value;
               setFilterType(
-                value === "Bets"
+                value === 'Bets'
                   ? FilterType.Bets
-                  : value === "Expenses"
+                  : value === 'Expenses'
                   ? FilterType.Expenses
                   : FilterType.Both
               );
             }}
           >
-            <FormControlLabel value="Bets" control={<Radio />} label="Bets" />
+            <FormControlLabel value='Bets' control={<Radio />} label='Bets' />
             <FormControlLabel
-              value="Expenses"
+              value='Expenses'
               control={<Radio />}
-              label="Expenses"
+              label='Expenses'
             />
-            <FormControlLabel value="Both" control={<Radio />} label="Both" />
+            <FormControlLabel value='Both' control={<Radio />} label='Both' />
           </RadioGroup>
         </Paper>
-        <Paper className="margin-top-5">
-          <Paper className="margin-top-1">
+        <Paper className='margin-top-5'>
+          <Paper className='margin-top-1'>
             <TextField
-              id="betId"
-              label="Bet id"
-              variant="outlined"
-              type="number"
+              id='betId'
+              label='Bet id'
+              variant='outlined'
+              type='number'
               onChange={(e) => {
                 const betId = parseInt(e.target.value);
                 if (!isNaN(betId)) {
@@ -1243,10 +1243,10 @@ export default function Search() {
               }}
             />
             <TextField
-              id="expenseId"
-              label="Expense id"
-              variant="outlined"
-              type="number"
+              id='expenseId'
+              label='Expense id'
+              variant='outlined'
+              type='number'
               onChange={(e) => {
                 const expenseId = parseInt(e.target.value);
                 if (!isNaN(expenseId)) {
@@ -1259,7 +1259,7 @@ export default function Search() {
           </Paper>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
-              label="From"
+              label='From'
               value={dayjs(dateFrom)}
               onChange={(newValue) => {
                 setDateFrom(
@@ -1268,7 +1268,7 @@ export default function Search() {
               }}
             />
             <DatePicker
-              label="To"
+              label='To'
               value={dayjs(dateTo)}
               onChange={(newValue) => {
                 setDateTo(
@@ -1277,12 +1277,12 @@ export default function Search() {
               }}
             />
           </LocalizationProvider>
-          <Paper className="margin-top-1">
+          <Paper className='margin-top-1'>
             <TextField
-              id="stake-from"
-              label="Stake from"
-              variant="outlined"
-              type="number"
+              id='stake-from'
+              label='Stake from'
+              variant='outlined'
+              type='number'
               onChange={(e) => {
                 const stakeFrom = parseInt(e.target.value);
                 if (!isNaN(stakeFrom)) {
@@ -1293,10 +1293,10 @@ export default function Search() {
               }}
             />
             <TextField
-              id="stake-to"
-              label="Stake to"
-              variant="outlined"
-              type="number"
+              id='stake-to'
+              label='Stake to'
+              variant='outlined'
+              type='number'
               onChange={(e) => {
                 const stakeTo = parseInt(e.target.value);
                 if (!isNaN(stakeTo)) {
@@ -1307,12 +1307,12 @@ export default function Search() {
               }}
             />
           </Paper>
-          <Paper className="margin-top-1">
+          <Paper className='margin-top-1'>
             <TextField
-              id="odd-from"
-              label="Odd from"
-              variant="outlined"
-              type="number"
+              id='odd-from'
+              label='Odd from'
+              variant='outlined'
+              type='number'
               onChange={(e) => {
                 const oddFrom = parseInt(e.target.value);
                 if (!isNaN(oddFrom)) {
@@ -1323,10 +1323,10 @@ export default function Search() {
               }}
             />
             <TextField
-              id="odd-to"
-              label="Odd to"
-              variant="outlined"
-              type="number"
+              id='odd-to'
+              label='Odd to'
+              variant='outlined'
+              type='number'
               onChange={(e) => {
                 const oddTo = parseInt(e.target.value);
                 if (!isNaN(oddTo)) {
@@ -1337,12 +1337,12 @@ export default function Search() {
               }}
             />
           </Paper>
-          <Paper className="margin-top-1">
+          <Paper className='margin-top-1'>
             <TextField
-              id="psLimit-from"
-              label="PsLimit from"
-              variant="outlined"
-              type="number"
+              id='psLimit-from'
+              label='PsLimit from'
+              variant='outlined'
+              type='number'
               onChange={(e) => {
                 const psLimitFrom = parseInt(e.target.value);
                 if (!isNaN(psLimitFrom)) {
@@ -1353,10 +1353,10 @@ export default function Search() {
               }}
             />
             <TextField
-              id="psLimit-to"
-              label="PsLimit to"
-              variant="outlined"
-              type="number"
+              id='psLimit-to'
+              label='PsLimit to'
+              variant='outlined'
+              type='number'
               onChange={(e) => {
                 const psLimitTo = parseInt(e.target.value);
                 if (!isNaN(psLimitTo)) {
@@ -1367,61 +1367,61 @@ export default function Search() {
               }}
             />
           </Paper>
-          <Paper className="search-filters-container">
+          <Paper className='search-filters-container'>
             <AutocompleteComponent
-              id="counteragentCategories-autocomplete"
-              label="CounteragentCategory"
+              id='counteragentCategories-autocomplete'
+              label='CounteragentCategory'
               options={distinctCounteragentCategories}
               selectedOptions={counteragentCategoriesIds}
               setStateFn={setCounteragentCategoriesIds}
             />
             <AutocompleteComponent
-              id="counteragents-autocomplete"
-              label="Counteragent"
+              id='counteragents-autocomplete'
+              label='Counteragent'
               options={distinctCounteragents}
               selectedOptions={counteragentIds}
               setStateFn={setCounteragentIds}
             />
             <AutocompleteComponent
-              id="sports-autocomplete"
-              label="Sport"
+              id='sports-autocomplete'
+              label='Sport'
               options={distinctSports}
               selectedOptions={sportIds}
               setStateFn={setSportIds}
             />
             <AutocompleteComponent
-              id="markets-autocomplete"
-              label="Market"
+              id='markets-autocomplete'
+              label='Market'
               options={distinctMarkets}
               selectedOptions={marketIds}
               setStateFn={setMarketIds}
             />
             <AutocompleteComponent
-              id="tournaments-autocomplete"
-              label="Tournament"
+              id='tournaments-autocomplete'
+              label='Tournament'
               options={distinctTournaments}
               selectedOptions={tournamentIds}
               setStateFn={setTournamentIds}
             />
             <AutocompleteComponent
-              id="liveStatuses-autocomplete"
-              label="LiveStatus"
+              id='liveStatuses-autocomplete'
+              label='LiveStatus'
               options={distinctLiveStatuses}
               selectedOptions={liveStatusIds}
               setStateFn={setLiveStatusIds}
             />
             <AutocompleteComponent
-              id="currencies-autocomplete"
-              label="Currency"
+              id='currencies-autocomplete'
+              label='Currency'
               options={distinctCurrencies}
               selectedOptions={currencyIds}
               setStateFn={setCurrencyIds}
             />
           </Paper>
         </Paper>
-        <Typography variant="h4">Bets</Typography>
-        <Typography variant="h4">
-          Total of totals:{" "}
+        <Typography variant='h4'>Bets</Typography>
+        <Typography variant='h4'>
+          Total of totals:{' '}
           {Number(totalOfTotals).toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
@@ -1429,11 +1429,11 @@ export default function Search() {
         </Typography>
         {filteredRows ? (
           <Bets
-            id="search"
+            id='search'
             arePengindBets={false}
             savedBet={(bets: Array<BetModel>, bet: BetModel) => {}}
             editBetTotalAmountsNotify={editBetTotalAmountsNotify}
-            isRead={true}
+            isReducedFunctionalityProvided={true}
             selectBetIdFn={selectBetId}
             setIsLoading={setIsLoading}
             defaultRows={filteredRows}
@@ -1446,7 +1446,7 @@ export default function Search() {
           />
         ) : null}
         {Number(auth.user?.role) === 1 && (
-          <Typography variant="h4">Expenses</Typography>
+          <Typography variant='h4'>Expenses</Typography>
         )}
         {filteredExpenseRowsRows &&
         allCounterAgents &&

@@ -9,7 +9,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
-import { EditToolbarProps, Enums, ExpenseModel, IDropdownValue, } from '../../models';
+import { ActionType, EditToolbarProps, ExpenseModel, IDropdownValue, } from '../../models';
 import { deleteExpense, upsertExpense } from '../../api';
 import ExpensesToolbar from '../ExpensesToolbar/ExpensesToolbar';
 
@@ -101,8 +101,8 @@ export default function Expenses(props: {
           return {
             ...row, 
             actionTypeApplied: row.isSavedInDatabase 
-              ? Enums.ActionType.EDITED
-              : Enums.ActionType.SAVED,
+              ? ActionType.EDITED
+              : ActionType.SAVED,
           };
         } else {
           return row;
@@ -128,7 +128,7 @@ export default function Expenses(props: {
           if(row.id === id) {
             return {
               ...row, 
-              actionTypeApplied: Enums.ActionType.CANCELED,
+              actionTypeApplied: ActionType.CANCELED,
             };
           } else {
             return row;
@@ -147,7 +147,7 @@ export default function Expenses(props: {
         if(row.id === id) {
           return {
             ...row, 
-            actionTypeApplied: Enums.ActionType.EDITED,
+            actionTypeApplied: ActionType.EDITED,
           };
         } else {
           return {
@@ -199,8 +199,8 @@ export default function Expenses(props: {
   const processRowUpdate = async (newRow: GridRowModel) => {
     const currentRow = rows?.find((row) => row.id === newRow.id);
     
-    if(currentRow?.actionTypeApplied === Enums.ActionType.SAVED
-        || currentRow?.actionTypeApplied === Enums.ActionType.EDITED) {
+    if(currentRow?.actionTypeApplied === ActionType.SAVED
+        || currentRow?.actionTypeApplied === ActionType.EDITED) {
           const newRowData: ExpenseModel = {
             ...currentRow,
             counterAgent: currentRow.counterAgent,
@@ -252,7 +252,7 @@ export default function Expenses(props: {
       });
     }
     
-    toast(currentRow?.actionTypeApplied === Enums.ActionType.CANCELED 
+    toast(currentRow?.actionTypeApplied === ActionType.CANCELED 
       ? 'Canceled' 
       : `Saved expense with id ${newRow!.id}`,
     {
@@ -390,7 +390,7 @@ export default function Expenses(props: {
       type: 'number',
       editable: true,
       width: 150,
-      align: "center",
+      align: 'center',
       valueFormatter: (params) => {
                return params.value ? params.value : '0.00';
       },
@@ -403,9 +403,9 @@ export default function Expenses(props: {
         width: 150,
     },
     {
-      field: "dateCreated",
-      headerName: "Date created",
-      type: "date",
+      field: 'dateCreated',
+      headerName: 'Date created',
+      type: 'date',
       editable: false,
       width: 150,
       renderCell: (params) => {

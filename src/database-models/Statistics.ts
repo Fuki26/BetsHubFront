@@ -1,4 +1,4 @@
-import { StatisticType, } from '../models/enums';
+import { StatisticType, } from '../models';
 
 export type Statistics = {
     type: StatisticType;

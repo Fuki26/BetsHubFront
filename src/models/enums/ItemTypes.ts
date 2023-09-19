@@ -8,6 +8,4 @@ enum ItemTypes {
     BET_STATUS = 'BET_STATUS',
 };
 
-export {
-    ItemTypes,
-};
+export { ItemTypes, };

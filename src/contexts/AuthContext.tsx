@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export type UserContext = {
   id: string;
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 export const useAuth = () => {
   const context = React.useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within a AuthContext");
+    throw new Error('useAuth must be used within a AuthContext');
   }
   return context;
 };

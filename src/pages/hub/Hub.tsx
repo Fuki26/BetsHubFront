@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 import {
   // Box,
   CircularProgress,
@@ -11,19 +11,19 @@ import {
   Radio,
   RadioGroup,
   Typography,
-} from "@mui/material";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
+} from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 
-import Bets from "../../components/Bets/Bets";
+import Bets from '../../components/Bets/Bets';
 import {
   BetModel,
   ExpenseModel,
   IDropdownValue,
   ISelectionsResult,
   StatisticItemModel,
-} from "../../models";
+} from '../../models';
 import {
   getBetStatistics,
   getCompletedBets,
@@ -35,15 +35,15 @@ import {
   getSelections,
   getSports,
   getTournaments,
-} from "../../api";
-import { Currency, Expense, Statistics } from "../../database-models";
-import { StatisticType } from "../../models/enums";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import Expenses from "../../components/Expenses/Expenses";
-import { betToBetModelMapper } from "../../utils";
-import Collapse from "@mui/material/Collapse";
-import IconButton from "@mui/material/IconButton";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+} from '../../api';
+import { Currency, Expense, Statistics } from '../../database-models';
+import { StatisticType } from '../../models/enums';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import Expenses from '../../components/Expenses/Expenses';
+import { betToBetModelMapper } from '../../utils';
+import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export default function Hub() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -331,7 +331,7 @@ export default function Hub() {
         const statisticsModel: Array<StatisticItemModel> = [
           {
             id: 1,
-            periodType: "today",
+            periodType: 'today',
             profit: betStatistics.current.profit,
             turnOver: betStatistics.current.turnOver,
             winRate: (betStatistics.current.winRate * 100) + '%',
@@ -339,7 +339,7 @@ export default function Hub() {
           },
           {
             id: 2,
-            periodType: "last 3m",
+            periodType: 'last 3m',
             profit: betStatistics.threeMonths.profit,
             turnOver: betStatistics.threeMonths.turnOver,
             winRate: (betStatistics.threeMonths.winRate * 100) + '%',
@@ -347,7 +347,7 @@ export default function Hub() {
           },
           {
             id: 3,
-            periodType: "last 6m",
+            periodType: 'last 6m',
             profit: betStatistics.sixMonths.profit,
             turnOver: betStatistics.sixMonths.turnOver,
             winRate: (betStatistics.sixMonths.winRate * 100) + '%',
@@ -412,37 +412,37 @@ export default function Hub() {
 
   const statisticsColumns: Array<GridColDef<any>> = [
     {
-      field: "id",
-      type: "number",
+      field: 'id',
+      type: 'number',
     },
     {
-      field: "periodType",
-      headerName: "Period",
-      type: "string",
+      field: 'periodType',
+      headerName: 'Period',
+      type: 'string',
       width: 100,
     },
     {
-      field: "profit",
-      headerName: "Profit",
-      type: "number",
+      field: 'profit',
+      headerName: 'Profit',
+      type: 'number',
       width: 100,
     },
     {
-      field: "turnOver",
-      headerName: "Turnover",
-      type: "number",
+      field: 'turnOver',
+      headerName: 'Turnover',
+      type: 'number',
       width: 100,
     },
     {
-      field: "winRate",
-      headerName: "Win Rate",
-      type: "number",
+      field: 'winRate',
+      headerName: 'Win Rate',
+      type: 'number',
       width: 100,
     },
     {
-      field: "yield",
-      headerName: "Yield",
-      type: "number",
+      field: 'yield',
+      headerName: 'Yield',
+      type: 'number',
       width: 100,
     },
   ];
@@ -463,9 +463,9 @@ export default function Hub() {
     <>
 {isLoading ? (
       <>
-      <div className="background-color-blur">
+      <div className='background-color-blur'>
       <CircularProgress
-          color="success"
+          color='success'
           size={250}
           disableShrink={true}
           style={{
@@ -484,46 +484,46 @@ export default function Hub() {
       </>
     ) : null}
 
-      <Paper sx={{ padding: "5%" ,width:"100% !important"}}>
-        <Paper className="parent-statistics" style={{ maxWidth: "70vw !important", display: "flex", zIndex: "1", top: "60px", position: isSticky ? "sticky" : "static" }}>
-          <Paper className="statistics" style={{ marginRight: "auto", }}>
-            <Typography variant="h4">Statistics</Typography>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+      <Paper sx={{ padding: '5%' ,width:'100% !important'}}>
+        <Paper className='parent-statistics' style={{ maxWidth: '70vw !important', display: 'flex', zIndex: '1', top: '60px', position: isSticky ? 'sticky' : 'static' }}>
+          <Paper className='statistics' style={{ marginRight: 'auto', }}>
+            <Typography variant='h4'>Statistics</Typography>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
               <RadioGroup
-                aria-labelledby="demo-controlled-radio-buttons-group"
-                name="controlled-radio-buttons-group"
+                aria-labelledby='demo-controlled-radio-buttons-group'
+                name='controlled-radio-buttons-group'
                 value={statisticsType}
                 onChange={(event) => {
                   const value: string = (event.target as HTMLInputElement).value;
                   setStatisticsType(
-                    value === "Flat" ? StatisticType.Flat : StatisticType.Real
+                    value === 'Flat' ? StatisticType.Flat : StatisticType.Real
                   );
                 }}
               >
-                <FormControlLabel value="Flat" control={<Radio />} label="Flat" />
-                <FormControlLabel value="Real" control={<Radio />} label="Real" />
+                <FormControlLabel value='Flat' control={<Radio />} label='Flat' />
+                <FormControlLabel value='Real' control={<Radio />} label='Real' />
               </RadioGroup>
 
               <FormControlLabel
                 onChange={() => {
                   setIsSticky(!isSticky)
                   console.log(isSticky)
-                }} control={<Checkbox />} label="Sticky" />
+                }} control={<Checkbox />} label='Sticky' />
             </div>
-            <DataGrid style={{ height: "70%", borderWidth: "0" }} columns={statisticsColumns}
+            <DataGrid style={{ height: '70%', borderWidth: '0' }} columns={statisticsColumns}
               rows={currentStatistcs || []}
               pageSizeOptions={[]}
               autoPageSize={false}
               hideFooterPagination
             />
           </Paper>
-          <Paper className="calendar-container">
-            <div className="switch-calendar">
+          <Paper className='calendar-container'>
+            <div className='switch-calendar'>
               <FormControlLabel onClick={() => {
                 setIsOpenedCalendar(!isOpenedCalendar)
-              }} control={<Switch defaultChecked />} label="Calendar" />
+              }} control={<Switch defaultChecked />} label='Calendar' />
             </div>
-            <div style={{ display: isOpenedCalendar ? "flex" : "none" }}>
+            <div style={{ display: isOpenedCalendar ? 'flex' : 'none' }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateCalendar onChange={selectedDateFn} />
               </LocalizationProvider>
@@ -531,22 +531,22 @@ export default function Hub() {
           </Paper>
         </Paper>
 
-      <Paper  style={{ display: "flex", flexWrap: "nowrap" }}>
-          <Paper style={{width:"100%"}}>
+      <Paper  style={{ display: 'flex', flexWrap: 'nowrap' }}>
+          <Paper style={{width:'100%'}}>
             {pendingRows ? (
               <>
-                <Grid item xs={12} sx={{ maxWidth: "90vw !important" }}>
-                  <Typography variant="h4">
+                <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
+                  <Typography variant='h4'>
                     PENDING
                     <IconButton
                       onClick={handleExpandClick}
                       aria-expanded={isPendingTableExpanded}
-                      aria-label="show more"
+                      aria-label='show more'
                       sx={{
                         transform: isPendingTableExpanded
-                          ? "rotate(0deg)"
-                          : "rotate(180deg)",
-                        transition: "transform 0.3s",
+                          ? 'rotate(0deg)'
+                          : 'rotate(180deg)',
+                        transition: 'transform 0.3s',
                       }}
                     >
                       <ExpandMoreIcon />
@@ -554,14 +554,14 @@ export default function Hub() {
                   </Typography>
                   <Collapse
                     in={isPendingTableExpanded}
-                    timeout="auto"
+                    timeout='auto'
                     unmountOnExit
                   >
                     <Bets
-                      id="pending"
+                      id='pending'
                       arePengindBets={true}
                       savedBet={savedPendingBet}
-                      isRead={false}
+                      isReducedFunctionalityProvided={false}
                       selectBetIdFn={selectBetId}
                       setIsLoading={setIsLoading}
                       defaultRows={pendingRows}
@@ -578,31 +578,31 @@ export default function Hub() {
             ) : null}
           {filteredCompletedRows ? (
   <>
-      <Grid item xs={12} sx={{ maxWidth: "90vw !important" }}>
-        <Typography variant="h4">
+      <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
+        <Typography variant='h4'>
           COMPLETED
           <IconButton
             onClick={handleExpandClickCompleted}
             aria-expanded={isCompletedTableExpanded}
-            aria-label="show more"
+            aria-label='show more'
             sx={{
               transform: isCompletedTableExpanded
-                ? "rotate(0deg)"
-                : "rotate(180deg)",
-              transition: "transform 0.3s",
+                ? 'rotate(0deg)'
+                : 'rotate(180deg)',
+              transition: 'transform 0.3s',
             }}
           >
             <ExpandMoreIcon />
           </IconButton>
         </Typography>
-        <Collapse in={isCompletedTableExpanded} timeout="auto" unmountOnExit>
+        <Collapse in={isCompletedTableExpanded} timeout='auto' unmountOnExit>
           {/* <Grid container spacing={3}> */}
-          {/* <Grid item xs={11} sx={{ maxWidth: "70vw !important" }}> */}
+          {/* <Grid item xs={11} sx={{ maxWidth: '70vw !important' }}> */}
           <Bets
-            id="completed"
+            id='completed'
             arePengindBets={false}
             savedBet={savedPendingBet}
-            isRead={true}
+            isReducedFunctionalityProvided={true}
             selectBetIdFn={selectBetId}
             setIsLoading={setIsLoading}
             defaultRows={filteredCompletedRows}
@@ -623,24 +623,24 @@ export default function Hub() {
 
         {expensesRows ? (
           <>
-            <Grid item xs={12} sx={{ maxWidth: "90vw !important" }}>
-              <Typography variant="h4">
+            <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
+              <Typography variant='h4'>
                 Expenses
                 <IconButton
                   onClick={handleExpandClickExpenses}
                   aria-expanded={isExpensesTableExpanded}
-                  aria-label="show more"
+                  aria-label='show more'
                   sx={{
                     transform: isExpensesTableExpanded
-                      ? "rotate(0deg)"
-                      : "rotate(180deg)",
-                    transition: "transform 0.3s",
+                      ? 'rotate(0deg)'
+                      : 'rotate(180deg)',
+                    transition: 'transform 0.3s',
                   }}
                 >
                   <ExpandMoreIcon />
                 </IconButton>
               </Typography>
-              <Collapse sx={{ maxWidth: "90vw !important" }} in={isExpensesTableExpanded} timeout="auto" unmountOnExit>
+              <Collapse sx={{ maxWidth: '90vw !important' }} in={isExpensesTableExpanded} timeout='auto' unmountOnExit>
                 <Expenses
                   displayExportToolbar={false}
                   isRead={false}

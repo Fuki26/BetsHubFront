@@ -1,6 +1,6 @@
-import { Bet, CurrencyAmount } from "../database-models";
-import { BetModel } from "../models";
-import { BetStatus, LiveStatus, WinStatus } from "../models/enums";
+import { Bet, CurrencyAmount } from '../database-models';
+import { BetModel } from '../models';
+import { BetStatus, LiveStatus, WinStatus } from '../models/enums';
 
 export const betToBetModelMapper = (bet: Bet) => {
   let currencyAmounts: Record<string, number> = {};

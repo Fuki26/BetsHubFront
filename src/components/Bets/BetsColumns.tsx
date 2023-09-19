@@ -1,26 +1,20 @@
 import {
-    GridActionsCellItem,
-    GridColDef,
-    GridRenderCellParams,
-    GridRenderEditCellParams,
-    GridRowId,
-    GridRowModes,
-    GridRowModesModel,
-    GridRowParams,
-    GridValueGetterParams,
-} from "@mui/x-data-grid";
-import { Tooltip, Autocomplete, TextField, } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import SaveIcon from "@mui/icons-material/Save";
-import HistoryIcon from "@mui/icons-material/History";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/DeleteOutlined";
-import CancelIcon from "@mui/icons-material/Close";
-import { BetModel, IDropdownValue } from "../../models";
-import { WinStatus, LiveStatus } from "../../models/enums";
-import { Currency } from "../../database-models";
+    GridActionsCellItem, GridColDef, GridRenderCellParams,
+    GridRenderEditCellParams, GridRowId, GridRowModes,
+    GridRowModesModel, GridRowParams, GridValueGetterParams,
+} from '@mui/x-data-grid';
+import { Tooltip, Autocomplete, TextField, } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import SaveIcon from '@mui/icons-material/Save';
+import HistoryIcon from '@mui/icons-material/History';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+import CancelIcon from '@mui/icons-material/Close';
+import { BetModel, IDropdownValue, WinStatus, LiveStatus } from '../../models';
+import { Currency, } from '../../database-models';
 
-export const getBetsColumns = (props: { rows: Array<BetModel>, 
+export const getBetsColumns = (props: { 
+    rows: Array<BetModel>, 
     setRows: React.Dispatch<React.SetStateAction<Array<BetModel>>>,
     possibleCounteragents: Array<IDropdownValue> | undefined,
     possibleSports: Array<IDropdownValue> | undefined,
@@ -29,7 +23,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
     possibleMarkets: Array<IDropdownValue> | undefined,
     currencies: Array<Currency> | undefined,
     rowModesModel: GridRowModesModel,
-    isRead: boolean,
+    isReducedFunctionalityProvided: boolean,
     isMobile: boolean,
     handleSaveClick: (id: GridRowId) => () => void,
     handleCancelClick: (id: GridRowId) => () => void,
@@ -39,28 +33,27 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
     handleClickOpenOnDeleteDialog: (id: GridRowId) => () => void,
   }): Array<GridColDef>  => {
     const { rows, setRows, possibleCounteragents, possibleSports, 
-      possibleTournaments, possibleSelections,
-      possibleMarkets, currencies, rowModesModel, 
-      isRead, isMobile, handleSaveClick, handleCancelClick, handleEditClick, 
-      handleHistoryClick, handleCopyBetClick, handleClickOpenOnDeleteDialog, } = props;
+      possibleTournaments, possibleSelections, possibleMarkets, 
+      currencies, rowModesModel,  isReducedFunctionalityProvided, isMobile, 
+      handleSaveClick, handleCancelClick, handleEditClick, handleHistoryClick, 
+      handleCopyBetClick, handleClickOpenOnDeleteDialog, } = props;
+
     const columns: Array<GridColDef> = [
         {
-          field: "id",
-          type: "number",
+          field: 'id',
+          type: 'number',
           valueGetter: (params) => {
-            const row = rows?.find((r) => r.id === params.id);
-            if (!row) {
+            const row = rows.find((r) => r.id === params.id)
+            if (!row || !row.isSavedInDatabase) {
               return null;
             }
-            if (!row.isSavedInDatabase) {
-              return null;
-            }
+
             return params.id;
           },
         },
         {
-          field: "winStatus",
-          headerName: "Status",
+          field: 'winStatus',
+          headerName: 'Status',
           editable: true,
           width: 150,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
@@ -69,7 +62,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
               return;
             }
     
-            return <>{row.winStatus ? row.winStatus.label : ""}</>;
+            return <>{row.winStatus ? row.winStatus.label : ''}</>;
           },
           renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
@@ -80,12 +73,12 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
             return (
               <Autocomplete
                 options={[
-                  { id: "0", label: WinStatus[0] },
-                  { id: "1", label: WinStatus[1] },
-                  { id: "2", label: WinStatus[2] },
-                  { id: "3", label: WinStatus[3] },
-                  { id: "4", label: WinStatus[4] },
-                  { id: "5", label: WinStatus[5] },
+                  { id: '0', label: WinStatus[0] },
+                  { id: '1', label: WinStatus[1] },
+                  { id: '2', label: WinStatus[2] },
+                  { id: '3', label: WinStatus[3] },
+                  { id: '4', label: WinStatus[4] },
+                  { id: '5', label: WinStatus[5] },
                 ]}
                 renderInput={(params) => <TextField {...params} />}
                 onChange={(e, value: any) => {
@@ -95,7 +88,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
                         return {
                           ...row,
                           winStatus: value
-                            ? typeof value === "string"
+                            ? typeof value === 'string'
                               ? { id: value, label: value }
                               : value
                             : undefined,
@@ -123,8 +116,8 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           },
         },
         {
-          field: "counterAgent",
-          headerName: "Counteragent",
+          field: 'counterAgent',
+          headerName: 'Counteragent',
           editable: true,
           width: 180,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
@@ -133,7 +126,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
               return;
             }
     
-            return <>{row.counterAgent ? row.counterAgent.label : ""}</>;
+            return <>{row.counterAgent ? row.counterAgent.label : ''}</>;
           },
           renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
@@ -152,7 +145,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
                         return {
                           ...row,
                           counterAgent: value
-                            ? typeof value === "string"
+                            ? typeof value === 'string'
                               ? { id: value, label: value }
                               : value
                             : undefined,
@@ -180,8 +173,8 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           },
         },
         {
-          field: "sport",
-          headerName: "Sport",
+          field: 'sport',
+          headerName: 'Sport',
           editable: true,
           width: 120,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
@@ -190,7 +183,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
               return;
             }
     
-            return <>{row.sport ? row.sport.label : ""}</>;
+            return <>{row.sport ? row.sport.label : ''}</>;
           },
           renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
@@ -208,7 +201,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
                     return previousRowsModel.map((row: BetModel) => {
                       if (row.id === params.row.id) {
                         const sport = value
-                          ? typeof value === "string"
+                          ? typeof value === 'string'
                             ? { id: value, label: value }
                             : value
                           : undefined;
@@ -240,8 +233,8 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           },
         },
         {
-          field: "liveStatus",
-          headerName: "Live status",
+          field: 'liveStatus',
+          headerName: 'Live status',
           editable: true,
           width: 150,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
@@ -250,7 +243,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
               return;
             }
     
-            return <>{row.liveStatus ? row.liveStatus.label : ""}</>;
+            return <>{row.liveStatus ? row.liveStatus.label : ''}</>;
           },
           renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
@@ -261,12 +254,12 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
             return (
               <Autocomplete
                 options={[
-                  { id: "0", label: LiveStatus[0] },
-                  { id: "1", label: LiveStatus[1] },
-                  { id: "2", label: LiveStatus[2] },
-                  { id: "3", label: LiveStatus[3] },
-                  { id: "4", label: LiveStatus[4] },
-                  { id: "5", label: LiveStatus[5] },
+                  { id: '0', label: LiveStatus[0] },
+                  { id: '1', label: LiveStatus[1] },
+                  { id: '2', label: LiveStatus[2] },
+                  { id: '3', label: LiveStatus[3] },
+                  { id: '4', label: LiveStatus[4] },
+                  { id: '5', label: LiveStatus[5] },
                 ]}
                 renderInput={(params) => <TextField {...params} />}
                 onChange={(e, value: any) => {
@@ -276,7 +269,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
                         return {
                           ...row,
                           liveStatus: value
-                            ? typeof value === "string"
+                            ? typeof value === 'string'
                               ? { id: value, label: value }
                               : value
                             : undefined,
@@ -304,16 +297,16 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           },
         },
         {
-          field: "psLimit",
-          headerName: "PS Limit",
-          type: "number",
+          field: 'psLimit',
+          headerName: 'PS Limit',
+          type: 'number',
           editable: true,
           width: 150,
-          align:"center"
+          align: 'center',
         },
         {
-          field: "market",
-          headerName: "Market",
+          field: 'market',
+          headerName: 'Market',
           editable: true,
           width: 120,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
@@ -322,7 +315,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
               return;
             }
     
-            return <>{row.market ? row.market.label : ""}</>;
+            return <>{row.market ? row.market.label : ''}</>;
           },
           renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
@@ -340,7 +333,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
                     return previousRowsModel.map((row: BetModel) => {
                       if (row.id === params.row.id) {
                         const market = value
-                          ? typeof value === "string"
+                          ? typeof value === 'string'
                             ? { id: value, label: value }
                             : value
                           : undefined;
@@ -372,16 +365,16 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           },
         },
         {
-          field: "stake",
-          headerName: "Stake",
-          type: "number",
+          field: 'stake',
+          headerName: 'Stake',
+          type: 'number',
           editable: true,
           width: 120,
-          align:"right"
+          align: 'right'
         },
         {
-          field: "tournament",
-          headerName: "Tournament",
+          field: 'tournament',
+          headerName: 'Tournament',
           editable: true,
           width: 150,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
@@ -390,7 +383,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
               return;
             }
     
-            return <>{row.tournament ? row.tournament.label : ""}</>;
+            return <>{row.tournament ? row.tournament.label : ''}</>;
           },
           renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
@@ -408,7 +401,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
                     return previousRowsModel.map((row: BetModel) => {
                       if (row.id === params.row.id) {
                         const tournament = value
-                          ? typeof value === "string"
+                          ? typeof value === 'string'
                             ? { id: value, label: value }
                             : value
                           : undefined;
@@ -440,8 +433,8 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           },
         },
         {
-          field: "selection",
-          headerName: "Selection",
+          field: 'selection',
+          headerName: 'Selection',
           editable: true,
           width: 150,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
@@ -450,7 +443,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
               return;
             }
     
-            return <>{row.selection ? row.selection.label : ""}</>;
+            return <>{row.selection ? row.selection.label : ''}</>;
           },
           renderEditCell: (params: GridRenderEditCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
@@ -478,7 +471,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
                       return previousRowsModel.map((r: BetModel) => {
                         if (r.id === row.id) {
                           const selection = value
-                            ? typeof value === "string"
+                            ? typeof value === 'string'
                               ? { id: value, label: value }
                               : value
                             : undefined;
@@ -498,7 +491,7 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
                     return previousRowsModel.map((row: BetModel) => {
                       if (row.id === params.row.id) {
                         const selection = value
-                          ? typeof value === "string"
+                          ? typeof value === 'string'
                             ? { id: value, label: value }
                             : value
                           : undefined;
@@ -530,9 +523,9 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           },
         },
         {
-          field: "totalAmount",
-          headerName: "Total amount",
-          type: "number",
+          field: 'totalAmount',
+          headerName: 'Total amount',
+          type: 'number',
           editable: false,
           width: 180,
           valueGetter: (params) => {
@@ -546,27 +539,27 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           },
         },
         {
-          field: "odd",
-          headerName: "Odd",
-          type: "number",
+          field: 'odd',
+          headerName: 'Odd',
+          type: 'number',
           editable: true,
           width: 100,
         },
         {
-          field: "dateFinished",
-          headerName: "Date finished",
-          type: "date",
+          field: 'dateFinished',
+          headerName: 'Date finished',
+          type: 'date',
           editable: false,
           width: 180,
         },
         {
-          field: "dateCreated",
-          headerName: "Date created",
-          type: "date",
+          field: 'dateCreated',
+          headerName: 'Date created',
+          type: 'date',
           editable: false,
           width: 180,
           renderCell: (params) => {
-            const row = rows ? rows.find((r) => r.id === params.id) : undefined;
+            const row = rows.find((r) => r.id === params.id);
     
             if (!row) {
               throw Error(`Row did not found.`);
@@ -582,30 +575,30 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
           },
         },
         {
-          field: "profits",
-          headerName: "P/L",
-          type: "number",
+          field: 'profits',
+          headerName: 'P/L',
+          type: 'number',
           editable: false,
           width: 100,
           
         },
         {
-          field: "notes",
-          headerName: "Notes",
-          type: "string",
+          field: 'notes',
+          headerName: 'Notes',
+          type: 'string',
           editable: true,
           width: 150,
         },        
         {
-          field: "actions",
-          headerName: "Actions",
-          type: "actions",
+          field: 'actions',
+          headerName: 'Actions',
+          type: 'actions',
           width: 150,
-          cellClassName: "actions",
+          cellClassName: 'actions',
           getActions: (params) => {
             const isInEditMode =
               rowModesModel[params.id]?.mode === GridRowModes.Edit;
-            if (isRead) {
+            if (isReducedFunctionalityProvided) {
               const isAnyOtherRowInEditMode = rows?.some((r) => {
                 if (r.id === params.id) {
                   return false;
@@ -624,15 +617,15 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
                   ? [
                       <GridActionsCellItem
                         icon={<SaveIcon />}
-                        label="Save"
+                        label='Save'
                         onClick={handleSaveClick(params.id)}
                       />,
                       <GridActionsCellItem
                         icon={<CancelIcon />}
-                        label="Cancel"
-                        className="textPrimary"
+                        label='Cancel'
+                        className='textPrimary'
                         onClick={handleCancelClick(params.id)}
-                        color="inherit"
+                        color='inherit'
                       />,
                     ]
                   : []
@@ -640,10 +633,10 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
                   ? [
                       <GridActionsCellItem
                         icon={<EditIcon />}
-                        label="Edit"
-                        className="textPrimary"
+                        label='Edit'
+                        className='textPrimary'
                         onClick={handleEditClick(params.id)}
-                        color="inherit"
+                        color='inherit'
                       />,
                     ]
                   : [];
@@ -666,15 +659,15 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
                   ? [
                       <GridActionsCellItem
                         icon={<SaveIcon />}
-                        label="Save"
+                        label='Save'
                         onClick={handleSaveClick(params.id)}
                       />,
                       <GridActionsCellItem
                         icon={<CancelIcon />}
-                        label="Cancel"
-                        className="textPrimary"
+                        label='Cancel'
+                        className='textPrimary'
                         onClick={handleCancelClick(params.id)}
-                        color="inherit"
+                        color='inherit'
                       />,
                     ]
                   : []
@@ -682,38 +675,38 @@ export const getBetsColumns = (props: { rows: Array<BetModel>,
                 ? [
                     <GridActionsCellItem
                       icon={<EditIcon />}
-                      label="Edit"
-                      className="textPrimary"
+                      label='Edit'
+                      className='textPrimary'
                       onClick={handleEditClick(params.id)}
-                      color="inherit"
+                      color='inherit'
                     />,
                     <GridActionsCellItem
                       icon={<HistoryIcon />}
-                      label="Bet History"
-                      className="textPrimary"
+                      label='Bet History'
+                      className='textPrimary'
                       onClick={() => handleHistoryClick(params) as any}
-                      color="inherit"
+                      color='inherit'
                     />,
                     <GridActionsCellItem
                       icon={<DeleteIcon />}
-                      label="Delete"
+                      label='Delete'
                       onClick={handleClickOpenOnDeleteDialog(params.id)}
-                      color="inherit"
+                      color='inherit'
                     />,
                     <GridActionsCellItem
                       icon={<AddIcon />}
-                      label="Copy bet"
+                      label='Copy bet'
                       onClick={handleCopyBetClick(params.id)}
-                      color="inherit"
+                      color='inherit'
                     />,
                   ]
                 : [
                     <GridActionsCellItem
                       icon={<HistoryIcon />}
-                      label="Bet History"
-                      className="textPrimary"
+                      label='Bet History'
+                      className='textPrimary'
                       onClick={() => handleHistoryClick(params) as any}
-                      color="inherit"
+                      color='inherit'
                     />,
                   ];
             }

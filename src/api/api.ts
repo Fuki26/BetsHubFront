@@ -1,9 +1,8 @@
 import axios from 'axios';
 import { Bet, Counteragent, CounterAgentCategory, Currency, Expense, Statistics, User, } from '../database-models';
 import { BetModel, CounteragentModel, CurrencyModel, ExpenseModel, ISelectionsResult, } from '../models';
-import { StatisticType } from '../models/enums';
-import { notifyError } from "../services";
-import { json } from 'react-router-dom';
+import { StatisticType } from '../models';
+import { notifyError } from '../services';
 const { evaluate } = require('mathjs')
 
 const domain = 'http://213.91.236.205:5000';
@@ -16,9 +15,9 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     if (token) {
-      config.headers["Authorization"] = "Bearer " + token;
+      config.headers['Authorization'] = 'Bearer ' + token;
     }
     return config;
   },
@@ -33,13 +32,13 @@ instance.interceptors.response.use(
   },
   (error) => {
 
-    console.log("This is response interceptor error", error, JSON.stringify(error))
+    console.log('This is response interceptor error', error, JSON.stringify(error))
     if (error.response && error.response.status === 401) {
-      notifyError("Session has expired");
+      notifyError('Session has expired');
       setTimeout(() => {
         localStorage.removeItem('user');
         localStorage.removeItem('token');
-        window.location.href = "/login";
+        window.location.href = '/login';
       }, 1000);
     }
     return Promise.reject(error);
@@ -238,7 +237,7 @@ const deleteCurrency = async (props: { id: number; }) => {
 const upsertBet = async (bet: BetModel) => {
   try {
     const amounts = Object.fromEntries(
-      Object.entries(bet).filter(([key, value]) => key.startsWith("amount")).map(([key, value]) => {
+      Object.entries(bet).filter(([key, value]) => key.startsWith('amount')).map(([key, value]) => {
         if(!value || value.constructor === Array) return [];
         return [key.replace('amount', ''), value ? evaluate(value.toString()) : 0 ]
       })
@@ -247,25 +246,25 @@ const upsertBet = async (bet: BetModel) => {
     const request = {
         id: bet.isSavedInDatabase ? Number(bet.id) : null,
         winStatus: bet.winStatus ? Number(bet.winStatus.id) : 0,
-        counteragentId: bet.counterAgent ? Number(bet.counterAgent.id) : "",
-        sport: bet.sport ? bet.sport.id : "",
-        tournament: bet.tournament ? bet.tournament.id : "",
-        market: bet.market ? bet.market.id : "",
+        counteragentId: bet.counterAgent ? Number(bet.counterAgent.id) : '',
+        sport: bet.sport ? bet.sport.id : '',
+        tournament: bet.tournament ? bet.tournament.id : '',
+        market: bet.market ? bet.market.id : '',
         stake: bet.stake ? bet.stake : 0,
         psLimit: bet.psLimit ? bet.psLimit : 0,
         currencyAmounts: amounts,
         odd: bet.odd ? bet.odd : 0,
         dateFinished: bet.dateFinished
-          ? bet.dateFinished.toISOString().split("T")[0]
+          ? bet.dateFinished.toISOString().split('T')[0]
           : null,
         profits: bet.profits ? bet.profits : 0,
-        notes: bet.notes ? bet.notes : "",
-        selection: bet.selection ? bet.selection.label : "",
+        notes: bet.notes ? bet.notes : '',
+        selection: bet.selection ? bet.selection.label : '',
       };
       
     return await instance.post(`${domain}/UpsertBets`, request, {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
   } catch (e) {
@@ -324,7 +323,7 @@ const login = async (userName: string, password: string) => {
       { userName, password },
       {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
@@ -340,7 +339,7 @@ const verifyTfa = async (userName: string, code: string) => {
         { userName, code },
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         }
       );
@@ -364,7 +363,7 @@ const registerUser = async (user: User) => {
       { userName, password, email, role },
       {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
@@ -381,7 +380,7 @@ const resetPassword = async (email: string) => {
         { email },
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         }
       );
@@ -407,7 +406,7 @@ const promoteUserToGA = async (userName: string) => {
       userName,
       {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
