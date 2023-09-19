@@ -7,7 +7,7 @@ import { Button, Dialog, DialogActions, DialogTitle,
   Paper, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { BetModel, EditToolbarProps, Enums,
-  IDropdownValue, ISelectionsResult,} from '../../models';
+  IDropdownValue,} from '../../models';
 import { deleteBet, upsertBet, getBetHistory, } from '../../api';
 import { BetStatus, WinStatus, LiveStatus, } from '../../models/enums';
 import { Currency, } from '../../database-models';
@@ -586,22 +586,22 @@ function Bets(props: {
         return newRow;
       }
 
-      if(currentRow.selection) {
-        let possibleSelectionsForBet: {
+      if(currentRow.selection && currentRow.counterAgent) {
+        let possibleSelectionsForCustomer: {
           id: number;
           selections: Array<IDropdownValue> | undefined;
         } | undefined = betsSelections.find((r) => {
-          return r.id === rowData.data.id;
+          return r.id === parseInt(currentRow.counterAgent!.id);
         });
   
-        if(possibleSelectionsForBet) {
-          const selection = possibleSelectionsForBet.selections?.find((s) => {
-            return s.id === currentRow.selection?.id;
+        if(possibleSelectionsForCustomer) {
+          const selection = possibleSelectionsForCustomer.selections?.find((s) => {
+            return s.id === currentRow.selection!.id;
           });
 
           if(!selection) {
             setBetsSelections((p) => {
-              const betSelections = p.find((betSelections) => betSelections.id === rowData.data.id);
+              const betSelections = p.find((betSelections) => betSelections.id === parseInt(currentRow.counterAgent!.id));
               betSelections!.selections!
                 .push({ id: currentRow.selection!.id, label: currentRow.selection!.label, },);
   
@@ -611,7 +611,7 @@ function Bets(props: {
         } else {
           setBetsSelections((p) => {
             p.push({
-              id: rowData.data.id,
+              id: parseInt(currentRow.counterAgent!.id),
               selections: [
                 { id: currentRow.selection!.id, label: currentRow.selection!.label, }
               ],
