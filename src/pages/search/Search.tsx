@@ -1433,7 +1433,6 @@ export default function Search() {
             arePengindBets={false}
             savedBet={(bets: Array<BetModel>, bet: BetModel) => {}}
             editBetTotalAmountsNotify={editBetTotalAmountsNotify}
-            isReducedFunctionalityProvided={true}
             selectBetIdFn={selectBetId}
             setIsLoading={setIsLoading}
             defaultRows={filteredRows}

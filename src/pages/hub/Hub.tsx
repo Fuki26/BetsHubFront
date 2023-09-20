@@ -561,7 +561,6 @@ export default function Hub() {
                       id='pending'
                       arePengindBets={true}
                       savedBet={savedPendingBet}
-                      isReducedFunctionalityProvided={false}
                       selectBetIdFn={selectBetId}
                       setIsLoading={setIsLoading}
                       defaultRows={pendingRows}
@@ -602,7 +601,6 @@ export default function Hub() {
             id='completed'
             arePengindBets={false}
             savedBet={savedPendingBet}
-            isReducedFunctionalityProvided={true}
             selectBetIdFn={selectBetId}
             setIsLoading={setIsLoading}
             defaultRows={filteredCompletedRows}

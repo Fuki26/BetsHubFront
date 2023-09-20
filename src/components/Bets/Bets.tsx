@@ -19,8 +19,7 @@ import { insertCurrenciesIntoColumns, sortBets, } from '.';
 const { evaluate } = require('mathjs');
 
 function Bets(props: {
-  id: string;
-  isReducedFunctionalityProvided: boolean;
+  id: 'pending' | 'completed' | 'search';
   arePengindBets: boolean;
   editBetTotalAmountsNotify?: (betId: number, totalAmount: number, ) => void;
   savedBet: (bets: Array<BetModel>, bet: BetModel) => void;
@@ -37,7 +36,7 @@ function Bets(props: {
   possibleMarkets: Array<IDropdownValue> | undefined;
 }) {
   const {
-    isReducedFunctionalityProvided, arePengindBets, selectBetIdFn, setIsLoading,
+    arePengindBets, selectBetIdFn, setIsLoading,
     defaultRows, currencies, possibleCounteragents, possibleSports,
     possibleTournaments, possibleSelections, possibleMarkets, } = props;
 
@@ -672,7 +671,7 @@ function Bets(props: {
     rows, setRows,
     possibleCounteragents, possibleSports, possibleTournaments,
     possibleSelections: betsSelections, possibleMarkets,
-    currencies, rowModesModel, isReducedFunctionalityProvided,
+    currencies, rowModesModel, id: props.id,
     isMobile, handleSaveClick, handleCancelClick, handleEditClick,
     handleHistoryClick, handleCopyBetClick, handleClickOpenOnDeleteDialog,
   });
@@ -715,7 +714,9 @@ function Bets(props: {
             columnThreshold={2}
             rows={rows}
             slots={{
-              toolbar: isReducedFunctionalityProvided ? CustomToolbar : editToolbarHandler,
+              toolbar: props.id === 'completed' || props.id === 'search' 
+                ? CustomToolbar 
+                : editToolbarHandler,
             }}
             rowModesModel={rowModesModel}
             processRowUpdate={processRowUpdate}

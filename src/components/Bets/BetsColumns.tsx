@@ -23,7 +23,7 @@ export const getBetsColumns = (props: {
     possibleMarkets: Array<IDropdownValue> | undefined,
     currencies: Array<Currency> | undefined,
     rowModesModel: GridRowModesModel,
-    isReducedFunctionalityProvided: boolean,
+    id: 'pending' | 'completed' | 'search',
     isMobile: boolean,
     handleSaveClick: (id: GridRowId) => () => void,
     handleCancelClick: (id: GridRowId) => () => void,
@@ -34,7 +34,7 @@ export const getBetsColumns = (props: {
   }): Array<GridColDef>  => {
     const { rows, setRows, possibleCounteragents, possibleSports, 
       possibleTournaments, possibleSelections, possibleMarkets, 
-      currencies, rowModesModel,  isReducedFunctionalityProvided, isMobile, 
+      currencies, rowModesModel,  id, isMobile, 
       handleSaveClick, handleCancelClick, handleEditClick, handleHistoryClick, 
       handleCopyBetClick, handleClickOpenOnDeleteDialog, } = props;
 
@@ -664,7 +664,49 @@ export const getBetsColumns = (props: {
           getActions: (params) => {
             const isInEditMode =
               rowModesModel[params.id]?.mode === GridRowModes.Edit;
-            if (isReducedFunctionalityProvided) {
+            if (id === 'search') {
+              const isAnyOtherRowInEditMode = rows?.some((r) => {
+                if (r.id === params.id) {
+                  return false;
+                }
+    
+                const rowModeData = rowModesModel[r.id];
+                return rowModeData && rowModeData.mode === GridRowModes.Edit;
+              });
+    
+              if (isAnyOtherRowInEditMode) {
+                return [];
+              }
+    
+              return isInEditMode
+                ? !isMobile
+                    ? [
+                        <GridActionsCellItem
+                          icon={<SaveIcon />}
+                          label='Save'
+                          onClick={handleSaveClick(params.id)}
+                        />,
+                        <GridActionsCellItem
+                          icon={<CancelIcon />}
+                          label='Cancel'
+                          className='textPrimary'
+                          onClick={handleCancelClick(params.id)}
+                          color='inherit'
+                        />,
+                      ]
+                    : []
+                : !isMobile
+                  ? [
+                      <GridActionsCellItem
+                        icon={<EditIcon />}
+                        label='Edit'
+                        className='textPrimary'
+                        onClick={handleEditClick(params.id)}
+                        color='inherit'
+                      />,
+                    ]
+                  : [];
+            } else if(id === 'pending') {
               const isAnyOtherRowInEditMode = rows?.some((r) => {
                 if (r.id === params.id) {
                   return false;
@@ -704,9 +746,36 @@ export const getBetsColumns = (props: {
                         onClick={handleEditClick(params.id)}
                         color='inherit'
                       />,
+                      <GridActionsCellItem
+                        icon={<HistoryIcon />}
+                        label='Bet History'
+                        className='textPrimary'
+                        onClick={() => handleHistoryClick(params) as any}
+                        color='inherit'
+                      />,
+                      <GridActionsCellItem
+                        icon={<DeleteIcon />}
+                        label='Delete'
+                        onClick={handleClickOpenOnDeleteDialog(params.id)}
+                        color='inherit'
+                      />,
+                      <GridActionsCellItem
+                        icon={<AddIcon />}
+                        label='Copy bet'
+                        onClick={handleCopyBetClick(params.id)}
+                        color='inherit'
+                      />,
                     ]
-                  : [];
-            } else {
+                  : [
+                      <GridActionsCellItem
+                        icon={<HistoryIcon />}
+                        label='Bet History'
+                        className='textPrimary'
+                        onClick={() => handleHistoryClick(params) as any}
+                        color='inherit'
+                      />,
+                    ];
+            } else if(id === 'completed') {
               const isAnyOtherRowInEditMode = rows?.some((r) => {
                 if (r.id === params.id) {
                   return false;
@@ -738,43 +807,24 @@ export const getBetsColumns = (props: {
                     ]
                   : []
                 : !isMobile
-                ? [
-                    <GridActionsCellItem
-                      icon={<EditIcon />}
-                      label='Edit'
-                      className='textPrimary'
-                      onClick={handleEditClick(params.id)}
-                      color='inherit'
-                    />,
-                    <GridActionsCellItem
-                      icon={<HistoryIcon />}
-                      label='Bet History'
-                      className='textPrimary'
-                      onClick={() => handleHistoryClick(params) as any}
-                      color='inherit'
-                    />,
-                    <GridActionsCellItem
-                      icon={<DeleteIcon />}
-                      label='Delete'
-                      onClick={handleClickOpenOnDeleteDialog(params.id)}
-                      color='inherit'
-                    />,
-                    <GridActionsCellItem
-                      icon={<AddIcon />}
-                      label='Copy bet'
-                      onClick={handleCopyBetClick(params.id)}
-                      color='inherit'
-                    />,
-                  ]
-                : [
-                    <GridActionsCellItem
-                      icon={<HistoryIcon />}
-                      label='Bet History'
-                      className='textPrimary'
-                      onClick={() => handleHistoryClick(params) as any}
-                      color='inherit'
-                    />,
-                  ];
+                  ? [
+                      <GridActionsCellItem
+                        icon={<EditIcon />}
+                        label='Edit'
+                        className='textPrimary'
+                        onClick={handleEditClick(params.id)}
+                        color='inherit'
+                      />,
+                      <GridActionsCellItem
+                        icon={<DeleteIcon />}
+                        label='Delete'
+                        onClick={handleClickOpenOnDeleteDialog(params.id)}
+                        color='inherit'
+                      />,
+                    ]
+                  : [];
+            } else {
+              return [];
             }
           },
         },
