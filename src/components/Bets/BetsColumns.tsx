@@ -349,7 +349,29 @@ export const getBetsColumns = (props: {
               <Autocomplete
                 freeSolo
                 options={possibleMarkets ? possibleMarkets : []}
-                renderInput={(params) => <TextField {...params} />}
+                renderInput={(params) => <TextField {...params}
+                  onBlurCapture={(p) => {
+                    const value = (p.target as any).value;
+                    setRows((previousRowsModel) => {
+                      return previousRowsModel.map((r: BetModel) => {
+                        if (r.id === row.id) {
+                          const market = value
+                            ? typeof value === 'string'
+                              ? { id: value, label: value }
+                              : value
+                            : undefined;
+
+                          return {
+                            ...row,
+                            market,
+                          };
+                        } else {
+                          return r;
+                        }
+                      });
+                    });
+                  }}
+                />}
                 onChange={(e, value: any) => {
                   setRows((previousRowsModel) => {
                     return previousRowsModel.map((row: BetModel) => {
@@ -417,7 +439,29 @@ export const getBetsColumns = (props: {
               <Autocomplete
                 freeSolo
                 options={possibleTournaments ? possibleTournaments : []}
-                renderInput={(params) => <TextField {...params} />}
+                renderInput={(params) => <TextField {...params}
+                  onBlurCapture={(p) => {
+                    const value = (p.target as any).value;
+                    setRows((previousRowsModel) => {
+                      return previousRowsModel.map((r: BetModel) => {
+                        if (r.id === row.id) {
+                          const tournament = value
+                            ? typeof value === 'string'
+                              ? { id: value, label: value }
+                              : value
+                            : undefined;
+
+                          return {
+                            ...row,
+                            tournament,
+                          };
+                        } else {
+                          return r;
+                        }
+                      });
+                    });
+                  }}
+                />}
                 onChange={(e, value: any) => {
                   setRows((previousRowsModel) => {
                     return previousRowsModel.map((row: BetModel) => {
