@@ -128,6 +128,16 @@ function Bets(props: {
     ? currencies.map((cur) => cur.abbreviation)
     : [];
 
+  useEffect(() => {	
+    setRows((oldRows) => {	
+      return defaultRows ? sortBets(defaultRows) : [];	
+    });	
+
+    setRowModesModel(() => {	
+      return {};	
+    });	
+  }, [defaultRows]);
+
   useEffect(() => {
     const savedColumnVisibilityModel = 
       JSON.parse(localStorage.getItem(`${props.id}ColumnVisibilityModel`) || '{}');
@@ -480,7 +490,7 @@ function Bets(props: {
             && 
             (
               !newRowData.liveStatus || !newRowData.counterAgent || !newRowData.sport
-                || !newRowData.tournament || !newRowData.market || !newRowData.psLimit
+                || !newRowData.tournament || !newRowData.market
                 || !atLeastOneCurrencyIsPopulated && !newRowData.odd
             ) 
             && 
@@ -636,7 +646,7 @@ function Bets(props: {
       return currentRow;
     } else{
       if(arePengindBets && (newRow.liveStatus && newRow.counterAgent && newRow.sport
-            && newRow.tournament && newRow.market && newRow.psLimit
+            && newRow.tournament && newRow.market 
             && atLeastOneCurrencyIsPopulated && newRow.odd) && 
           (newRow.winStatus && newRow.winStatus.id !== '0')) {
         setTimeout(() => {
