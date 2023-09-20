@@ -331,7 +331,7 @@ export default function Hub() {
         const statisticsModel: Array<StatisticItemModel> = [
           {
             id: 1,
-            periodType: 'today',
+            periodType: 'all time',
             profit: betStatistics.current.profit,
             turnOver: betStatistics.current.turnOver,
             winRate: (betStatistics.current.winRate * 100) + '%',

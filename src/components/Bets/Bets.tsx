@@ -15,7 +15,7 @@ import Modal from '../UI/Modal';
 import { getBetsColumns, } from './BetsColumns';
 import CustomToolbar from '../CustomToolbar/CustomToolbar';
 import './Bets.css';
-import { insertCurrenciesIntoColumns, sortBets } from '.';
+import { insertCurrenciesIntoColumns, sortBets, } from '.';
 const { evaluate } = require('mathjs');
 
 function Bets(props: {
@@ -41,7 +41,7 @@ function Bets(props: {
     defaultRows, currencies, possibleCounteragents, possibleSports,
     possibleTournaments, possibleSelections, possibleMarkets, } = props;
 
-  const handleCellKeyDown: GridEventListener<'cellKeyDown'> 
+  const tabKeyHandler: GridEventListener<'cellKeyDown'> 
     = (params, event) => {
       if (event.key === 'Tab' && params.cellMode === 'edit') {
         event.preventDefault(); // Prevent the default Tab behavior
@@ -111,18 +111,21 @@ function Bets(props: {
     defaultRows ? sortBets(defaultRows) : []
   );
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+
   const [deleteRowId, setDeleteRowId] = useState<number | undefined>(undefined);
   const [deleteDialogIsOpened, setOpenDeleteDialog] = useState(false);
+
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [history, setHistory] = useState(null);
+
   const [columnVisibilityModel, setColumnVisibilityModel] = useState<Record<string, boolean>>({});
+
   const [betsSelections, setBetsSelections] = 
     useState<Array<{ id: number; selections: Array<IDropdownValue> | undefined, }>>(possibleSelections);
 
   const abbreviations = currencies
     ? currencies.map((cur) => cur.abbreviation)
     : [];
-
 
   useEffect(() => {
     const savedColumnVisibilityModel = 
@@ -138,7 +141,7 @@ function Bets(props: {
     setColumnVisibilityModel(newVisibilityModel);
   }, []);
 
-  function EditToolbar(props: EditToolbarProps) {
+  const editToolbarHandler = (props: EditToolbarProps) => {
     const { setRows, setRowModesModel } = props;
 
     const handleAddNewClick = () => {
@@ -247,8 +250,6 @@ function Bets(props: {
     const row = rows.find((r) => r.id === params.id);
     if (!props.arePengindBets && row && row.winStatus?.label) {
       switch (row.winStatus.label) {
-        // case WinStatus[0]:
-        //   return 'row-win-status-void';
         case WinStatus[1]:
           return 'row-win-status-winner';
         case WinStatus[2]:
@@ -319,7 +320,6 @@ function Bets(props: {
 
     setRowModesModel((previousRowModesModel) => {
       let newRowsModel: GridRowModesModel = {};
-      // newRowsModel[id] = { mode: GridRowModes.Edit };
       for (var i = 0; i <= rows.length - 1; i++) {
         const currentRow = rows[i];
         if (currentRow.id === id) {
@@ -334,12 +334,12 @@ function Bets(props: {
   };
 
   const handleHistoryClick = async (params: GridRowParams) => {
-    const row = rows!.find((row) => row.id === params.id);
+    const row = rows.find((row) => row.id === params.id);
 
     if (!row) {
       return;
     }
-    // const betId = await selectBetIdFn(row.id);
+
     const history = await getBetHistory(row.id);
 
     setShowHistoryModal(true);
@@ -432,10 +432,8 @@ function Bets(props: {
     }
 
     let atLeastOneCurrencyIsPopulated = false;
-    if (
-      currentRow.actionTypeApplied === ActionType.SAVED ||
-      currentRow.actionTypeApplied === ActionType.EDITED 
-    ) {
+    if (currentRow.actionTypeApplied === ActionType.SAVED ||
+      currentRow.actionTypeApplied === ActionType.EDITED) {
       
       let amounts = Object.fromEntries(Object.entries(newRow).filter(([key, value]) => key.startsWith('amount')));
       for (let key in amounts) {
@@ -691,7 +689,7 @@ function Bets(props: {
       {rows ? (
         <>
           <DataGrid
-            onCellKeyDown={handleCellKeyDown}
+            onCellKeyDown={tabKeyHandler}
             columns={columns}
             initialState={{
               columns: {
@@ -706,7 +704,7 @@ function Bets(props: {
             columnThreshold={2}
             rows={rows}
             slots={{
-              toolbar: isReducedFunctionalityProvided ? CustomToolbar : EditToolbar,
+              toolbar: isReducedFunctionalityProvided ? CustomToolbar : editToolbarHandler,
             }}
             rowModesModel={rowModesModel}
             processRowUpdate={processRowUpdate}
@@ -715,7 +713,6 @@ function Bets(props: {
             }}
             onRowClick={onRowClick}
             onCellEditStop={onCellEditStop}
-            // editMode='row'
             editMode='cell'
             sx={{
               height: 500,
