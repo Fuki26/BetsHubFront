@@ -79,13 +79,14 @@ function Bets(props: {
           { currentColumnId: currentPointer, focusColumnId: currentPointer + 1, },
           { currentColumnId: currentPointer + 1, focusColumnId: currentPointer + 2, },
           { currentColumnId: currentPointer + 2, focusColumnId: currentPointer + 3, },
-          { currentColumnId: currentPointer + 3, focusColumnId: currentPointer + 5, },
-          { currentColumnId: currentPointer + 4, focusColumnId: currentPointer + 5, },
-          { currentColumnId: currentPointer + 5, focusColumnId: currentPointer + 9, },
-          { currentColumnId: currentPointer + 6, focusColumnId: currentPointer + 9, },
-          { currentColumnId: currentPointer + 7, focusColumnId: currentPointer + 9, },
-          { currentColumnId: currentPointer + 8, focusColumnId: currentPointer + 9, },
-          { currentColumnId: currentPointer + 9, focusColumnId: 2, },
+          { currentColumnId: currentPointer + 3, focusColumnId: currentPointer + 4, },
+          { currentColumnId: currentPointer + 4, focusColumnId: currentPointer + 6, },
+          { currentColumnId: currentPointer + 5, focusColumnId: currentPointer + 6, },
+          { currentColumnId: currentPointer + 6, focusColumnId: currentPointer + 10, },
+          { currentColumnId: currentPointer + 7, focusColumnId: currentPointer + 10, },
+          { currentColumnId: currentPointer + 8, focusColumnId: currentPointer + 10, },
+          { currentColumnId: currentPointer + 9, focusColumnId: currentPointer + 10, },
+          { currentColumnId: currentPointer + 10, focusColumnId: 2, },
         ]);
         
         let elementToBeFocused = null;

@@ -531,26 +531,26 @@ export const getBetsColumns = (props: {
                 freeSolo
                 options={possibleSelectionsForBet}
                 renderInput={(params) => <TextField {...params} 
-                  onChange={(p) => { 
-                    const value = p.target.value;
-                    setRows((previousRowsModel) => {
-                      return previousRowsModel.map((r: BetModel) => {
-                        if (r.id === row.id) {
-                          const selection = value
-                            ? typeof value === 'string'
-                              ? { id: value, label: value }
-                              : value
-                            : undefined;
-      
-                          return {
-                            ...row,
-                            selection,
-                          };
-                        } else {
-                          return r;
-                        }
-                      });
+                onBlurCapture={(p) => { 
+                  const value = (p.target as any).value;
+                  setRows((previousRowsModel) => {
+                    return previousRowsModel.map((r: BetModel) => {
+                      if (r.id === row.id) {
+                        const selection = value
+                          ? typeof value === 'string'
+                            ? { id: value, label: value }
+                            : value
+                          : undefined;
+    
+                        return {
+                          ...row,
+                          selection,
+                        };
+                      } else {
+                        return r;
+                      }
                     });
+                  });
                   }}/>}
                 onChange={(e, value: any) => {
                   setRows((previousRowsModel) => {
