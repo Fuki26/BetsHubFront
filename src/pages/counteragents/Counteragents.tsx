@@ -262,6 +262,21 @@ export default function Counteragents(props: {}) {
     
     if(currentRow?.actionTypeApplied === ActionType.SAVED
         || currentRow?.actionTypeApplied === ActionType.EDITED) {
+        const isValidCounterAgentName = newRow.name.split(' ').every((s: string) => {
+          return s.match('^[A-Za-z0-9]+$')
+        });
+
+        if(!isValidCounterAgentName) {
+          setRowModesModel((previousRowModesModel) => {
+            return { ...previousRowModesModel, [currentRow.id!.toString()]: { mode: GridRowModes.Edit } }
+          });
+          toast(`Name should contain only latin characters and digits!`, {
+            position: 'top-center',
+          });
+          
+          return;
+        }
+
         const newRowData: CounteragentModel = {
           ...currentRow,
           name: newRow.name,

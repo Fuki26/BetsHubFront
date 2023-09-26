@@ -83,8 +83,6 @@ export default function Hub() {
     Array<ExpenseModel> | undefined
   >(undefined);
 
-
-
   useEffect(() => {
     (async () => {
       try {
