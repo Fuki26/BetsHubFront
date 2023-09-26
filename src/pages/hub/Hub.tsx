@@ -8,6 +8,8 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import dayjs from 'dayjs';
+import updateLocale from 'dayjs/plugin/updateLocale';
 import Bets from '../../components/Bets/Bets';
 import { BetModel, ExpenseModel, IDropdownValue, StatisticItemModel, } from '../../models';
 import { getBetStatistics, getCompletedBets, getCounterAgents, getCurrencies, 
@@ -17,6 +19,12 @@ import { Currency, Expense, Statistics } from '../../database-models';
 import { StatisticType } from '../../models/enums';
 import Expenses from '../../components/Expenses/Expenses';
 import { betToBetModelMapper } from '../../utils';
+
+
+dayjs.extend(updateLocale);
+dayjs.updateLocale("en", {
+  weekStart: 1
+});
 
 export default function Hub() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
