@@ -1,49 +1,22 @@
 import React, { useEffect } from 'react';
-import {
-  // Box,
-  CircularProgress,
-  FormControlLabel,
-  Checkbox,
-  Button,
-  Switch,
-  Grid,
-  Paper,
-  Radio,
-  RadioGroup,
-  Typography,
-} from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-
-import Bets from '../../components/Bets/Bets';
-import {
-  BetModel,
-  ExpenseModel,
-  IDropdownValue,
-  ISelectionsResult,
-  StatisticItemModel,
-} from '../../models';
-import {
-  getBetStatistics,
-  getCompletedBets,
-  getCounterAgents,
-  getCurrencies,
-  getExpenses,
-  getMarkets,
-  getPendingBets,
-  getSelections,
-  getSports,
-  getTournaments,
-} from '../../api';
-import { Currency, Expense, Statistics } from '../../database-models';
-import { StatisticType } from '../../models/enums';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import Expenses from '../../components/Expenses/Expenses';
-import { betToBetModelMapper } from '../../utils';
+import { CircularProgress, FormControlLabel, Checkbox, Switch, Grid, Paper, 
+  Radio, RadioGroup, Typography, } from '@mui/material';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import Bets from '../../components/Bets/Bets';
+import { BetModel, ExpenseModel, IDropdownValue, StatisticItemModel, } from '../../models';
+import { getBetStatistics, getCompletedBets, getCounterAgents, getCurrencies, 
+  getExpenses, getMarkets, getPendingBets, getSelections, getSports, getTournaments,
+} from '../../api';
+import { Currency, Expense, Statistics } from '../../database-models';
+import { StatisticType } from '../../models/enums';
+import Expenses from '../../components/Expenses/Expenses';
+import { betToBetModelMapper } from '../../utils';
 
 export default function Hub() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -77,10 +50,6 @@ export default function Hub() {
   const [completedRows, setCompletedRows] = React.useState<
     Array<BetModel> | undefined
   >(undefined);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [filteredPendingRows, setFilteredPendingRows] = React.useState<
-    Array<BetModel> | undefined
-  >(undefined);
   const [filteredCompletedRows, setFilteredCompletedRows] = React.useState<
     Array<BetModel> | undefined
   >(undefined);
@@ -102,32 +71,11 @@ export default function Hub() {
   const [expensesRows, setExpensesRows] = React.useState<
     Array<ExpenseModel> | undefined
   >(undefined);
+  const [filteredExpensesRows, setFilteredExpensesRows] = React.useState<
+    Array<ExpenseModel> | undefined
+  >(undefined);
 
-  const sortExpenses = () => {
-    let sortedExpenses: Array<ExpenseModel> = [];
-    if(expensesRows && date) {
-      const selectedDateExpenses: Array<ExpenseModel> = expensesRows.filter((expense) => {
-        return date.getFullYear() === expense.dateCreated.getFullYear()
-          && date.getMonth() === expense.dateCreated.getMonth()
-          && date.getDate() === expense.dateCreated.getDate();
-      });
 
-      const notSelectedDateExpenses: Array<ExpenseModel> = expensesRows.filter((expense) => {
-        return date.getFullYear() !== expense.dateCreated.getFullYear()
-          || date.getMonth() !== expense.dateCreated.getMonth()
-          || date.getDate() !== expense.dateCreated.getDate();
-      });
-
-      const sortedNotSelectedDateExpenses 
-        = notSelectedDateExpenses
-          .sort((a, b) => a.dateCreated.getTime() - b.dateCreated.getTime());
-
-      sortedExpenses = selectedDateExpenses.concat(sortedNotSelectedDateExpenses);
-    } else if (expensesRows) {
-      sortedExpenses = expensesRows;
-    }
-    setExpensesRows(sortedExpenses);
-  }
 
   useEffect(() => {
     (async () => {
@@ -169,17 +117,6 @@ export default function Hub() {
         setPendingRows(pendingBets);
         setCompletedRows(completedBets);
         setCurrencies(currencies);
-        // setFilteredPendingRows(
-        //   pendingBets.filter((b) => {
-        //     const now = new Date();
-        //     return (
-        //       b.dateFinished &&
-        //       b.dateFinished.getFullYear() === now.getFullYear() &&
-        //       b.dateFinished.getMonth() === now.getMonth() &&
-        //       b.dateFinished.getDate() === now.getDate()
-        //     );
-        //   })
-        // );
         setFilteredCompletedRows(
           completedBets.filter((b) => {
             const now = new Date();
@@ -256,6 +193,23 @@ export default function Hub() {
           : [];
 
         setExpensesRows(expenses);
+        setFilteredExpensesRows((previousRowsModel: Array<ExpenseModel> | undefined) => {
+          const now = new Date();
+          return expenses
+            .filter((e) => {
+              if(
+                e.dateCreated &&
+                e.dateCreated.getFullYear() === now.getFullYear() &&
+                e.dateCreated.getMonth() === now.getMonth() &&
+                e.dateCreated.getDate() === now.getDate()
+              ) {
+                return true;
+              } else {
+                return false;
+              }
+            })
+            .sort((a, b) => a.dateCreated.getTime() - b.dateCreated.getTime());
+        });
         setDate(new Date());
       } catch (e) {
         console.error(e);
@@ -264,27 +218,6 @@ export default function Hub() {
   }, []);
 
   useEffect(() => {
-    // setFilteredPendingRows((previousRowsModel: Array<BetModel> | undefined) => {
-    //   if (pendingRows && date) {
-    //     const bets: Array<BetModel> = [];
-    //     for (var i = 0; i <= pendingRows?.length - 1; i++) {
-    //       const currentRow = pendingRows[i];
-    //       if (
-    //         currentRow.dateFinished &&
-    //         currentRow.dateFinished.getFullYear() === date.getFullYear() &&
-    //         currentRow.dateFinished.getMonth() === date.getMonth() &&
-    //         currentRow.dateFinished.getDate() === date.getDate()
-    //       ) {
-    //         bets.push(currentRow);
-    //       }
-    //     }
-
-    //     return bets;
-    //   } else {
-    //     return [];
-    //   }
-    // });
-
     setFilteredCompletedRows(
       (previousRowsModel: Array<BetModel> | undefined) => {
         if (completedRows && date) {
@@ -308,8 +241,32 @@ export default function Hub() {
       }
     );
 
-    sortExpenses();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setFilteredExpensesRows((previousRowsModel: Array<ExpenseModel> | undefined) => {
+      let filteredExpenses: Array<ExpenseModel> = [];
+      if (expensesRows) {
+        if(date) {
+          filteredExpenses = expensesRows
+            .filter((e) => {
+              if(
+                e.dateCreated &&
+                e.dateCreated.getFullYear() === date.getFullYear() &&
+                e.dateCreated.getMonth() === date.getMonth() &&
+                e.dateCreated.getDate() === date.getDate()
+              ) {
+                return true;
+              } else {
+                return false;
+              }
+            })
+            ;
+        } else {
+          filteredExpenses = expensesRows;
+        }
+      }
+
+      return filteredExpenses
+        .sort((a, b) => a.dateCreated.getTime() - b.dateCreated.getTime());
+    });
   }, [date]);
 
   useEffect(() => {
@@ -619,7 +576,7 @@ export default function Hub() {
           </Paper>
         </Paper>
 
-        {expensesRows ? (
+        {filteredExpensesRows ? (
           <>
             <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
               <Typography variant='h4'>
@@ -643,7 +600,7 @@ export default function Hub() {
                   displayExportToolbar={false}
                   isRead={false}
                   setIsLoading={setIsLoading}
-                  defaultRows={expensesRows}
+                  defaultRows={filteredExpensesRows}
                   possibleCounterAgents={possibleCounterAgents}
                 />
               </Collapse>
