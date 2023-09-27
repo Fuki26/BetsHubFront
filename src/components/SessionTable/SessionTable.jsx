@@ -6,6 +6,7 @@ import { getUserSessions } from "../../api";
 import { startOfWeek, format, isToday, parseISO } from "date-fns";
 
 const SessionTable = ({ userName }) => {
+  const [sessionData, setSessionData] = useState([]);
   const [summarizedData, setSummarizedData] = useState([]);
   const [open, setOpen] = useState(false);
 
@@ -13,6 +14,7 @@ const SessionTable = ({ userName }) => {
     const fetchSessionData = async () => {
       try {
         const data = await getUserSessions(userName);
+        setSessionData(data?.data);
         processSummarizedData(data?.data);
       } catch (e) {
         console.error(e);
@@ -54,7 +56,14 @@ const SessionTable = ({ userName }) => {
     setSummarizedData([todaySummary, ...Object.values(weekSummaries)]);
   };
 
-  const columns = [
+  const rawColumns = [
+    { field: "startTime", headerName: "Start Time", width: 200 },
+    { field: "duration", headerName: "Duration", width: 150 },
+    { field: "ip", headerName: "IP Address", width: 100 },
+    { field: "userAgent", headerName: "User agent", width: 200 },
+  ];
+
+  const summaryColumns = [
     { field: "id", headerName: "Date/Week Starting", width: 200 },
     { field: "duration", headerName: "Total Duration", width: 150 },
     { field: "count", headerName: "Number of Sessions", width: 200 },
@@ -75,10 +84,18 @@ const SessionTable = ({ userName }) => {
         />
       </IconButton>
       <Collapse in={open}>
-        <div style={{ height: 400, width: "100%" }}>
+        <div style={{ height: 400, width: "100%", marginBottom: "20px" }}>
           <DataGrid
             rows={summarizedData}
-            columns={columns}
+            columns={summaryColumns}
+            pageSize={5}
+            pageSizeOptions={[5, 10, 25]}
+          />
+        </div>
+        <div style={{ height: 400, width: "100%" }}>
+          <DataGrid
+            rows={sessionData}
+            columns={rawColumns}
             pageSize={5}
             pageSizeOptions={[5, 10, 25]}
           />
