@@ -1,12 +1,12 @@
-import { IDropdownValue } from '.';
+import { IDropdownValue, } from '.';
 import { ActionType, } from './enums';
 
 export type BetModel = {
     id: number;
     dateCreated: Date;
-    betStatus?: IDropdownValue; //0,1
-    winStatus?: IDropdownValue; //0,1,2,3,4,5
-    liveStatus?: IDropdownValue; //0,1,2,3
+    betStatus?: IDropdownValue;
+    winStatus?: IDropdownValue;
+    liveStatus?: IDropdownValue;
     stake?: number;
     counterAgent?: IDropdownValue;
     counterAgentCategory?: IDropdownValue;
@@ -21,8 +21,6 @@ export type BetModel = {
     dateFinished?: Date;
     profits?: number;
     notes?: string;
-    
-    //user??
 
     actionTypeApplied?: ActionType;
     isSavedInDatabase: boolean;

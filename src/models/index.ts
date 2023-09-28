@@ -1,4 +1,4 @@
-export * as Enums from './enums';
+export * from './enums';
 export * from './BetModel';
 export * from './CounteragentModel';
 export * from './CurrencyModel';

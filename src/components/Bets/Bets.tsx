@@ -2,42 +2,24 @@ import React, { useEffect, useState, useCallback, } from 'react';
 import { toast, } from 'react-toastify';
 import { isMobile, } from 'react-device-detect';
 import { DataGrid, GridColDef, GridRowId, GridRowModel, GridRowModes,
-  GridRowModesModel, GridRowParams, GridCellParams, GridToolbarContainer, GridEventListener, } from '@mui/x-data-grid';
-import { Button, Dialog, DialogActions, DialogTitle,
-  Paper, } from '@mui/material';
+  GridRowModesModel, GridRowParams, GridCellParams, GridToolbarContainer, 
+  GridEventListener, } from '@mui/x-data-grid';
+import { Button, Dialog, DialogActions, DialogTitle, Paper, 
+  } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { BetModel, EditToolbarProps, Enums,
-  IDropdownValue,} from '../../models';
+import { BetModel, EditToolbarProps, BetStatus, 
+  WinStatus, LiveStatus, IDropdownValue, ActionType ,} from '../../models';
 import { deleteBet, upsertBet, getBetHistory, } from '../../api';
-import { BetStatus, WinStatus, LiveStatus, } from '../../models/enums';
 import { Currency, } from '../../database-models';
 import Modal from '../UI/Modal';
 import { getBetsColumns, } from './BetsColumns';
 import CustomToolbar from '../CustomToolbar/CustomToolbar';
 import './Bets.css';
+import { insertCurrenciesIntoColumns, sortBets, } from '.';
 const { evaluate } = require('mathjs');
 
-const getAbbreviations = (currencies: Currency[] | undefined) => {
-  if (!currencies) return [];
-  return currencies.map((cur) => cur.abbreviation);
-};
-
-const insertCurrenciesIntoColumns = (columns: any, abbreviations: string[]) => {
-  const idx = columns.findIndex((c: any) => c.field === "psLimit");
-  const currencyColumns = abbreviations.map((a) => ({
-    field: `amount${a}`,
-    headerName: a,
-    type: "text",
-    editable: true,
-    width: 100,
-    align:"left"
-  }));
-  columns.splice(idx + 1, 0, ...currencyColumns);
-};
-
 function Bets(props: {
-  id: string;
-  isRead: boolean;
+  id: 'pending' | 'completed' | 'search';
   arePengindBets: boolean;
   editBetTotalAmountsNotify?: (betId: number, totalAmount: number, ) => void;
   savedBet: (bets: Array<BetModel>, bet: BetModel) => void;
@@ -54,11 +36,11 @@ function Bets(props: {
   possibleMarkets: Array<IDropdownValue> | undefined;
 }) {
   const {
-    isRead, arePengindBets, selectBetIdFn, setIsLoading,
+    arePengindBets, selectBetIdFn, setIsLoading,
     defaultRows, currencies, possibleCounteragents, possibleSports,
     possibleTournaments, possibleSelections, possibleMarkets, } = props;
 
-  const handleCellKeyDown: GridEventListener<"cellKeyDown"> 
+  const tabKeyHandler: GridEventListener<'cellKeyDown'> 
     = (params, event) => {
       if (event.key === 'Tab' && params.cellMode === 'edit') {
         event.preventDefault(); // Prevent the default Tab behavior
@@ -96,13 +78,14 @@ function Bets(props: {
           { currentColumnId: currentPointer, focusColumnId: currentPointer + 1, },
           { currentColumnId: currentPointer + 1, focusColumnId: currentPointer + 2, },
           { currentColumnId: currentPointer + 2, focusColumnId: currentPointer + 3, },
-          { currentColumnId: currentPointer + 3, focusColumnId: currentPointer + 5, },
-          { currentColumnId: currentPointer + 4, focusColumnId: currentPointer + 5, },
-          { currentColumnId: currentPointer + 5, focusColumnId: currentPointer + 9, },
-          { currentColumnId: currentPointer + 6, focusColumnId: currentPointer + 9, },
-          { currentColumnId: currentPointer + 7, focusColumnId: currentPointer + 9, },
-          { currentColumnId: currentPointer + 8, focusColumnId: currentPointer + 9, },
-          { currentColumnId: currentPointer + 9, focusColumnId: 2, },
+          { currentColumnId: currentPointer + 3, focusColumnId: currentPointer + 4, },
+          { currentColumnId: currentPointer + 4, focusColumnId: currentPointer + 6, },
+          { currentColumnId: currentPointer + 5, focusColumnId: currentPointer + 6, },
+          { currentColumnId: currentPointer + 6, focusColumnId: currentPointer + 10, },
+          { currentColumnId: currentPointer + 7, focusColumnId: currentPointer + 10, },
+          { currentColumnId: currentPointer + 8, focusColumnId: currentPointer + 10, },
+          { currentColumnId: currentPointer + 9, focusColumnId: currentPointer + 10, },
+          { currentColumnId: currentPointer + 10, focusColumnId: 2, },
         ]);
         
         let elementToBeFocused = null;
@@ -111,7 +94,7 @@ function Bets(props: {
             return c.currentColumnId === columnIndex;
           });
 
-          elementToBeFocused = document.querySelector(`[aria-colindex="${columnIndexToBeFocused!.focusColumnId}"] input`);
+          elementToBeFocused = document.querySelector(`[aria-colindex='${columnIndexToBeFocused!.focusColumnId}'] input`);
           if(elementToBeFocused) {
             (elementToBeFocused! as any).focus();
           } else {
@@ -124,48 +107,35 @@ function Bets(props: {
       }
   };
 
-  const sortBets = (bets: Array<BetModel>): Array<BetModel> => {
-    const notCompletedBets = bets.filter((b) => {
-      return !b.liveStatus || !b.counterAgent || !b.sport 
-        || !b.tournament || !b.market || !b.stake 
-        || !b.psLimit || !b.totalAmount || !b.odd || !b.notes;
-    });
-
-    const completedBets = bets.filter((b) => {
-      return b.liveStatus && b.counterAgent && b.sport && b.tournament
-        && b.market && b.stake && b.psLimit && b.totalAmount && b.odd && b.notes;
-    });
-
-    const allBets = notCompletedBets.concat(completedBets);
-
-    return allBets;
-  }
-
   const [rows, setRows] = useState<Array<BetModel>>(
     defaultRows ? sortBets(defaultRows) : []
   );
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+
   const [deleteRowId, setDeleteRowId] = useState<number | undefined>(undefined);
   const [deleteDialogIsOpened, setOpenDeleteDialog] = useState(false);
+
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [history, setHistory] = useState(null);
+
   const [columnVisibilityModel, setColumnVisibilityModel] = useState<Record<string, boolean>>({});
+
   const [betsSelections, setBetsSelections] = 
     useState<Array<{ id: number; selections: Array<IDropdownValue> | undefined, }>>(possibleSelections);
 
+  const abbreviations = currencies
+    ? currencies.map((cur) => cur.abbreviation)
+    : [];
 
-  const abbreviations = getAbbreviations(currencies);
+  useEffect(() => {	
+    setRows((oldRows) => {	
+      return defaultRows ? sortBets(defaultRows) : [];	
+    });	
 
-  useEffect(() => {
-    setRows((oldRows) => {
-      return defaultRows ? sortBets(defaultRows) : [];
-    });
-  
-    setRowModesModel(() => {
-      return {};
-    });
+    setRowModesModel(() => {	
+      return {};	
+    });	
   }, [defaultRows]);
-
 
   useEffect(() => {
     const savedColumnVisibilityModel = 
@@ -181,7 +151,7 @@ function Bets(props: {
     setColumnVisibilityModel(newVisibilityModel);
   }, []);
 
-  function EditToolbar(props: EditToolbarProps) {
+  const editToolbarHandler = (props: EditToolbarProps) => {
     const { setRows, setRowModesModel } = props;
 
     const handleAddNewClick = () => {
@@ -236,8 +206,8 @@ function Bets(props: {
     return !isMobile ? (
       <GridToolbarContainer>
         <Button
-          color="primary"
-          variant="contained"
+          color='primary'
+          variant='contained'
           startIcon={<AddIcon />}
           onClick={handleAddNewClick}
           disabled={isAnyRowInEditMode}
@@ -273,8 +243,8 @@ function Bets(props: {
           return {
             ...row,
             actionTypeApplied: row.isSavedInDatabase
-              ? Enums.ActionType.EDITED
-              : Enums.ActionType.SAVED,
+              ? ActionType.EDITED
+              : ActionType.SAVED,
           };
         } else {
           return row;
@@ -290,24 +260,22 @@ function Bets(props: {
     const row = rows.find((r) => r.id === params.id);
     if (!props.arePengindBets && row && row.winStatus?.label) {
       switch (row.winStatus.label) {
-        // case WinStatus[0]:
-        //   return "row-win-status-void";
         case WinStatus[1]:
-          return "row-win-status-winner";
+          return 'row-win-status-winner';
         case WinStatus[2]:
-          return "row-win-status-loser";
+          return 'row-win-status-loser';
         case WinStatus[3]:
-          return "row-win-status-halfwin";
+          return 'row-win-status-halfwin';
         case WinStatus[4]:
-          return "row-win-status-halfloss";
+          return 'row-win-status-halfloss';
         case WinStatus[5]:
-          return "row-win-status-void";
+          return 'row-win-status-void';
         default:
-          return "";
+          return '';
       }
     }
 
-    return "";
+    return '';
   };
 
 
@@ -330,7 +298,7 @@ function Bets(props: {
           if (row.id === id) {
             return {
               ...row,
-              actionTypeApplied: Enums.ActionType.CANCELED,
+              actionTypeApplied: ActionType.CANCELED,
             };
           } else {
             return row;
@@ -349,7 +317,7 @@ function Bets(props: {
         if (row.id === id) {
           return {
             ...row,
-            actionTypeApplied: Enums.ActionType.EDITED,
+            actionTypeApplied: ActionType.EDITED,
           };
         } else {
           return {
@@ -362,7 +330,6 @@ function Bets(props: {
 
     setRowModesModel((previousRowModesModel) => {
       let newRowsModel: GridRowModesModel = {};
-      // newRowsModel[id] = { mode: GridRowModes.Edit };
       for (var i = 0; i <= rows.length - 1; i++) {
         const currentRow = rows[i];
         if (currentRow.id === id) {
@@ -377,12 +344,12 @@ function Bets(props: {
   };
 
   const handleHistoryClick = async (params: GridRowParams) => {
-    const row = rows!.find((row) => row.id === params.id);
+    const row = rows.find((row) => row.id === params.id);
 
     if (!row) {
       return;
     }
-    // const betId = await selectBetIdFn(row.id);
+
     const history = await getBetHistory(row.id);
 
     setShowHistoryModal(true);
@@ -475,10 +442,8 @@ function Bets(props: {
     }
 
     let atLeastOneCurrencyIsPopulated = false;
-    if (
-      currentRow.actionTypeApplied === Enums.ActionType.SAVED ||
-      currentRow.actionTypeApplied === Enums.ActionType.EDITED 
-    ) {
+    if (currentRow.actionTypeApplied === ActionType.SAVED ||
+      currentRow.actionTypeApplied === ActionType.EDITED) {
       
       let amounts = Object.fromEntries(Object.entries(newRow).filter(([key, value]) => key.startsWith('amount')));
       for (let key in amounts) {
@@ -487,7 +452,7 @@ function Bets(props: {
         }
 
         if (
-          typeof amounts[key] === "string")
+          typeof amounts[key] === 'string')
            {
           amounts[key] = evaluate(amounts[key]);
         }
@@ -524,7 +489,7 @@ function Bets(props: {
             && 
             (
               !newRowData.liveStatus || !newRowData.counterAgent || !newRowData.sport
-                || !newRowData.tournament || !newRowData.market || !newRowData.psLimit
+                || !newRowData.tournament || !newRowData.market
                 || !atLeastOneCurrencyIsPopulated && !newRowData.odd
             ) 
             && 
@@ -535,7 +500,7 @@ function Bets(props: {
           toast(
             `You should populate all required fields if you changed the win status.`,
             {
-              position: "top-center",
+              position: 'top-center',
             }
           );
 
@@ -564,7 +529,7 @@ function Bets(props: {
         toast(
           `Some fields are not populated correctly or they are missing.`,
           {
-            position: "top-center",
+            position: 'top-center',
           }
         );
 
@@ -667,11 +632,11 @@ function Bets(props: {
     }
 
     toast(
-      currentRow.actionTypeApplied === Enums.ActionType.CANCELED
-        ? "Canceled"
+      currentRow.actionTypeApplied === ActionType.CANCELED
+        ? 'Canceled'
         : `Saved bet with id ${newRow!.id}`,
       {
-        position: "top-center",
+        position: 'top-center',
       }
     );
 
@@ -680,7 +645,7 @@ function Bets(props: {
       return currentRow;
     } else{
       if(arePengindBets && (newRow.liveStatus && newRow.counterAgent && newRow.sport
-            && newRow.tournament && newRow.market && newRow.psLimit
+            && newRow.tournament && newRow.market 
             && atLeastOneCurrencyIsPopulated && newRow.odd) && 
           (newRow.winStatus && newRow.winStatus.id !== '0')) {
         setTimeout(() => {
@@ -703,26 +668,16 @@ function Bets(props: {
   };
 
   let columns: Array<GridColDef> = getBetsColumns({ 
-    rows, 
-    setRows,
-    possibleCounteragents,
-    possibleSports,
-    possibleTournaments,
-    possibleSelections: betsSelections,
-    possibleMarkets,
-    currencies,
-    rowModesModel,
-    isRead,
-    isMobile,
-    handleSaveClick,
-    handleCancelClick,
-    handleEditClick,
-    handleHistoryClick,
-    handleCopyBetClick,
-    handleClickOpenOnDeleteDialog,
+    rows, setRows,
+    possibleCounteragents, possibleSports, possibleTournaments,
+    possibleSelections: betsSelections, possibleMarkets,
+    currencies, rowModesModel, id: props.id,
+    isMobile, handleSaveClick, handleCancelClick, handleEditClick,
+    handleHistoryClick, handleCopyBetClick, handleClickOpenOnDeleteDialog,
   });
 
   const handleModalClose = () => setShowHistoryModal(false);
+
   if (showHistoryModal && history) {
     return (
       <Modal
@@ -734,17 +689,17 @@ function Bets(props: {
   }
 
   if (props.arePengindBets) {
-    columns = columns.filter((c) => c.headerName !== "Profits");
+    columns = columns.filter((c) => c.headerName !== 'Profits');
   }
 
   insertCurrenciesIntoColumns(columns, abbreviations);
 
   return (
-    <Paper sx={{ paddingTop: "1%" }}>
+    <Paper sx={{ paddingTop: '1%' }}>
       {rows ? (
         <>
           <DataGrid
-            onCellKeyDown={handleCellKeyDown}
+            onCellKeyDown={tabKeyHandler}
             columns={columns}
             initialState={{
               columns: {
@@ -759,7 +714,9 @@ function Bets(props: {
             columnThreshold={2}
             rows={rows}
             slots={{
-              toolbar: isRead ? CustomToolbar : EditToolbar,
+              toolbar: props.id === 'completed' || props.id === 'search' 
+                ? CustomToolbar 
+                : editToolbarHandler,
             }}
             rowModesModel={rowModesModel}
             processRowUpdate={processRowUpdate}
@@ -768,8 +725,7 @@ function Bets(props: {
             }}
             onRowClick={onRowClick}
             onCellEditStop={onCellEditStop}
-            // editMode="row"
-            editMode="cell"
+            editMode='cell'
             sx={{
               height: 500,
             }}
@@ -777,11 +733,11 @@ function Bets(props: {
           <Dialog
             open={deleteDialogIsOpened}
             onClose={handleCloseOnDeleteDialog}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
+            aria-labelledby='alert-dialog-title'
+            aria-describedby='alert-dialog-description'
           >
-            <DialogTitle id="alert-dialog-title">
-              {"Are you sure you want to delete the bet?"}
+            <DialogTitle id='alert-dialog-title'>
+              {'Are you sure you want to delete the bet?'}
             </DialogTitle>
             <DialogActions>
               <Button onClick={handleDeleteClick} autoFocus>

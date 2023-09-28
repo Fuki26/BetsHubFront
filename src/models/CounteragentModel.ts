@@ -1,4 +1,4 @@
-import { IDropdownValue } from '.';
+import { IDropdownValue, } from '.';
 import { ActionType, } from './enums';
 
 export type CounteragentModel = {

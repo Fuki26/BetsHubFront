@@ -1,5 +1,5 @@
-import { WinStatus } from '../models/enums';
-import { Counteragent } from './CounterAgent';
+import { WinStatus, } from '../models';
+import { Counteragent, } from './CounterAgent';
 
 export type CurrencyAmount = {
   abbreviation: string;
@@ -9,13 +9,13 @@ export type CurrencyAmount = {
 export type Bet = {
     id: number;
     dateCreated: string;
-    betStatus: number; //0,1
-    winStatus: number; //0,1,2,3,4,5
+    betStatus: number;
+    winStatus: number;
     stake?  : number;
     counteragentId?: number;
     counteragent?: Counteragent;
     sport?:	string;
-    liveStatus:	number; //0,1,2,3
+    liveStatus:	number;
     psLimit?: number;
     market?: string;
     tournament?: string;
