@@ -4,8 +4,28 @@ import { CopyrightSharp, PeopleRounded, SearchRounded,
 
 export const items = [
   {
-    title: 'Home',
-    path: '/',
+    title: 'Pending Bets',
+    path: '/pending_bets',
+    icon: (
+      <SvgIcon fontSize='small'>
+        <CopyrightSharp />
+      </SvgIcon>
+    ),
+    requireAuthentication: true,
+  },
+  {
+    title: 'Completed Bets',
+    path: '/completed_bets',
+    icon: (
+      <SvgIcon fontSize='small'>
+        <CopyrightSharp />
+      </SvgIcon>
+    ),
+    requireAuthentication: true,
+  },
+  {
+    title: 'Expenses',
+    path: '/expenses',
     icon: (
       <SvgIcon fontSize='small'>
         <CopyrightSharp />

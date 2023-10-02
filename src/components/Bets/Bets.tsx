@@ -710,8 +710,7 @@ function Bets(props: {
             }}
             onColumnVisibilityModelChange={handleColumnVisibilityChange}
             getRowClassName={getRowClassName}
-            columnBuffer={2}
-            columnThreshold={2}
+            columnBuffer={50}
             rows={rows}
             slots={{
               toolbar: props.id === 'completed' || props.id === 'search' 

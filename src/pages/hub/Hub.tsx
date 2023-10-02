@@ -26,7 +26,10 @@ dayjs.updateLocale("en", {
   weekStart: 1
 });
 
-export default function Hub() {
+export default function Hub(props: {
+  id: 'pending_bets' | 'completed_bets' | 'expenses';
+}) {
+  const { id, } = props;
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isSticky, setIsSticky]=React.useState<boolean>(false);
   const [isOpenedCalendar, setIsOpenedCalendar]=React.useState<boolean>(true);
@@ -424,197 +427,229 @@ export default function Hub() {
 
   return (
     <>
-{isLoading ? (
-      <>
-      <div className='background-color-blur'>
-      <CircularProgress
-          color='success'
-          size={250}
-          disableShrink={true}
-          style={{
-            position: 'fixed', 
-            top: '0', 
-            right: '0',
-            bottom: '0',
-            left: '0',
-            margin: 'auto',
-            zIndex: 9999999999999,
-            transition: 'none',
-          }}
-        />
-      </div>
-        
-      </>
-    ) : null}
+      {
+        isLoading 
+          ? (
+              <>
+                <div className='background-color-blur'>
+                  <CircularProgress
+                    color='success'
+                    size={250}
+                    disableShrink={true}
+                    style={{
+                      position: 'fixed', 
+                      top: '0', 
+                      right: '0',
+                      bottom: '0',
+                      left: '0',
+                      margin: 'auto',
+                      zIndex: 9999999999999,
+                      transition: 'none',
+                    }}
+                  />
+                </div>
+              </>
+            ) 
+          : null
+      }
 
       <Paper sx={{ padding: '5%' ,width:'100% !important'}}>
-        <Paper className='parent-statistics' style={{ maxWidth: '70vw !important', display: 'flex', zIndex: '1', top: '60px', position: isSticky ? 'sticky' : 'static' }}>
-          <Paper className='statistics' style={{ marginRight: 'auto', }}>
-            <Typography variant='h4'>Statistics</Typography>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <RadioGroup
-                aria-labelledby='demo-controlled-radio-buttons-group'
-                name='controlled-radio-buttons-group'
-                value={statisticsType}
-                onChange={(event) => {
-                  const value: string = (event.target as HTMLInputElement).value;
-                  setStatisticsType(
-                    value === 'Flat' ? StatisticType.Flat : StatisticType.Real
-                  );
-                }}
-              >
-                <FormControlLabel value='Flat' control={<Radio />} label='Flat' />
-                <FormControlLabel value='Real' control={<Radio />} label='Real' />
-              </RadioGroup>
-
-              <FormControlLabel
-                onChange={() => {
-                  setIsSticky(!isSticky)
-                  console.log(isSticky)
-                }} control={<Checkbox />} label='Sticky' />
-            </div>
-            <DataGrid style={{ height: '70%', borderWidth: '0' }} columns={statisticsColumns}
-              rows={currentStatistcs || []}
-              pageSizeOptions={[]}
-              autoPageSize={false}
-              hideFooterPagination
-            />
-          </Paper>
-          <Paper className='calendar-container'>
-            <div className='switch-calendar'>
-              <FormControlLabel onClick={() => {
-                setIsOpenedCalendar(!isOpenedCalendar)
-              }} control={<Switch defaultChecked />} label='Calendar' />
-            </div>
-            <div style={{ display: isOpenedCalendar ? 'flex' : 'none' }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateCalendar onChange={selectedDateFn} />
-              </LocalizationProvider>
-            </div>
-          </Paper>
-        </Paper>
-
-      <Paper  style={{ display: 'flex', flexWrap: 'nowrap' }}>
-          <Paper style={{width:'100%'}}>
-            {pendingRows ? (
-              <>
-                <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
-                  <Typography variant='h4'>
-                    PENDING
-                    <IconButton
-                      onClick={handleExpandClick}
-                      aria-expanded={isPendingTableExpanded}
-                      aria-label='show more'
-                      sx={{
-                        transform: isPendingTableExpanded
-                          ? 'rotate(0deg)'
-                          : 'rotate(180deg)',
-                        transition: 'transform 0.3s',
-                      }}
-                    >
-                      <ExpandMoreIcon />
-                    </IconButton>
-                  </Typography>
-                  <Collapse
-                    in={isPendingTableExpanded}
-                    timeout='auto'
-                    unmountOnExit
-                  >
-                    <Bets
-                      id='pending'
-                      arePengindBets={true}
-                      savedBet={savedPendingBet}
-                      selectBetIdFn={selectBetId}
-                      setIsLoading={setIsLoading}
-                      defaultRows={pendingRows}
-                      currencies={currencies}
-                      possibleCounteragents={possibleCounterAgents}
-                      possibleSports={possibleSports}
-                      possibleTournaments={possibleTournaments}
-                      possibleSelections={possibleSelections}
-                      possibleMarkets={possibleMarkets}
+        {
+          id === 'pending_bets' || id === 'completed_bets'
+            ? (
+                <Paper className='parent-statistics' style={{ maxWidth: '70vw !important', display: 'flex', zIndex: '1', top: '60px', position: isSticky ? 'sticky' : 'static' }}>
+                  <Paper className='statistics' style={{ marginRight: 'auto', }}>
+                    <Typography variant='h4'>Statistics</Typography>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                      <RadioGroup
+                        aria-labelledby='demo-controlled-radio-buttons-group'
+                        name='controlled-radio-buttons-group'
+                        value={statisticsType}
+                        onChange={(event) => {
+                          const value: string = (event.target as HTMLInputElement).value;
+                          setStatisticsType(
+                            value === 'Flat' ? StatisticType.Flat : StatisticType.Real
+                          );
+                        }}
+                      >
+                        <FormControlLabel value='Flat' control={<Radio />} label='Flat' />
+                        <FormControlLabel value='Real' control={<Radio />} label='Real' />
+                      </RadioGroup>
+        
+                      <FormControlLabel
+                        onChange={() => {
+                          setIsSticky(!isSticky)
+                          console.log(isSticky)
+                        }} control={<Checkbox />} label='Sticky' 
+                      />
+                    </div>
+                    <DataGrid 
+                      style={{ height: '70%', borderWidth: '0' }} 
+                      columns={statisticsColumns}
+                      rows={currentStatistcs || []}
+                      pageSizeOptions={[]}
+                      autoPageSize={false}
+                      hideFooterPagination
                     />
-                  </Collapse>
-                </Grid>
-              </>
-            ) : null}
-          {filteredCompletedRows ? (
-  <>
-      <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
-        <Typography variant='h4'>
-          COMPLETED
-          <IconButton
-            onClick={handleExpandClickCompleted}
-            aria-expanded={isCompletedTableExpanded}
-            aria-label='show more'
-            sx={{
-              transform: isCompletedTableExpanded
-                ? 'rotate(0deg)'
-                : 'rotate(180deg)',
-              transition: 'transform 0.3s',
-            }}
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-        </Typography>
-        <Collapse in={isCompletedTableExpanded} timeout='auto' unmountOnExit>
-          {/* <Grid container spacing={3}> */}
-          {/* <Grid item xs={11} sx={{ maxWidth: '70vw !important' }}> */}
-          <Bets
-            id='completed'
-            arePengindBets={false}
-            savedBet={savedPendingBet}
-            selectBetIdFn={selectBetId}
-            setIsLoading={setIsLoading}
-            defaultRows={filteredCompletedRows}
-            currencies={currencies}
-            possibleCounteragents={possibleCounterAgents}
-            possibleSports={possibleSports}
-            possibleTournaments={possibleTournaments}
-            possibleSelections={possibleSelections}
-            possibleMarkets={possibleMarkets}
-          />
-        </Collapse>
-      </Grid>
-  </>
-) : null}
+                  </Paper>
+                </Paper>
+              )
+            : null
+        }
 
+        {
+          id === 'completed_bets' || id === 'expenses'
+            ? (
+                <Paper className='calendar-container'>
+                  <div className='switch-calendar'>
+                    <FormControlLabel 
+                      onClick={() => {
+                        setIsOpenedCalendar(!isOpenedCalendar)
+                      }} 
+                      control={<Switch defaultChecked />} 
+                      label='Calendar' 
+                    />
+                  </div>
+                  <div style={{ display: isOpenedCalendar ? 'flex' : 'none' }}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DateCalendar onChange={selectedDateFn} />
+                    </LocalizationProvider>
+                  </div>
+                </Paper>
+              )
+            : null
+        }
+
+        <Paper  style={{ display: 'flex', flexWrap: 'nowrap' }}>
+          <Paper style={{width:'100%'}}>
+            {
+              pendingRows && id === 'pending_bets'
+                ? (
+                    <>
+                      <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
+                        <Typography variant='h4'>
+                          PENDING
+                          <IconButton
+                            onClick={handleExpandClick}
+                            aria-expanded={isPendingTableExpanded}
+                            aria-label='show more'
+                            sx={{
+                              transform: isPendingTableExpanded
+                                ? 'rotate(0deg)'
+                                : 'rotate(180deg)',
+                              transition: 'transform 0.3s',
+                            }}
+                          >
+                            <ExpandMoreIcon />
+                          </IconButton>
+                        </Typography>
+                        <Collapse
+                          in={isPendingTableExpanded}
+                          timeout='auto'
+                          unmountOnExit
+                        >
+                          <Bets
+                            id='pending'
+                            arePengindBets={true}
+                            savedBet={savedPendingBet}
+                            selectBetIdFn={selectBetId}
+                            setIsLoading={setIsLoading}
+                            defaultRows={pendingRows}
+                            currencies={currencies}
+                            possibleCounteragents={possibleCounterAgents}
+                            possibleSports={possibleSports}
+                            possibleTournaments={possibleTournaments}
+                            possibleSelections={possibleSelections}
+                            possibleMarkets={possibleMarkets}
+                          />
+                        </Collapse>
+                      </Grid>
+                    </>
+                ) 
+                : null
+            }
+            {
+              filteredCompletedRows && id === 'completed_bets'
+                ? (
+                    <>
+                      <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
+                        <Typography variant='h4'>
+                          COMPLETED
+                          <IconButton
+                            onClick={handleExpandClickCompleted}
+                            aria-expanded={isCompletedTableExpanded}
+                            aria-label='show more'
+                            sx={{
+                              transform: isCompletedTableExpanded
+                                ? 'rotate(0deg)'
+                                : 'rotate(180deg)',
+                              transition: 'transform 0.3s',
+                            }}
+                          >
+                            <ExpandMoreIcon />
+                          </IconButton>
+                        </Typography>
+                        <Collapse in={isCompletedTableExpanded} timeout='auto' unmountOnExit>
+                          <Bets
+                            id='completed'
+                            arePengindBets={false}
+                            savedBet={savedPendingBet}
+                            selectBetIdFn={selectBetId}
+                            setIsLoading={setIsLoading}
+                            defaultRows={filteredCompletedRows}
+                            currencies={currencies}
+                            possibleCounteragents={possibleCounterAgents}
+                            possibleSports={possibleSports}
+                            possibleTournaments={possibleTournaments}
+                            possibleSelections={possibleSelections}
+                            possibleMarkets={possibleMarkets}
+                          />
+                        </Collapse>
+                      </Grid>
+                    </>
+                  ) 
+              : null
+            }
           </Paper>
         </Paper>
 
-        {filteredExpensesRows ? (
-          <>
-            <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
-              <Typography variant='h4'>
-                Expenses
-                <IconButton
-                  onClick={handleExpandClickExpenses}
-                  aria-expanded={isExpensesTableExpanded}
-                  aria-label='show more'
-                  sx={{
-                    transform: isExpensesTableExpanded
-                      ? 'rotate(0deg)'
-                      : 'rotate(180deg)',
-                    transition: 'transform 0.3s',
-                  }}
-                >
-                  <ExpandMoreIcon />
-                </IconButton>
-              </Typography>
-              <Collapse sx={{ maxWidth: '90vw !important' }} in={isExpensesTableExpanded} timeout='auto' unmountOnExit>
-                <Expenses
-                  displayExportToolbar={false}
-                  isRead={false}
-                  setIsLoading={setIsLoading}
-                  defaultRows={filteredExpensesRows}
-                  possibleCounterAgents={possibleCounterAgents}
-                />
-              </Collapse>
-            </Grid>
-          </>
-        ) : null}
+        {
+          filteredExpensesRows && id === 'expenses'
+            ? 
+              (
+                <>
+                  <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
+                    <Typography variant='h4'>
+                      Expenses
+                      <IconButton
+                        onClick={handleExpandClickExpenses}
+                        aria-expanded={isExpensesTableExpanded}
+                        aria-label='show more'
+                        sx={{
+                          transform: isExpensesTableExpanded
+                            ? 'rotate(0deg)'
+                            : 'rotate(180deg)',
+                          transition: 'transform 0.3s',
+                        }}
+                      >
+                        <ExpandMoreIcon />
+                      </IconButton>
+                    </Typography>
+                    <Collapse sx={{ maxWidth: '90vw !important' }} in={isExpensesTableExpanded} timeout='auto' unmountOnExit>
+                    <Expenses
+                      displayExportToolbar={false}
+                      isRead={false}
+                      setIsLoading={setIsLoading}
+                      defaultRows={filteredExpensesRows}
+                      possibleCounterAgents={possibleCounterAgents}
+                    />
+                    </Collapse>
+                  </Grid>
+                </>
+            ) 
+            : null
+        }
       </Paper>
     </>
-
   );
 }
