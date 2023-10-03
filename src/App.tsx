@@ -35,8 +35,6 @@ function App() {
   const [isOpenSideBar, setIsOpenSideBar] = useState<boolean>();
   // useSession();
 
-  const loggedUser = JSON.parse(localStorage.getItem('user')!);
-
   return (
     <>
       <BrowserRouter>
