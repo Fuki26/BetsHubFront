@@ -123,24 +123,18 @@ function App() {
               </RequireAuth>
             }
           />
-          {
-            loggedUser && loggedUser.role === 'GA'
-              ? (
-                  <Route
-                    path='/users'
-                    element={
-                      <RequireAuth restrictedRole={1}>
-                        <LayoutRoot isOpenSideBar={isOpenSideBar}>
-                          <LayoutContainer>
-                            <Users />
-                          </LayoutContainer>
-                        </LayoutRoot>
-                      </RequireAuth>
-                    }
-                  />
-                )
-              : undefined
-          }
+          <Route
+            path='/users'
+            element={
+              <RequireAuth restrictedRole={1}>
+                <LayoutRoot isOpenSideBar={isOpenSideBar}>
+                  <LayoutContainer>
+                    <Users />
+                  </LayoutContainer>
+                </LayoutRoot>
+              </RequireAuth>
+            }
+          />
         </Routes>
         <PersistentDrawerLeft openSidebarCb={setIsOpenSideBar} />
       </BrowserRouter>

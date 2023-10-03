@@ -147,8 +147,11 @@ export default function PersistentDrawerLeft(
                         // eslint-disable-next-line array-callback-return
                         ) => 
                         {
-                          if(!item.requireAuthentication 
-                              || (item.requireAuthentication && auth.user)) {
+
+                          if( !item.requireAuthentication 
+                                || (item.requireAuthentication && !item.adminOnly && auth.user)
+                                || (item.requireAuthentication && item.adminOnly && auth.user 
+                                    && Number(auth.user.role) === 1)) {
                             const isActive = window.location.pathname === item.path
                               ? true
                               : false;
@@ -159,7 +162,7 @@ export default function PersistentDrawerLeft(
                                   key={item.title}
                                   path={item.path}
                                   title={item.title!}
-                                  disabled={(item.adminOnly && Number(auth.user?.role) !== 1)}
+                                  disabled={false}
                               />
                             );
                           }
