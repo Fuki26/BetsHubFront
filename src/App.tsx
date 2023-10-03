@@ -35,6 +35,8 @@ function App() {
   const [isOpenSideBar, setIsOpenSideBar] = useState<boolean>();
   // useSession();
 
+  const loggedUser = JSON.parse(localStorage.getItem('user')!);
+
   return (
     <>
       <BrowserRouter>
@@ -121,18 +123,24 @@ function App() {
               </RequireAuth>
             }
           />
-          <Route
-            path='/users'
-            element={
-              <RequireAuth restrictedRole={1}>
-                <LayoutRoot isOpenSideBar={isOpenSideBar}>
-                  <LayoutContainer>
-                    <Users />
-                  </LayoutContainer>
-                </LayoutRoot>
-              </RequireAuth>
-            }
-          />
+          {
+            loggedUser && loggedUser.role === 'GA'
+              ? (
+                  <Route
+                    path='/users'
+                    element={
+                      <RequireAuth restrictedRole={1}>
+                        <LayoutRoot isOpenSideBar={isOpenSideBar}>
+                          <LayoutContainer>
+                            <Users />
+                          </LayoutContainer>
+                        </LayoutRoot>
+                      </RequireAuth>
+                    }
+                  />
+                )
+              : undefined
+          }
         </Routes>
         <PersistentDrawerLeft openSidebarCb={setIsOpenSideBar} />
       </BrowserRouter>

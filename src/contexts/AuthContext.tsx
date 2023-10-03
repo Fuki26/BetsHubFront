@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       username: userName,
       email: 'User_email',
       token: token,
-      role: role,
+      role,
     };
     
     localStorage.setItem('user', JSON.stringify(user));
