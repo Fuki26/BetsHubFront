@@ -2,7 +2,8 @@ import * as React from 'react';
 import { toast } from 'react-toastify';
 import { isMobile } from 'react-device-detect';
 import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
-  GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams , } from '@mui/x-data-grid';
+  GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams,
+  GridToolbarExport, } from '@mui/x-data-grid';
 import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, Paper, TextField,Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
@@ -41,7 +42,7 @@ export default function Expenses(props: {
     const { setRows, setRowModesModel } = props;
   
     if(!possibleCounterAgents || possibleCounterAgents.length === 0) {
-      // alert('There are not any possible contraagents in the system. You cannot create an expsense.');
+      // alert('There are not any possible contraagents in the system. You cannot create an expense.');
       return null;
     }
 
@@ -72,6 +73,7 @@ export default function Expenses(props: {
             <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleAddNewClick}>
               Create an expense
             </Button>
+            <GridToolbarExport />
           </GridToolbarContainer>
         )
       : <></>;
@@ -263,31 +265,6 @@ export default function Expenses(props: {
   };
 
   //#endregion Rows update handler
-  
-  //#region Dropdown handlers
-
-  // const onChange = (event: any, value: {
-  //   rowId: GridRowId | undefined;
-  //   value?: string;
-  //   label?: string,
-  // } | null): void => {
-  //   setRows((previousRowsModel) => {
-  //     return previousRowsModel!.map((row) => {
-  //       if(row.id === value?.rowId) {
-  //         return {
-  //           ...row, 
-  //           counteragentId: parseInt(value.value!),
-  //           counteragent: value.label,
-  //         };
-  //       } else {
-  //         return row;
-  //       }
-  //     });
-  //   });
-  // }
-
-
-  //#endreigon Dropdown handlers
 
   const columns: Array<GridColDef> = [
     {

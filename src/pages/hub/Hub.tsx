@@ -26,62 +26,38 @@ dayjs.updateLocale("en", {
   weekStart: 1
 });
 
-export default function Hub() {
+export default function Hub(props: {
+  id: 'pending_bets' | 'completed_bets' | 'expenses';
+}) {
+  const { id, } = props;
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isSticky, setIsSticky]=React.useState<boolean>(false);
   const [isOpenedCalendar, setIsOpenedCalendar]=React.useState<boolean>(true);
 
-  const [selectedBetId, setSelectedBetId] = React.useState<number | undefined>(
-    undefined
-  );
-  const [statisticsType, setStatisticsType] = React.useState<StatisticType>(
-    StatisticType.Flat
-  );
-  const [currentStatistcs, setCurrentStatistcs] = React.useState<
-    Array<StatisticItemModel> | undefined
-  >(undefined);
-  const [isPendingTableExpanded, setPendingTableExpanded] =
-    React.useState<boolean>(true);
-  const [isCompletedTableExpanded, setCompletedTableExpanded] =
-    React.useState<boolean>(true);
-  const [isExpensesTableExpanded, setExpensesTableExpanded] =
-    React.useState<boolean>(true);
+  const [selectedBetId, setSelectedBetId] = React.useState<number | undefined>(undefined);
+  const [statisticsType, setStatisticsType] = React.useState<StatisticType>(StatisticType.Flat);
+  const [currentStatistcs, setCurrentStatistcs] = React.useState<Array<StatisticItemModel> | undefined>(undefined);
+  const [isPendingTableExpanded, setPendingTableExpanded] = React.useState<boolean>(true);
+  const [isCompletedTableExpanded, setCompletedTableExpanded] = React.useState<boolean>(true);
+  const [isExpensesTableExpanded, setExpensesTableExpanded] = React.useState<boolean>(true);
 
   const [date, setDate] = React.useState<Date | undefined>(undefined);
 
-  const [currencies, setCurrencies] = React.useState<
-    Array<Currency> | undefined
-  >(undefined);
-  const [pendingRows, setPendingRows] = React.useState<
-    Array<BetModel> | undefined
-  >(undefined);
-  const [completedRows, setCompletedRows] = React.useState<
-    Array<BetModel> | undefined
-  >(undefined);
-  const [filteredCompletedRows, setFilteredCompletedRows] = React.useState<
-    Array<BetModel> | undefined
-  >(undefined);
-  const [possibleCounterAgents, setCounterAgents] = React.useState<
-    Array<IDropdownValue> | undefined
-  >(undefined);
-  const [possibleSports, setSports] = React.useState<
-    Array<IDropdownValue> | undefined
-  >(undefined);
-  const [possibleTournaments, setTournaments] = React.useState<
-    Array<IDropdownValue> | undefined
-  >(undefined);
-  const [possibleMarkets, setMarkets] = React.useState<
-    Array<IDropdownValue> | undefined
-  >(undefined);
-  const [possibleSelections, setSelections] = React.useState<
-    Array<{ id: number; selections: Array<IDropdownValue> | undefined, }>
-  >([]);
-  const [expensesRows, setExpensesRows] = React.useState<
-    Array<ExpenseModel> | undefined
-  >(undefined);
-  const [filteredExpensesRows, setFilteredExpensesRows] = React.useState<
-    Array<ExpenseModel> | undefined
-  >(undefined);
+  const [currencies, setCurrencies] = React.useState<Array<Currency> | undefined>(undefined);
+  const [pendingRows, setPendingRows] = React.useState<Array<BetModel> | undefined>(undefined);
+  const [completedRows, setCompletedRows] = React.useState<Array<BetModel> | undefined>(undefined);
+  const [filteredCompletedRows, setFilteredCompletedRows] = React.useState<Array<BetModel> | undefined>(undefined);
+  const [possibleCounterAgents, setCounterAgents] = React.useState<Array<IDropdownValue> | undefined>(undefined);
+  const [possibleSports, setSports] = React.useState<Array<IDropdownValue> | undefined>(undefined);
+  const [possibleTournaments, setTournaments] = React.useState<Array<IDropdownValue> | undefined>(undefined);
+  const [possibleMarkets, setMarkets] = React.useState<Array<IDropdownValue> | undefined>(undefined);
+  const [possibleSelections, setSelections] = React.useState<Array<{ id: number; selections: Array<IDropdownValue> | undefined, }>>([]);
+  const [expensesRows, setExpensesRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
+  const [filteredExpensesRows, setFilteredExpensesRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
+
+  const [totalOfTotalsPending, setTotalOfTotalsPending ] = React.useState<number>(0);
+  const [totalOfTotalsCompleted, setTotalOfTotalsCompleted ] = React.useState<number>(0);
+  const [totalOfProfitsPending, setTotalOfProfitsPending ] = React.useState<number>(0);
 
   useEffect(() => {
     (async () => {
@@ -122,18 +98,40 @@ export default function Hub() {
 
         setPendingRows(pendingBets);
         setCompletedRows(completedBets);
+
+        let calculatedTotalOfTotalsPending = pendingBets
+          ? pendingBets.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.totalAmount) {
+                return accumulator + currentValue.totalAmount;
+              } else {
+                return accumulator;
+              }
+            }, 0)
+          : 0;
+        setTotalOfTotalsPending(calculatedTotalOfTotalsPending);
+
         setCurrencies(currencies);
-        setFilteredCompletedRows(
-          completedBets.filter((b) => {
-            const now = new Date();
-            return (
-              b.dateFinished &&
-              b.dateFinished.getFullYear() === now.getFullYear() &&
-              b.dateFinished.getMonth() === now.getMonth() &&
-              b.dateFinished.getDate() === now.getDate()
-            );
-          })
-        );
+        const completedBetsFilteredByDate = completedBets.filter((b) => {
+          const now = new Date();
+          return (
+            b.dateFinished &&
+            b.dateFinished.getFullYear() === now.getFullYear() &&
+            b.dateFinished.getMonth() === now.getMonth() &&
+            b.dateFinished.getDate() === now.getDate()
+          );
+        });
+        setFilteredCompletedRows(completedBetsFilteredByDate);
+        
+        let calculatedTotalOfTotalsCompleted = completedBetsFilteredByDate
+          ? completedBetsFilteredByDate.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.totalAmount) {
+                return accumulator + currentValue.totalAmount;
+              } else {
+                return accumulator;
+              }
+            }, 0)
+          : 0;
+        setTotalOfTotalsCompleted(calculatedTotalOfTotalsCompleted);
 
         const counterAgents: Array<IDropdownValue> | undefined =
           getCounteragentsResult
@@ -224,28 +222,33 @@ export default function Hub() {
   }, []);
 
   useEffect(() => {
-    setFilteredCompletedRows(
-      (previousRowsModel: Array<BetModel> | undefined) => {
-        if (completedRows && date) {
-          const bets: Array<BetModel> = [];
-          for (var i = 0; i <= completedRows?.length - 1; i++) {
-            const currentRow = completedRows[i];
-            if (
-              currentRow.dateFinished &&
-              currentRow.dateFinished.getFullYear() === date.getFullYear() &&
-              currentRow.dateFinished.getMonth() === date.getMonth() &&
-              currentRow.dateFinished.getDate() === date.getDate()
-            ) {
-              bets.push(currentRow);
-            }
-          }
-
-          return bets;
-        } else {
-          return [];
+    const filteredCompletedBetsByDate: Array<BetModel> = [];
+    if (completedRows && date) {
+      for (var i = 0; i <= completedRows?.length - 1; i++) {
+        const currentRow = completedRows[i];
+        if (
+          currentRow.dateFinished &&
+          currentRow.dateFinished.getFullYear() === date.getFullYear() &&
+          currentRow.dateFinished.getMonth() === date.getMonth() &&
+          currentRow.dateFinished.getDate() === date.getDate()
+        ) {
+          filteredCompletedBetsByDate.push(currentRow);
         }
       }
-    );
+    }
+
+    setFilteredCompletedRows(filteredCompletedBetsByDate);
+
+    let calculatedTotalOfTotalsCompleted = filteredCompletedBetsByDate
+          ? filteredCompletedBetsByDate.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.totalAmount) {
+                return accumulator + currentValue.totalAmount;
+              } else {
+                return accumulator;
+              }
+            }, 0)
+          : 0;
+    setTotalOfTotalsCompleted(calculatedTotalOfTotalsCompleted);
 
     setFilteredExpensesRows((previousRowsModel: Array<ExpenseModel> | undefined) => {
       let filteredExpenses: Array<ExpenseModel> = [];
@@ -355,19 +358,31 @@ export default function Hub() {
     });
 
     if(completedRows) {
-      setFilteredCompletedRows(
-        completedRows.filter((b) => {
-          const now = new Date();
-          return (
-            b.dateFinished &&
-            b.dateFinished.getFullYear() === now.getFullYear() &&
-            b.dateFinished.getMonth() === now.getMonth() &&
-            b.dateFinished.getDate() === now.getDate()
-          );
-        })
-      );
+      const filteredCompletedRowsByDate = completedRows.filter((b) => {
+        const now = new Date();
+        return (
+          b.dateFinished &&
+          b.dateFinished.getFullYear() === now.getFullYear() &&
+          b.dateFinished.getMonth() === now.getMonth() &&
+          b.dateFinished.getDate() === now.getDate()
+        );
+      });
+
+      setFilteredCompletedRows(filteredCompletedRowsByDate);
+
+      let calculatedTotalOfTotalsCompleted = filteredCompletedRowsByDate
+          ? filteredCompletedRowsByDate.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.totalAmount) {
+                return accumulator + currentValue.totalAmount;
+              } else {
+                return accumulator;
+              }
+            }, 0)
+          : 0;
+      setTotalOfTotalsCompleted(calculatedTotalOfTotalsCompleted);
     } else {
       setFilteredCompletedRows([]);
+      setTotalOfTotalsCompleted(0);
     }
     
     return;
@@ -422,199 +437,257 @@ export default function Hub() {
     setExpensesTableExpanded(!isExpensesTableExpanded);
   };
 
+  const editBetTotalAmountsNotifyForPending = (totalOfTotals: number) => {
+    setTotalOfTotalsPending(totalOfTotals);
+  }
+
+  const editBetTotalAmountsNotifyForCompleted = (totalOfTotals: number) => {
+    setTotalOfTotalsCompleted(totalOfTotals);
+  }
+
   return (
     <>
-{isLoading ? (
-      <>
-      <div className='background-color-blur'>
-      <CircularProgress
-          color='success'
-          size={250}
-          disableShrink={true}
-          style={{
-            position: 'fixed', 
-            top: '0', 
-            right: '0',
-            bottom: '0',
-            left: '0',
-            margin: 'auto',
-            zIndex: 9999999999999,
-            transition: 'none',
-          }}
-        />
-      </div>
-        
-      </>
-    ) : null}
+      {
+        isLoading 
+          ? (
+              <>
+                <div className='background-color-blur'>
+                  <CircularProgress
+                    color='success'
+                    size={250}
+                    disableShrink={true}
+                    style={{
+                      position: 'fixed', 
+                      top: '0', 
+                      right: '0',
+                      bottom: '0',
+                      left: '0',
+                      margin: 'auto',
+                      zIndex: 9999999999999,
+                      transition: 'none',
+                    }}
+                  />
+                </div>
+              </>
+            ) 
+          : null
+      }
 
       <Paper sx={{ padding: '5%' ,width:'100% !important'}}>
-        <Paper className='parent-statistics' style={{ maxWidth: '70vw !important', display: 'flex', zIndex: '1', top: '60px', position: isSticky ? 'sticky' : 'static' }}>
-          <Paper className='statistics' style={{ marginRight: 'auto', }}>
-            <Typography variant='h4'>Statistics</Typography>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <RadioGroup
-                aria-labelledby='demo-controlled-radio-buttons-group'
-                name='controlled-radio-buttons-group'
-                value={statisticsType}
-                onChange={(event) => {
-                  const value: string = (event.target as HTMLInputElement).value;
-                  setStatisticsType(
-                    value === 'Flat' ? StatisticType.Flat : StatisticType.Real
-                  );
-                }}
-              >
-                <FormControlLabel value='Flat' control={<Radio />} label='Flat' />
-                <FormControlLabel value='Real' control={<Radio />} label='Real' />
-              </RadioGroup>
-
-              <FormControlLabel
-                onChange={() => {
-                  setIsSticky(!isSticky)
-                  console.log(isSticky)
-                }} control={<Checkbox />} label='Sticky' />
-            </div>
-            <DataGrid style={{ height: '70%', borderWidth: '0' }} columns={statisticsColumns}
-              rows={currentStatistcs || []}
-              pageSizeOptions={[]}
-              autoPageSize={false}
-              hideFooterPagination
-            />
-          </Paper>
-          <Paper className='calendar-container'>
-            <div className='switch-calendar'>
-              <FormControlLabel onClick={() => {
-                setIsOpenedCalendar(!isOpenedCalendar)
-              }} control={<Switch defaultChecked />} label='Calendar' />
-            </div>
-            <div style={{ display: isOpenedCalendar ? 'flex' : 'none' }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateCalendar onChange={selectedDateFn} />
-              </LocalizationProvider>
-            </div>
-          </Paper>
-        </Paper>
-
-      <Paper  style={{ display: 'flex', flexWrap: 'nowrap' }}>
-          <Paper style={{width:'100%'}}>
-            {pendingRows ? (
-              <>
-                <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
-                  <Typography variant='h4'>
-                    PENDING
-                    <IconButton
-                      onClick={handleExpandClick}
-                      aria-expanded={isPendingTableExpanded}
-                      aria-label='show more'
-                      sx={{
-                        transform: isPendingTableExpanded
-                          ? 'rotate(0deg)'
-                          : 'rotate(180deg)',
-                        transition: 'transform 0.3s',
-                      }}
-                    >
-                      <ExpandMoreIcon />
-                    </IconButton>
-                  </Typography>
-                  <Collapse
-                    in={isPendingTableExpanded}
-                    timeout='auto'
-                    unmountOnExit
-                  >
-                    <Bets
-                      id='pending'
-                      arePengindBets={true}
-                      savedBet={savedPendingBet}
-                      selectBetIdFn={selectBetId}
-                      setIsLoading={setIsLoading}
-                      defaultRows={pendingRows}
-                      currencies={currencies}
-                      possibleCounteragents={possibleCounterAgents}
-                      possibleSports={possibleSports}
-                      possibleTournaments={possibleTournaments}
-                      possibleSelections={possibleSelections}
-                      possibleMarkets={possibleMarkets}
+        {
+          id === 'pending_bets' || id === 'completed_bets'
+            ? (
+                <Paper className='parent-statistics' style={{ maxWidth: '70vw !important', display: 'flex', zIndex: '1', top: '60px', position: isSticky ? 'sticky' : 'static' }}>
+                  <Paper className='statistics' style={{ marginRight: 'auto', }}>
+                    <Typography variant='h4'>Statistics</Typography>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                      <RadioGroup
+                        aria-labelledby='demo-controlled-radio-buttons-group'
+                        name='controlled-radio-buttons-group'
+                        value={statisticsType}
+                        onChange={(event) => {
+                          const value: string = (event.target as HTMLInputElement).value;
+                          setStatisticsType(
+                            value === 'Flat' ? StatisticType.Flat : StatisticType.Real
+                          );
+                        }}
+                      >
+                        <FormControlLabel value='Flat' control={<Radio />} label='Flat' />
+                        <FormControlLabel value='Real' control={<Radio />} label='Real' />
+                      </RadioGroup>
+        
+                      <FormControlLabel
+                        onChange={() => {
+                          setIsSticky(!isSticky)
+                          console.log(isSticky)
+                        }} control={<Checkbox />} label='Sticky' 
+                      />
+                    </div>
+                    <DataGrid 
+                      style={{ height: '70%', borderWidth: '0' }} 
+                      columns={statisticsColumns}
+                      rows={currentStatistcs || []}
+                      pageSizeOptions={[]}
+                      autoPageSize={false}
+                      hideFooterPagination
                     />
-                  </Collapse>
-                </Grid>
-              </>
-            ) : null}
-          {filteredCompletedRows ? (
-  <>
-      <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
-        <Typography variant='h4'>
-          COMPLETED
-          <IconButton
-            onClick={handleExpandClickCompleted}
-            aria-expanded={isCompletedTableExpanded}
-            aria-label='show more'
-            sx={{
-              transform: isCompletedTableExpanded
-                ? 'rotate(0deg)'
-                : 'rotate(180deg)',
-              transition: 'transform 0.3s',
-            }}
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-        </Typography>
-        <Collapse in={isCompletedTableExpanded} timeout='auto' unmountOnExit>
-          {/* <Grid container spacing={3}> */}
-          {/* <Grid item xs={11} sx={{ maxWidth: '70vw !important' }}> */}
-          <Bets
-            id='completed'
-            arePengindBets={false}
-            savedBet={savedPendingBet}
-            selectBetIdFn={selectBetId}
-            setIsLoading={setIsLoading}
-            defaultRows={filteredCompletedRows}
-            currencies={currencies}
-            possibleCounteragents={possibleCounterAgents}
-            possibleSports={possibleSports}
-            possibleTournaments={possibleTournaments}
-            possibleSelections={possibleSelections}
-            possibleMarkets={possibleMarkets}
-          />
-        </Collapse>
-      </Grid>
-  </>
-) : null}
+                  </Paper>
+                </Paper>
+              )
+            : null
+        }
 
+        {
+          id === 'completed_bets' || id === 'expenses'
+            ? (
+                <Paper className='calendar-container'>
+                  <div className='switch-calendar'>
+                    <FormControlLabel 
+                      onClick={() => {
+                        setIsOpenedCalendar(!isOpenedCalendar)
+                      }} 
+                      control={<Switch defaultChecked />} 
+                      label='Calendar' 
+                    />
+                  </div>
+                  <div style={{ display: isOpenedCalendar ? 'flex' : 'none' }}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DateCalendar onChange={selectedDateFn} />
+                    </LocalizationProvider>
+                  </div>
+                </Paper>
+              )
+            : null
+        }
+
+        <Paper  style={{ display: 'flex', flexWrap: 'nowrap' }}>
+          <Paper style={{width:'100%'}}>
+            {
+              pendingRows && id === 'pending_bets'
+                ? (
+                    <>
+                      <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
+                        <Typography variant='h4'>
+                          PENDING
+                          <IconButton
+                            onClick={handleExpandClick}
+                            aria-expanded={isPendingTableExpanded}
+                            aria-label='show more'
+                            sx={{
+                              transform: isPendingTableExpanded
+                                ? 'rotate(0deg)'
+                                : 'rotate(180deg)',
+                              transition: 'transform 0.3s',
+                            }}
+                          >
+                            <ExpandMoreIcon />
+                          </IconButton>
+                        </Typography>
+                        <Paper style={{
+                          marginLeft: '90%',
+                        }}>
+                          {Number(totalOfTotalsPending).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </Paper>
+                        <Collapse
+                          in={isPendingTableExpanded}
+                          timeout='auto'
+                          unmountOnExit
+                        >
+                          <Bets
+                            id='pending'
+                            arePengindBets={true}
+                            savedBet={savedPendingBet}
+                            selectBetIdFn={selectBetId}
+                            setIsLoading={setIsLoading}
+                            editBetTotalAmountsNotify={editBetTotalAmountsNotifyForPending}
+                            defaultRows={pendingRows}
+                            currencies={currencies}
+                            possibleCounteragents={possibleCounterAgents}
+                            possibleSports={possibleSports}
+                            possibleTournaments={possibleTournaments}
+                            possibleSelections={possibleSelections}
+                            possibleMarkets={possibleMarkets}
+                          />
+                        </Collapse>
+                      </Grid>
+                    </>
+                ) 
+                : null
+            }
+            {
+              filteredCompletedRows && id === 'completed_bets'
+                ? (
+                    <>
+                      <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
+                        <Typography variant='h4'>
+                          COMPLETED
+                          <IconButton
+                            onClick={handleExpandClickCompleted}
+                            aria-expanded={isCompletedTableExpanded}
+                            aria-label='show more'
+                            sx={{
+                              transform: isCompletedTableExpanded
+                                ? 'rotate(0deg)'
+                                : 'rotate(180deg)',
+                              transition: 'transform 0.3s',
+                            }}
+                          >
+                            <ExpandMoreIcon />
+                          </IconButton>
+                        </Typography>
+                        <Paper style={{
+                            marginLeft: '90%',
+                          }}>
+                            {Number(totalOfTotalsCompleted).toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </Paper>
+                        <Collapse in={isCompletedTableExpanded} timeout='auto' unmountOnExit>
+                          <Bets
+                            id='completed'
+                            arePengindBets={false}
+                            savedBet={savedPendingBet}
+                            editBetTotalAmountsNotify={editBetTotalAmountsNotifyForCompleted}
+                            selectBetIdFn={selectBetId}
+                            setIsLoading={setIsLoading}
+                            defaultRows={filteredCompletedRows}
+                            currencies={currencies}
+                            possibleCounteragents={possibleCounterAgents}
+                            possibleSports={possibleSports}
+                            possibleTournaments={possibleTournaments}
+                            possibleSelections={possibleSelections}
+                            possibleMarkets={possibleMarkets}
+                          />
+                        </Collapse>
+                      </Grid>
+                    </>
+                  ) 
+              : null
+            }
           </Paper>
         </Paper>
 
-        {filteredExpensesRows ? (
-          <>
-            <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
-              <Typography variant='h4'>
-                Expenses
-                <IconButton
-                  onClick={handleExpandClickExpenses}
-                  aria-expanded={isExpensesTableExpanded}
-                  aria-label='show more'
-                  sx={{
-                    transform: isExpensesTableExpanded
-                      ? 'rotate(0deg)'
-                      : 'rotate(180deg)',
-                    transition: 'transform 0.3s',
-                  }}
-                >
-                  <ExpandMoreIcon />
-                </IconButton>
-              </Typography>
-              <Collapse sx={{ maxWidth: '90vw !important' }} in={isExpensesTableExpanded} timeout='auto' unmountOnExit>
-                <Expenses
-                  displayExportToolbar={false}
-                  isRead={false}
-                  setIsLoading={setIsLoading}
-                  defaultRows={filteredExpensesRows}
-                  possibleCounterAgents={possibleCounterAgents}
-                />
-              </Collapse>
-            </Grid>
-          </>
-        ) : null}
+        {
+          filteredExpensesRows && id === 'expenses'
+            ? 
+              (
+                <>
+                  <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
+                    <Typography variant='h4'>
+                      Expenses
+                      <IconButton
+                        onClick={handleExpandClickExpenses}
+                        aria-expanded={isExpensesTableExpanded}
+                        aria-label='show more'
+                        sx={{
+                          transform: isExpensesTableExpanded
+                            ? 'rotate(0deg)'
+                            : 'rotate(180deg)',
+                          transition: 'transform 0.3s',
+                        }}
+                      >
+                        <ExpandMoreIcon />
+                      </IconButton>
+                    </Typography>
+                    <Collapse sx={{ maxWidth: '90vw !important' }} in={isExpensesTableExpanded} timeout='auto' unmountOnExit>
+                    <Expenses
+                      displayExportToolbar={false}
+                      isRead={false}
+                      setIsLoading={setIsLoading}
+                      defaultRows={filteredExpensesRows}
+                      possibleCounterAgents={possibleCounterAgents}
+                    />
+                    </Collapse>
+                  </Grid>
+                </>
+            ) 
+            : null
+        }
       </Paper>
     </>
-
   );
 }

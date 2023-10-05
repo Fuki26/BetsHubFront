@@ -40,12 +40,36 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route
-            path='/'
+            path='/pending_bets'
             element={
               <RequireAuth>
                 <LayoutRoot isOpenSideBar={isOpenSideBar}>
                   <LayoutContainer>
-                    <Hub />
+                    <Hub id='pending_bets'/>
+                  </LayoutContainer>
+                </LayoutRoot>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path='/completed_bets'
+            element={
+              <RequireAuth>
+                <LayoutRoot isOpenSideBar={isOpenSideBar}>
+                  <LayoutContainer>
+                    <Hub id='completed_bets'/>
+                  </LayoutContainer>
+                </LayoutRoot>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path='/expenses'
+            element={
+              <RequireAuth>
+                <LayoutRoot isOpenSideBar={isOpenSideBar}>
+                  <LayoutContainer>
+                    <Hub id='expenses'/>
                   </LayoutContainer>
                 </LayoutRoot>
               </RequireAuth>

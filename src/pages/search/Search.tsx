@@ -178,6 +178,7 @@ export default function Search() {
   const [currencyIds, setCurrencyIds] = React.useState<Array<string>>([]);
 
   const [totalOfTotals, setTotalOfTotals ] = React.useState<number>(0);
+  const [totalOfProfits, setTotalProfits ] = React.useState<number>(0);
 
   //#endregion Filters
 
@@ -264,13 +265,24 @@ export default function Search() {
         let calculatedTotalOfTotals = filteredRows
           ? filteredRows.reduce((accumulator, currentValue: BetModel) => {
               if (currentValue.totalAmount) {
-              return accumulator + currentValue.totalAmount;
+                return accumulator + currentValue.totalAmount;
               } else {
-              return accumulator;
+                return accumulator;
               }
             }, 0)
           : 0;
 	      setTotalOfTotals(calculatedTotalOfTotals);
+
+        let calculatedTotalProfits = filteredRows
+          ? filteredRows.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.profits) {
+                return accumulator + Number(currentValue.profits);
+              } else {
+                return accumulator;
+              }
+            }, 0)
+          : 0;
+	      setTotalProfits(calculatedTotalProfits);
 
         //#endregion Bets
 
@@ -293,8 +305,8 @@ export default function Search() {
                 expense.counteragent &&
                 expense.counteragent.counteragentCategory
                   ? {
-                      id: expense.counteragent.counteragentCategory.id.toString(),
-                      label: expense.counteragent.counteragentCategory.name!,
+                      id: expense.counteragent.counteragentCategory,
+                      label: expense.counteragent.counteragentCategory,
                     }
                   : undefined,
 
@@ -437,6 +449,17 @@ export default function Search() {
             }, 0)
           : 0;
 	      setTotalOfTotals(calculatedTotalOfTotals);
+
+        let calculatedTotalProfits = rows
+          ? rows.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.profits) {
+              return accumulator + Number(currentValue.profits);
+              } else {
+              return accumulator;
+              }
+            }, 0)
+          : 0;
+        setTotalProfits(calculatedTotalProfits);
 
         return rows ? rows : [];
       }
@@ -778,9 +801,22 @@ export default function Search() {
           : 0;
 
         setTotalOfTotals(calculatedTotalOfTotals);
+
+        let calculatedTotalProfits = bets
+          ? bets.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.profits) {
+              return accumulator + Number(currentValue.profits);
+              } else {
+              return accumulator;
+              }
+            }, 0)
+          : 0;
+        setTotalProfits(calculatedTotalProfits);
+
         return bets;
       } else {
         setTotalOfTotals(0);
+        setTotalProfits(0);
         return [];
       }
     });
@@ -1112,32 +1148,8 @@ export default function Search() {
       })
     : [];
 
-  const editBetTotalAmountsNotify = (betId: number, totalAmount: number, ) => {
-    if(!rows) {
-      return;
-    }
-
-    const changedRows = rows.map((r) => {
-      if(r.id === betId) {
-        return {
-          ...r,
-          totalAmount,
-        }
-      } else {
-        return r;
-      };
-    });
-    
-    let calculatedTotalOfTotals = changedRows
-        ? changedRows.reduce((accumulator, currentValue: BetModel) => {
-            if (currentValue.totalAmount) {
-              return accumulator + currentValue.totalAmount;
-            } else {
-              return accumulator;
-            }
-          }, 0)
-        : 0;
-    setTotalOfTotals(calculatedTotalOfTotals);
+  const editBetTotalAmountsNotify = (totalOfTotals: number) => {
+    setTotalOfTotals(totalOfTotals);
   }
 
   return (
@@ -1420,13 +1432,18 @@ export default function Search() {
           </Paper>
         </Paper>
         <Typography variant='h4'>Bets</Typography>
-        <Typography variant='h4'>
-          Total of totals:{' '}
+        <Paper style={{ marginLeft: '90%', }}>
           {Number(totalOfTotals).toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}
-        </Typography>
+        </Paper>
+        <Paper style={{ marginLeft: '90%', }}>
+          {Number(totalOfProfits).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </Paper>
         {filteredRows ? (
           <Bets
             id='search'
