@@ -103,7 +103,7 @@ const getCounterAgents = async (): Promise<Array<Counteragent> | undefined> => {
     }
 };
 
-const getCounterAgentsCategories = async (): Promise<Array<CounterAgentCategory> | undefined> => {
+const getCounterAgentsCategories = async (): Promise<Array<string> | undefined> => {
     try {
         const getCounterAgentsCategoriesResult = await instance.get(`${domain}/GetAllCounteragentsCategories`);
         return getCounterAgentsCategoriesResult.data;
@@ -289,7 +289,7 @@ const upsertCounteragent = async (counteragent: CounteragentModel) => {
       const id = counteragent.isSavedInDatabase
           ? `Id=${counteragent.id}&`
           : 'Id=0&';
-      return await instance.post(`${domain}/UpsertCounteragent?${id}Name=${counteragent.name}&CounteragentCategoryId=${counteragent.counteragentCategory?.id}&MaxRate=${counteragent.maxRate}&UserId=${counteragent.user?.id}`);
+      return await instance.post(`${domain}/UpsertCounteragent?${id}Name=${counteragent.name}&CounteragentCategory=${counteragent.counteragentCategory?.id}&MaxRate=${counteragent.maxRate}&UserId=${counteragent.user?.id}`);
   } catch(e) {
       //alert(JSON.stringify(e));
   }

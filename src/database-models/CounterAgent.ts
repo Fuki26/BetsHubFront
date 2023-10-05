@@ -4,7 +4,7 @@ export type Counteragent = {
     id: number;
     name: string;
     counteragentCategoryId: number;
-    counteragentCategory: CounterAgentCategory;     
+    counteragentCategory: string;     
     maxRate: number;
     dateCreated: string;
     dateChanged: string;

@@ -40,7 +40,7 @@ const LoginPage = () => {
       if (res && res.data && res.data.token) {
         localStorage.setItem("token", res.data.token.token);
         logIn(userName, res.data.token.token, res.data.token.roleId);
-        setTimeout(() => logout(), 3600000);
+        setTimeout(() => logout(), 7200000);
       } else {
         throw new Error("Invalid TFA code");
       }
