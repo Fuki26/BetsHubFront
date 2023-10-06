@@ -322,10 +322,10 @@ export default function Hub(props: {
           {
             id: 1,
             periodType: 'all time',
-            profit: betStatistics.current.profit,
-            turnOver: betStatistics.current.turnOver,
-            winRate: (betStatistics.current.winRate * 100) + '%',
-            yield: (betStatistics.current.yield * 100) + '%',
+            profit: betStatistics.allTime.profit,
+            turnOver: betStatistics.allTime.turnOver,
+            winRate: (betStatistics.allTime.winRate * 100) + '%',
+            yield: (betStatistics.allTime.yield * 100) + '%',
           },
           {
             id: 2,

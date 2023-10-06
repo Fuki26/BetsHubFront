@@ -2,7 +2,7 @@ import { StatisticType, } from '../models';
 
 export type Statistics = {
     type: StatisticType;
-    current: StatisticsPeriod;
+    allTime: StatisticsPeriod;
     threeMonths: StatisticsPeriod;
     sixMonths: StatisticsPeriod;
 };
