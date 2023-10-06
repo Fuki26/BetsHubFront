@@ -292,6 +292,7 @@ function Bets(props: {
           return row.id !== id;
         });
       });
+      setRowModesModel({});
     } else {
       setRows((previousRowsModel) => {
         return previousRowsModel.map((row) => {
