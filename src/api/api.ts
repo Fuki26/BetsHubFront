@@ -316,6 +316,15 @@ const getBetHistory = async (betId: number) => {
   }
 };
 
+const getExpenseHistory = async (betId: number) => {
+  try {
+      const response = await instance.get(`${domain}/GetExpensesHistory?expenseId=${betId}`);
+      return response.data;
+  } catch(e) {
+      //alert(JSON.stringify(e));
+  }
+};
+
 const login = async (userName: string, password: string) => {
   try {
     return await instance.post(
@@ -432,6 +441,7 @@ export {
   getCompletedBets,
   getBetStatistics,
   getBetHistory,
+  getExpenseHistory,
   getExpenses,
   getCounterAgents,
   getCounterAgentsCategories,

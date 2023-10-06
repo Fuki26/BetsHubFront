@@ -3,16 +3,20 @@ import { toast } from 'react-toastify';
 import { isMobile } from 'react-device-detect';
 import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
   GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams,
-  GridToolbarExport, } from '@mui/x-data-grid';
+  GridToolbarExport,
+  GridRowParams, } from '@mui/x-data-grid';
 import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, Paper, TextField,Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
+import HistoryIcon from '@mui/icons-material/History';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import CancelIcon from '@mui/icons-material/Close';
 import { ActionType, EditToolbarProps, ExpenseModel, IDropdownValue, } from '../../models';
-import { deleteExpense, upsertExpense } from '../../api';
+import { deleteExpense, getExpenseHistory, upsertExpense } from '../../api';
 import ExpensesToolbar from '../ExpensesToolbar/ExpensesToolbar';
+import Modal from '../UI/Modal';
+import { useState } from 'react';
 
 export default function Expenses(props: { 
   isRead: boolean;
@@ -27,6 +31,8 @@ export default function Expenses(props: {
   const [ rowModesModel, setRowModesModel, ] = React.useState<GridRowModesModel>({});
   const [ deleteRowId, setDeleteRowId, ] = React.useState<number | null>(null);
   const [ deleteDialogIsOpened, setOpenDeleteDialog, ] = React.useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [history, setHistory] = useState(null);
   const [ totalOfTotals, setTotalOfTotals, ] = React.useState(0);
 
   React.useEffect(() => {
@@ -136,6 +142,7 @@ export default function Expenses(props: {
           return row.id !== id;
         });
       });
+      setRowModesModel({});
     } else {
       setRows((previousRowsModel) => {
         return previousRowsModel!.map((row) => {
@@ -215,6 +222,19 @@ export default function Expenses(props: {
     });
 
     setIsLoading(false);
+  };
+
+  const handleHistoryClick = async (params: GridRowParams) => {
+    const row = rows!.find((row) => row.id === params.id);
+
+    if (!row) {
+      return;
+    }
+
+    const history = await getExpenseHistory(row.id);
+
+    setShowHistoryModal(true);
+    setHistory(history);
   };
 
   //#endregion Actions handlers
@@ -480,6 +500,13 @@ export default function Expenses(props: {
                   color='inherit'
                 />,
                 <GridActionsCellItem
+                  icon={<HistoryIcon />}
+                  label='Bet History'
+                  className='textPrimary'
+                  onClick={() => handleHistoryClick(params) as any}
+                  color='inherit'
+                />,
+                <GridActionsCellItem
                   icon={<DeleteIcon />}
                   label='Delete'
                   onClick={handleClickOpenOnDeleteDialog(params.id)}
@@ -491,6 +518,18 @@ export default function Expenses(props: {
       }
     );
   }
+
+    const handleModalClose = () => setShowHistoryModal(false);
+
+    if (showHistoryModal && history) {
+      return (
+        <Modal
+          open={showHistoryModal}
+          handleClose={handleModalClose}
+          betsHistory={history}
+        />
+      );
+    }
 
   return (
     <Paper sx={{ padding: '5%', }}>

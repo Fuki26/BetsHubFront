@@ -816,13 +816,28 @@ export const getBetsColumns = (props: {
                         color='inherit'
                       />,
                       <GridActionsCellItem
+                        icon={<HistoryIcon />}
+                        label='Bet History'
+                        className='textPrimary'
+                        onClick={() => handleHistoryClick(params) as any}
+                        color='inherit'
+                      />,
+                      <GridActionsCellItem
                         icon={<DeleteIcon />}
                         label='Delete'
                         onClick={handleClickOpenOnDeleteDialog(params.id)}
                         color='inherit'
                       />,
                     ]
-                  : [];
+                  : [
+                      <GridActionsCellItem
+                        icon={<HistoryIcon />}
+                        label='Bet History'
+                        className='textPrimary'
+                        onClick={() => handleHistoryClick(params) as any}
+                        color='inherit'
+                      />,
+                    ];
             } else {
               return [];
             }
