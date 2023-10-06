@@ -33,7 +33,7 @@ export default function Hub(props: {
   const { id, } = props;
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isSticky, setIsSticky]=React.useState<boolean>(false);
-  const [isOpenedCalendar, setIsOpenedCalendar]=React.useState<boolean>(true);
+  const [isOpenedCalendar, setIsOpenedCalendar] = React.useState<boolean>(true);
   const location = useLocation();
 
   const [selectedBetId, setSelectedBetId] = React.useState<number | undefined>(undefined);
@@ -228,6 +228,10 @@ export default function Hub(props: {
             .sort((a, b) => a.dateCreated.getTime() - b.dateCreated.getTime());
         });
         setDate(new Date());
+
+        setSelectedBetId(undefined);
+        setCurrentStatistcs(undefined);
+        setIsSticky(false);
       } catch (e) {
         console.error(e);
       }
