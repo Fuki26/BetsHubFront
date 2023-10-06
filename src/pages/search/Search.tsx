@@ -1433,13 +1433,13 @@ export default function Search() {
         </Paper>
         <Typography variant='h4'>Bets</Typography>
         <Paper style={{ marginLeft: '60%', }}>
-            Total of totals: 
+            Turnover: 
             {Number(totalOfTotals).toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
 
-            { '  Total of profits:'} 
+            { '  Profit:'} 
             {Number(totalOfProfits).toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,

@@ -606,7 +606,7 @@ export default function Hub(props: {
                         <Paper style={{
                           marginLeft: '60%',
                         }}>
-                          Total of totals: 
+                          Turnover: 
                           {Number(totalOfTotalsPending).toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
@@ -662,13 +662,13 @@ export default function Hub(props: {
                         <Paper style={{
                             marginLeft: '60%',
                           }}>
-                            Total of totals: 
+                            Turnover: 
                             {Number(totalOfTotalsCompleted).toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                             })}
 
-                            { '  Total of profits:'} 
+                            { '  Profit:'} 
                             {Number(totalOfProfitsCompleted).toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,

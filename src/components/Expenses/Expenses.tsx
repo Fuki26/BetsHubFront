@@ -546,7 +546,7 @@ export default function Expenses(props: {
           ? (
               <>
                 <Paper style={{ marginLeft: '60%', }}>
-                  Total of amounts: 
+                  Total: 
                   {Number(totalOfTotals).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
