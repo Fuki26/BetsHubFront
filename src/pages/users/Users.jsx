@@ -113,8 +113,8 @@ const Users = () => {
       justifyContent: 'center',
       minHeight: '100vh',
       minWidth: '50%',
-      maxWidth: '90%',
-      margin: 'auto'
+      // maxWidth: '90%',
+      // margin: 'auto'
     }}>
       <SupervisedUserCircleIcon style={{ fontSize: 100 }} />
       <Paper sx={{ padding: "5%", width: '100%' }}>

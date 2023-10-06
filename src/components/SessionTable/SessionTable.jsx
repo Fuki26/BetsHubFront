@@ -14,7 +14,14 @@ const SessionTable = ({ userName }) => {
     const fetchSessionData = async () => {
       try {
         const data = await getUserSessions(userName);
-        setSessionData(data?.data);
+        setSessionData(data?.data.map((d) => {
+          return {
+            ...d,
+            startTime: d.startTime
+              ? new Date(d.startTime).toUTCString()
+              : '',
+          }
+        }));
         processSummarizedData(data?.data);
       } catch (e) {
         console.error(e);
@@ -57,10 +64,10 @@ const SessionTable = ({ userName }) => {
   };
 
   const rawColumns = [
-    { field: "startTime", headerName: "Start Time", width: 200 },
-    { field: "duration", headerName: "Duration", width: 150 },
-    { field: "ip", headerName: "IP Address", width: 100 },
-    { field: "userAgent", headerName: "User agent", width: 200 },
+    { field: "startTime", headerName: "Start Time", width: 270 },
+    { field: "duration", headerName: "Duration", width: 100 },
+    { field: "ip", headerName: "IP Address", width: 150 },
+    { field: "userAgent", headerName: "User agent", width: 800 },
   ];
 
   const summaryColumns = [

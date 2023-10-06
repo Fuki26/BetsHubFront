@@ -38,25 +38,28 @@ const UserCard = ({ user, qrCodeUrl, deleteUser, promoteUser }) => {
   return (
     <Card variant="outlined" style={{ margin: "20px" }}>
       <CardContent>
-        <Grid container spacing={2}>
+        <Grid container>
           <Grid item xs={8}>
-          <Grid container alignItems="center" spacing={2}>
+            <Grid container alignItems="center" spacing={2}>
               <Grid item>
                 <Typography variant="subtitle1">
                   Role: {user?.role?.name}
                 </Typography>
               </Grid>
-              {user?.role?.name === "RA" && (
-                <Grid item>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handlePromoteUser}
-                  >
-                    Promote to GA
-                  </Button>
-                </Grid>
-              )}
+              {
+                user?.role?.name === "RA" 
+                  && (
+                        <Grid item>
+                          <Button
+                            variant="outlined"
+                            color="primary"
+                            onClick={handlePromoteUser}
+                          >
+                            Promote to GA
+                          </Button>
+                        </Grid>
+                      )
+                }
             </Grid>
             <Typography variant="subtitle1">Email: {user.email}</Typography>
             <Typography variant="subtitle1">
@@ -101,11 +104,7 @@ const UserCard = ({ user, qrCodeUrl, deleteUser, promoteUser }) => {
             />
           </Grid>
         </Grid>
-        <Grid container>
-          <Grid item>
-            <SessionTable userName={user.userName} />
-          </Grid>
-        </Grid>
+        <SessionTable userName={user.userName} />
       </CardContent>
     </Card>
   );
