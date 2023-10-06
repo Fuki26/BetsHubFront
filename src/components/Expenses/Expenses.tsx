@@ -27,11 +27,23 @@ export default function Expenses(props: {
   const [ rowModesModel, setRowModesModel, ] = React.useState<GridRowModesModel>({});
   const [ deleteRowId, setDeleteRowId, ] = React.useState<number | null>(null);
   const [ deleteDialogIsOpened, setOpenDeleteDialog, ] = React.useState(false);
+  const [ totalOfTotals, setTotalOfTotals, ] = React.useState(0);
 
   React.useEffect(() => {
     setRows((oldRows) => {
       return defaultRows;
     });
+
+    let calculatedTotalOfTotals = defaultRows
+        ? defaultRows.reduce((accumulator, currentValue: ExpenseModel) => {
+            if (currentValue.amount) {
+              return accumulator + Number(currentValue.amount);
+            } else {
+              return accumulator;
+            }
+          }, 0)
+        : 0;
+    setTotalOfTotals(calculatedTotalOfTotals);
 
     setRowModesModel(() => {
       return {};
@@ -187,6 +199,17 @@ export default function Expenses(props: {
     setOpenDeleteDialog(false);
 
     setRows((previousRows) => previousRows!.filter((row) => row.id !== deleteRowId));
+    let calculatedTotalOfTotals = rows
+        ? rows.filter((r) => r.id !== deleteRowId)
+          .reduce((accumulator, currentValue: ExpenseModel) => {
+            if (currentValue.amount) {
+              return accumulator + Number(currentValue.amount);
+            } else {
+              return accumulator;
+            }
+          }, 0)
+        : 0;
+    setTotalOfTotals(calculatedTotalOfTotals);
     setRowModesModel((previousRowModesModel) => {
       return { ...previousRowModesModel, [deleteRowId]: { mode: GridRowModes.View } };
     });
@@ -240,6 +263,22 @@ export default function Expenses(props: {
               }
             });
           });
+
+          let calculatedTotalOfTotals = rows
+              ? rows.reduce((accumulator, currentValue: ExpenseModel) => {
+                  if(currentValue.id === rowData?.data.id) {
+                    return accumulator
+                  }
+
+                  if (currentValue.amount) {
+                    return accumulator + Number(currentValue.amount);
+                  } else {
+                    return accumulator;
+                  }
+                }, 0)
+              : 0;
+          calculatedTotalOfTotals += newRowData.amount ? Number(newRowData.amount) : 0;
+          setTotalOfTotals(calculatedTotalOfTotals);
 
           setRowModesModel((previousRowModesModel) => {
             return { ...previousRowModesModel, [rowData?.data.id]: { mode: GridRowModes.View } }
@@ -459,6 +498,12 @@ export default function Expenses(props: {
         rows
           ? (
               <>
+                <Paper style={{ marginLeft: '90%', }}>
+                  {Number(totalOfTotals).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </Paper>
                 <DataGrid
                   columns={columns}
                   columnBuffer={2} 
