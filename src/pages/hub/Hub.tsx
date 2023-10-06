@@ -59,7 +59,7 @@ export default function Hub(props: {
 
   const [totalOfTotalsPending, setTotalOfTotalsPending ] = React.useState<number>(0);
   const [totalOfTotalsCompleted, setTotalOfTotalsCompleted ] = React.useState<number>(0);
-  const [totalOfProfitsPending, setTotalOfProfitsPending ] = React.useState<number>(0);
+  const [totalOfProfitsCompleted, setTotalOfProfitsCompleted ] = React.useState<number>(0);
 
   useEffect(() => {
     (async () => {
@@ -134,6 +134,17 @@ export default function Hub(props: {
             }, 0)
           : 0;
         setTotalOfTotalsCompleted(calculatedTotalOfTotalsCompleted);
+
+        let calculatedTotalOfProfitsCompleted = completedBetsFilteredByDate
+          ? completedBetsFilteredByDate.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.profits) {
+                return accumulator + Number(currentValue.profits);
+              } else {
+                return accumulator;
+              }
+            }, 0)
+          : 0;
+        setTotalOfProfitsCompleted(calculatedTotalOfProfitsCompleted);
 
         const counterAgents: Array<IDropdownValue> | undefined =
           getCounteragentsResult
@@ -251,6 +262,17 @@ export default function Hub(props: {
             }, 0)
           : 0;
     setTotalOfTotalsCompleted(calculatedTotalOfTotalsCompleted);
+
+    let calculatedTotalOfProfitsCompleted = filteredCompletedBetsByDate
+          ? filteredCompletedBetsByDate.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.profits) {
+                return accumulator + Number(currentValue.profits);
+              } else {
+                return accumulator;
+              }
+            }, 0)
+          : 0;
+    setTotalOfProfitsCompleted(calculatedTotalOfProfitsCompleted);
 
     setFilteredExpensesRows((previousRowsModel: Array<ExpenseModel> | undefined) => {
       let filteredExpenses: Array<ExpenseModel> = [];
@@ -382,9 +404,21 @@ export default function Hub(props: {
             }, 0)
           : 0;
       setTotalOfTotalsCompleted(calculatedTotalOfTotalsCompleted);
+
+      let calculatedTotalProfisCompleted = filteredCompletedRowsByDate
+          ? filteredCompletedRowsByDate.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.profits) {
+                return accumulator + Number(currentValue.profits);
+              } else {
+                return accumulator;
+              }
+            }, 0)
+          : 0;
+      setTotalOfProfitsCompleted(calculatedTotalProfisCompleted);
     } else {
       setFilteredCompletedRows([]);
       setTotalOfTotalsCompleted(0);
+      setTotalOfProfitsCompleted(0);
     }
     
     return;
@@ -445,6 +479,10 @@ export default function Hub(props: {
 
   const totalOfTotalAmountsForCompletedChangedHandler = (totalOfTotals: number) => {
     setTotalOfTotalsCompleted(totalOfTotals);
+  }
+
+  const totalOfProfitsForCompletedChangedHandler = (totalOfProfits: number) => {
+    setTotalOfProfitsCompleted(totalOfProfits);
   }
 
   return (
@@ -627,13 +665,22 @@ export default function Hub(props: {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                             })}
-                          </Paper>
+                        </Paper>
+                        <Paper style={{
+                            marginLeft: '90%',
+                          }}>
+                            {Number(totalOfProfitsCompleted).toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                        </Paper>
                         <Collapse in={isCompletedTableExpanded} timeout='auto' unmountOnExit>
                           <Bets
                             id='completed'
                             arePengindBets={false}
                             savedBet={savedPendingBet}
                             notificationTotalOfTotalAmountsChanged={totalOfTotalAmountsForCompletedChangedHandler}
+                            notificationTotalProfitsChanged={totalOfProfitsForCompletedChangedHandler}
                             selectBetIdFn={selectBetId}
                             setIsLoading={setIsLoading}
                             defaultRows={filteredCompletedRows}

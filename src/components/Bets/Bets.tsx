@@ -22,6 +22,7 @@ function Bets(props: {
   id: 'pending' | 'completed' | 'search';
   arePengindBets: boolean;
   notificationTotalOfTotalAmountsChanged?: (totalOfTotals: number) => void;
+  notificationTotalProfitsChanged?: (totalOfProfits: number) => void;
   savedBet: (bets: Array<BetModel>, bet: BetModel) => void;
   selectBetIdFn: (id: number) => void;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -378,6 +379,20 @@ function Bets(props: {
 
       props.notificationTotalOfTotalAmountsChanged(calculatedTotalOfTotals);
     }
+
+    if(props.notificationTotalProfitsChanged) {
+      let calculatedTotalOfProfits = rows
+        ? rows.filter((r) => r.id !== deleteRowId).reduce((accumulator, currentValue: BetModel) => {
+            if (currentValue.profits) {
+              return accumulator + Number(currentValue.profits);
+            } else {
+              return accumulator;
+            }
+          }, 0)
+        : 0;
+
+      props.notificationTotalProfitsChanged(calculatedTotalOfProfits);
+    }
     
     setDeleteRowId(undefined);
     setOpenDeleteDialog(false);
@@ -645,6 +660,21 @@ function Bets(props: {
         calculatedTotalOfTotals += newRow.totalAmount ? newRow.totalAmount : 0;
 
         props.notificationTotalOfTotalAmountsChanged(calculatedTotalOfTotals);
+      }
+
+      if(props.notificationTotalProfitsChanged) {
+        let calculatedTotalOfProfits = rows
+          ? rows.filter((r) => r.id !== newRow.id).reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.profits) {
+                return accumulator + Number(currentValue.profits);
+              } else {
+                return accumulator;
+              }
+            }, 0)
+          : 0;
+        calculatedTotalOfProfits += newRow.profits ? Number(newRow.profits) : 0;
+
+        props.notificationTotalProfitsChanged(calculatedTotalOfProfits);
       }
     } else {
       
