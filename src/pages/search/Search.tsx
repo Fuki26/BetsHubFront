@@ -1432,17 +1432,18 @@ export default function Search() {
           </Paper>
         </Paper>
         <Typography variant='h4'>Bets</Typography>
-        <Paper style={{ marginLeft: '90%', }}>
-          {Number(totalOfTotals).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
-        </Paper>
-        <Paper style={{ marginLeft: '90%', }}>
-          {Number(totalOfProfits).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
+        <Paper style={{ marginLeft: '60%', }}>
+            Total of totals: 
+            {Number(totalOfTotals).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+
+            { '  Total of profits:'} 
+            {Number(totalOfProfits).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
         </Paper>
         {filteredRows ? (
           <Bets

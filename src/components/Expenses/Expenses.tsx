@@ -3,8 +3,7 @@ import { toast } from 'react-toastify';
 import { isMobile } from 'react-device-detect';
 import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
   GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams,
-  GridToolbarExport,
-  GridRowParams, } from '@mui/x-data-grid';
+  GridToolbarExport, GridRowParams, } from '@mui/x-data-grid';
 import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, Paper, TextField,Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
@@ -91,7 +90,9 @@ export default function Expenses(props: {
             <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleAddNewClick}>
               Create an expense
             </Button>
-            <GridToolbarExport />
+            <GridToolbarExport 
+              csvOptions={{ allColumns: true }}
+            />
           </GridToolbarContainer>
         )
       : <></>;
@@ -345,6 +346,13 @@ export default function Expenses(props: {
       headerName: 'Counteragent',
       editable: true,
       width: 170,
+      valueFormatter: ({ value }) => {
+        if(value) {
+          return value.label;
+        } else {
+          return '';
+        }
+      },
       renderCell: (params: GridRenderCellParams<ExpenseModel>) => {
         const row = rows?.find((r) => r.id === params.row.id);
         if(!row) {
@@ -519,17 +527,17 @@ export default function Expenses(props: {
     );
   }
 
-    const handleModalClose = () => setShowHistoryModal(false);
+  const handleModalClose = () => setShowHistoryModal(false);
 
-    if (showHistoryModal && history) {
-      return (
-        <Modal
-          open={showHistoryModal}
-          handleClose={handleModalClose}
-          betsHistory={history}
-        />
-      );
-    }
+  if (showHistoryModal && history) {
+    return (
+      <Modal
+        open={showHistoryModal}
+        handleClose={handleModalClose}
+        betsHistory={history}
+      />
+    );
+  }
 
   return (
     <Paper sx={{ padding: '5%', }}>
@@ -537,7 +545,8 @@ export default function Expenses(props: {
         rows
           ? (
               <>
-                <Paper style={{ marginLeft: '90%', }}>
+                <Paper style={{ marginLeft: '60%', }}>
+                  Total of amounts: 
                   {Number(totalOfTotals).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
