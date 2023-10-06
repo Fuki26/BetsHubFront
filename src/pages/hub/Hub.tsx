@@ -439,11 +439,11 @@ export default function Hub(props: {
     setExpensesTableExpanded(!isExpensesTableExpanded);
   };
 
-  const editBetTotalAmountsNotifyForPending = (totalOfTotals: number) => {
+  const totalOfTotalAmountsForPendingChangedHandler = (totalOfTotals: number) => {
     setTotalOfTotalsPending(totalOfTotals);
   }
 
-  const editBetTotalAmountsNotifyForCompleted = (totalOfTotals: number) => {
+  const totalOfTotalAmountsForCompletedChangedHandler = (totalOfTotals: number) => {
     setTotalOfTotalsCompleted(totalOfTotals);
   }
 
@@ -584,7 +584,7 @@ export default function Hub(props: {
                             savedBet={savedPendingBet}
                             selectBetIdFn={selectBetId}
                             setIsLoading={setIsLoading}
-                            editBetTotalAmountsNotify={editBetTotalAmountsNotifyForPending}
+                            notificationTotalOfTotalAmountsChanged={totalOfTotalAmountsForPendingChangedHandler}
                             defaultRows={pendingRows}
                             currencies={currencies}
                             possibleCounteragents={possibleCounterAgents}
@@ -633,7 +633,7 @@ export default function Hub(props: {
                             id='completed'
                             arePengindBets={false}
                             savedBet={savedPendingBet}
-                            editBetTotalAmountsNotify={editBetTotalAmountsNotifyForCompleted}
+                            notificationTotalOfTotalAmountsChanged={totalOfTotalAmountsForCompletedChangedHandler}
                             selectBetIdFn={selectBetId}
                             setIsLoading={setIsLoading}
                             defaultRows={filteredCompletedRows}

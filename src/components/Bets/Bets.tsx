@@ -21,7 +21,7 @@ const { evaluate } = require('mathjs');
 function Bets(props: {
   id: 'pending' | 'completed' | 'search';
   arePengindBets: boolean;
-  editBetTotalAmountsNotify?: (totalOfTotals: number) => void;
+  notificationTotalOfTotalAmountsChanged?: (totalOfTotals: number) => void;
   savedBet: (bets: Array<BetModel>, bet: BetModel) => void;
   selectBetIdFn: (id: number) => void;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -365,7 +365,7 @@ function Bets(props: {
     setIsLoading(true);
 
     await deleteBet({ id: deleteRowId });
-    if(props.editBetTotalAmountsNotify) {
+    if(props.notificationTotalOfTotalAmountsChanged) {
       let calculatedTotalOfTotals = rows
         ? rows.filter((r) => r.id !== deleteRowId).reduce((accumulator, currentValue: BetModel) => {
             if (currentValue.totalAmount) {
@@ -376,7 +376,7 @@ function Bets(props: {
           }, 0)
         : 0;
 
-      props.editBetTotalAmountsNotify(calculatedTotalOfTotals);
+      props.notificationTotalOfTotalAmountsChanged(calculatedTotalOfTotals);
     }
     
     setDeleteRowId(undefined);
@@ -632,7 +632,7 @@ function Bets(props: {
       newRow.id = rowData?.data.id;
       newRow.totalAmount = rowData?.data.totalAmount;
       newRow.profits = rowData?.data.profits;
-      if(props.editBetTotalAmountsNotify) {
+      if(props.notificationTotalOfTotalAmountsChanged) {
         let calculatedTotalOfTotals = rows
           ? rows.filter((r) => r.id !== newRow.id).reduce((accumulator, currentValue: BetModel) => {
               if (currentValue.totalAmount) {
@@ -644,7 +644,7 @@ function Bets(props: {
           : 0;
         calculatedTotalOfTotals += newRow.totalAmount ? newRow.totalAmount : 0;
 
-        props.editBetTotalAmountsNotify(calculatedTotalOfTotals);
+        props.notificationTotalOfTotalAmountsChanged(calculatedTotalOfTotals);
       }
     } else {
       

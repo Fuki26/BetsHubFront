@@ -1148,7 +1148,7 @@ export default function Search() {
       })
     : [];
 
-  const editBetTotalAmountsNotify = (totalOfTotals: number) => {
+  const totalOfTotalAmountsChangedHandler = (totalOfTotals: number) => {
     setTotalOfTotals(totalOfTotals);
   }
 
@@ -1449,7 +1449,7 @@ export default function Search() {
             id='search'
             arePengindBets={false}
             savedBet={(bets: Array<BetModel>, bet: BetModel) => {}}
-            editBetTotalAmountsNotify={editBetTotalAmountsNotify}
+            notificationTotalOfTotalAmountsChanged={totalOfTotalAmountsChangedHandler}
             selectBetIdFn={selectBetId}
             setIsLoading={setIsLoading}
             defaultRows={filteredRows}
