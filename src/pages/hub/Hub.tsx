@@ -10,6 +10,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs from 'dayjs';
 import updateLocale from 'dayjs/plugin/updateLocale';
+import { useLocation } from "react-router-dom";
 import Bets from '../../components/Bets/Bets';
 import { BetModel, ExpenseModel, IDropdownValue, StatisticItemModel, } from '../../models';
 import { getBetStatistics, getCompletedBets, getCounterAgents, getCurrencies, 
@@ -33,6 +34,7 @@ export default function Hub(props: {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isSticky, setIsSticky]=React.useState<boolean>(false);
   const [isOpenedCalendar, setIsOpenedCalendar]=React.useState<boolean>(true);
+  const location = useLocation();
 
   const [selectedBetId, setSelectedBetId] = React.useState<number | undefined>(undefined);
   const [statisticsType, setStatisticsType] = React.useState<StatisticType>(StatisticType.Flat);
@@ -219,7 +221,7 @@ export default function Hub(props: {
         console.error(e);
       }
     })();
-  }, []);
+  }, [location]);
 
   useEffect(() => {
     const filteredCompletedBetsByDate: Array<BetModel> = [];
