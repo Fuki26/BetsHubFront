@@ -686,14 +686,13 @@ function Bets(props: {
       });
     }
 
-    toast(
-      currentRow.actionTypeApplied === ActionType.CANCELED
-        ? 'Canceled'
-        : `Saved bet with id ${newRow!.id}`,
-      {
-        position: 'top-center',
-      }
-    );
+    if(currentRow.actionTypeApplied === ActionType.CANCELED) {
+      toast('Canceled', { position: 'top-center', });
+    } else if(currentRow.actionTypeApplied === ActionType.EDITED 
+        || currentRow.actionTypeApplied === ActionType.SAVED) {
+      toast(`Saved bet with id ${newRow!.id}`, { position: 'top-center', });
+    }
+    
 
     if(!currentRow.actionTypeApplied) {
       currentRow.actionTypeApplied = newRow.actionTypeApplied;
