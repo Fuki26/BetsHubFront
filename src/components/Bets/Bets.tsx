@@ -21,8 +21,11 @@ const { evaluate } = require('mathjs');
 function Bets(props: {
   id: 'pending' | 'completed' | 'search';
   arePengindBets: boolean;
-  notificationTotalOfTotalAmountsChanged?: (totalOfTotals: number) => void;
-  notificationTotalProfitsChanged?: (totalOfProfits: number) => void;
+  onTotalOfTotalAmountsChanged?: (totalOfTotals: number) => void;
+  onTotalProfitsChanged?: (totalOfProfits: number) => void;
+  onNewSportAdded?: (sport: string) => void;
+  onNewMarketAdded?: (market: string) => void;
+  onNewTournamentAdded?: (tournament: string) => void;
   savedBet: (bets: Array<BetModel>, bet: BetModel) => void;
   selectBetIdFn: (id: number) => void;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -37,7 +40,8 @@ function Bets(props: {
   possibleMarkets: Array<IDropdownValue> | undefined;
 }) {
   const {
-    arePengindBets, selectBetIdFn, setIsLoading,
+    arePengindBets, onTotalOfTotalAmountsChanged, onTotalProfitsChanged,
+    onNewSportAdded, onNewMarketAdded, onNewTournamentAdded, selectBetIdFn, setIsLoading,
     defaultRows, currencies, possibleCounteragents, possibleSports,
     possibleTournaments, possibleSelections, possibleMarkets, } = props;
 
@@ -366,7 +370,7 @@ function Bets(props: {
     setIsLoading(true);
 
     await deleteBet({ id: deleteRowId });
-    if(props.notificationTotalOfTotalAmountsChanged) {
+    if(onTotalOfTotalAmountsChanged) {
       let calculatedTotalOfTotals = rows
         ? rows.filter((r) => r.id !== deleteRowId).reduce((accumulator, currentValue: BetModel) => {
             if (currentValue.totalAmount) {
@@ -377,10 +381,10 @@ function Bets(props: {
           }, 0)
         : 0;
 
-      props.notificationTotalOfTotalAmountsChanged(calculatedTotalOfTotals);
+      onTotalOfTotalAmountsChanged(calculatedTotalOfTotals);
     }
 
-    if(props.notificationTotalProfitsChanged) {
+    if(onTotalProfitsChanged) {
       let calculatedTotalOfProfits = rows
         ? rows.filter((r) => r.id !== deleteRowId).reduce((accumulator, currentValue: BetModel) => {
             if (currentValue.profits) {
@@ -391,7 +395,7 @@ function Bets(props: {
           }, 0)
         : 0;
 
-      props.notificationTotalProfitsChanged(calculatedTotalOfProfits);
+      onTotalProfitsChanged(calculatedTotalOfProfits);
     }
     
     setDeleteRowId(undefined);
@@ -464,10 +468,47 @@ function Bets(props: {
     }
   };
 
+  const checkAndNotifyAboutNewSportTournamentOrMarket = (props: { sport?: string;
+    tournament?: string; market?: string; }) => {
+    const { sport, tournament, market, } = props;
+    if(sport) {
+      const isExistingSport = possibleSports
+        ? possibleSports.some((s) => s.label === sport)
+        : false;
+
+      if(!isExistingSport && onNewSportAdded) {
+        onNewSportAdded(sport);
+      }
+    }
+
+    if(market) {
+      const isExistingMarket = possibleMarkets
+        ? possibleMarkets.some((m) => m.label === market)
+        : false;
+
+      if(!isExistingMarket && onNewMarketAdded) {
+        onNewMarketAdded(market);
+      }
+    }
+
+    if(tournament) {
+      const isExistingTournament = possibleTournaments
+        ? possibleTournaments.some((t) => t.label === tournament)
+        : false;
+
+      if(!isExistingTournament && onNewTournamentAdded) {
+        onNewTournamentAdded(tournament);
+      }
+    }
+  };
+
   const processRowUpdate = async ( 
     newRow: GridRowModel<BetModel>
   ): Promise<BetModel> => {
-    
+    if(!newRow.counterAgent) {
+      return newRow;
+    }
+
     const currentRow = rows.find((row) => row.id === newRow.id);
     if (!currentRow) {
       return newRow;
@@ -649,7 +690,7 @@ function Bets(props: {
       newRow.id = rowData?.data.id;
       newRow.totalAmount = rowData?.data.totalAmount;
       newRow.profits = rowData?.data.profits;
-      if(props.notificationTotalOfTotalAmountsChanged) {
+      if(onTotalOfTotalAmountsChanged) {
         let calculatedTotalOfTotals = rows
           ? rows.filter((r) => r.id !== newRow.id).reduce((accumulator, currentValue: BetModel) => {
               if (currentValue.totalAmount) {
@@ -661,10 +702,10 @@ function Bets(props: {
           : 0;
         calculatedTotalOfTotals += newRow.totalAmount ? newRow.totalAmount : 0;
 
-        props.notificationTotalOfTotalAmountsChanged(calculatedTotalOfTotals);
+        onTotalOfTotalAmountsChanged(calculatedTotalOfTotals);
       }
 
-      if(props.notificationTotalProfitsChanged) {
+      if(onTotalProfitsChanged) {
         let calculatedTotalOfProfits = rows
           ? rows.filter((r) => r.id !== newRow.id).reduce((accumulator, currentValue: BetModel) => {
               if (currentValue.profits) {
@@ -676,7 +717,7 @@ function Bets(props: {
           : 0;
         calculatedTotalOfProfits += newRow.profits ? Number(newRow.profits) : 0;
 
-        props.notificationTotalProfitsChanged(calculatedTotalOfProfits);
+        onTotalProfitsChanged(calculatedTotalOfProfits);
       }
     } else {
       
@@ -716,6 +757,12 @@ function Bets(props: {
         }, 500);
       }
 
+      checkAndNotifyAboutNewSportTournamentOrMarket({
+        sport: newRow.sport ? newRow.sport.label : undefined,
+        market: newRow.market ? newRow.market.label : undefined,
+        tournament: newRow.tournament ? newRow.tournament.label : undefined,
+      });
+      
       return { 
         ...newRow,
         profits: currentRow.profits,
@@ -752,57 +799,62 @@ function Bets(props: {
 
   return (
     <Paper sx={{ paddingTop: '1%' }}>
-      {rows ? (
-        <>
-          <DataGrid
-            onCellKeyDown={tabKeyHandler}
-            columns={columns}
-            initialState={{
-              columns: {
-                columnVisibilityModel: {
-                  ...JSON.parse(localStorage.getItem(`${props.id}ColumnVisibilityModel`) || '{}')
-                },
-              },
-            }}
-            onColumnVisibilityModelChange={handleColumnVisibilityChange}
-            getRowClassName={getRowClassName}
-            columnBuffer={50}
-            rows={rows}
-            slots={{
-              toolbar: props.id === 'completed' || props.id === 'search' 
-                ? CustomToolbar 
-                : editToolbarHandler,
-            }}
-            rowModesModel={rowModesModel}
-            processRowUpdate={processRowUpdate}
-            slotProps={{
-              toolbar: { setRows, setRowModesModel, rows, currencies,  printOptions: { disableToolbarButton: true }},
-            }}
-            onRowClick={onRowClick}
-            onCellEditStop={onCellEditStop}
-            editMode='cell'
-            sx={{
-              height: 500,
-            }}
-          />
-          <Dialog
-            open={deleteDialogIsOpened}
-            onClose={handleCloseOnDeleteDialog}
-            aria-labelledby='alert-dialog-title'
-            aria-describedby='alert-dialog-description'
-          >
-            <DialogTitle id='alert-dialog-title'>
-              {'Are you sure you want to delete the bet?'}
-            </DialogTitle>
-            <DialogActions>
-              <Button onClick={handleDeleteClick} autoFocus>
-                Yes
-              </Button>
-              <Button onClick={handleCloseOnDeleteDialog}>No</Button>
-            </DialogActions>
-          </Dialog>
-        </>
-      ) : null}
+      {
+        rows 
+          ? 
+            (
+              <>
+                <DataGrid
+                  onCellKeyDown={tabKeyHandler}
+                  columns={columns}
+                  initialState={{
+                    columns: {
+                      columnVisibilityModel: {
+                        ...JSON.parse(localStorage.getItem(`${props.id}ColumnVisibilityModel`) || '{}')
+                      },
+                    },
+                  }}
+                  onColumnVisibilityModelChange={handleColumnVisibilityChange}
+                  getRowClassName={getRowClassName}
+                  columnBuffer={50}
+                  rows={rows}
+                  slots={{
+                    toolbar: props.id === 'completed' || props.id === 'search' 
+                      ? CustomToolbar 
+                      : editToolbarHandler,
+                  }}
+                  rowModesModel={rowModesModel}
+                  processRowUpdate={processRowUpdate}
+                  slotProps={{
+                    toolbar: { setRows, setRowModesModel, rows, currencies,  printOptions: { disableToolbarButton: true }},
+                  }}
+                  onRowClick={onRowClick}
+                  onCellEditStop={onCellEditStop}
+                  editMode='cell'
+                  sx={{
+                    height: 500,
+                  }}
+                />
+                <Dialog
+                  open={deleteDialogIsOpened}
+                  onClose={handleCloseOnDeleteDialog}
+                  aria-labelledby='alert-dialog-title'
+                  aria-describedby='alert-dialog-description'
+                >
+                  <DialogTitle id='alert-dialog-title'>
+                    {'Are you sure you want to delete the bet?'}
+                  </DialogTitle>
+                  <DialogActions>
+                    <Button onClick={handleDeleteClick} autoFocus>
+                      Yes
+                    </Button>
+                    <Button onClick={handleCloseOnDeleteDialog}>No</Button>
+                  </DialogActions>
+                </Dialog>
+              </>
+            ) 
+            : null
+      }
     </Paper>
   );
 }

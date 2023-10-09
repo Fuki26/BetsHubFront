@@ -477,16 +477,43 @@ export default function Hub(props: {
     setExpensesTableExpanded(!isExpensesTableExpanded);
   };
 
-  const totalOfTotalAmountsForPendingChangedHandler = (totalOfTotals: number) => {
+  const onTotalOfTotalAmountsForPendingChangedHandler = (totalOfTotals: number) => {
     setTotalOfTotalsPending(totalOfTotals);
   }
 
-  const totalOfTotalAmountsForCompletedChangedHandler = (totalOfTotals: number) => {
+  const onTotalOfTotalAmountsForCompletedChangedHandler = (totalOfTotals: number) => {
     setTotalOfTotalsCompleted(totalOfTotals);
   }
 
-  const totalOfProfitsForCompletedChangedHandler = (totalOfProfits: number) => {
+  const onTotalOfProfitsForCompletedChangedHandler = (totalOfProfits: number) => {
     setTotalOfProfitsCompleted(totalOfProfits);
+  }
+
+  const onNewSportAddedHandler = (sport: string) => {
+    var sports = possibleSports;
+    sports?.push({
+      id: sport,
+      label: sport,
+    })
+    setSports(sports);
+  }
+
+  const onNewMarketAddedHandler = (market: string) => {
+    var markets = possibleMarkets;
+    markets?.push({
+      id: market,
+      label: market,
+    })
+    setMarkets(markets);
+  }
+
+  const onNewTournamentAddedHandler = (tournament: string) => {
+    var tournaments = possibleTournaments;
+    tournaments?.push({
+      id: tournament,
+      label: tournament,
+    })
+    setTournaments(tournaments);
   }
 
   return (
@@ -627,7 +654,10 @@ export default function Hub(props: {
                             savedBet={savedPendingBet}
                             selectBetIdFn={selectBetId}
                             setIsLoading={setIsLoading}
-                            notificationTotalOfTotalAmountsChanged={totalOfTotalAmountsForPendingChangedHandler}
+                            onTotalOfTotalAmountsChanged={onTotalOfTotalAmountsForPendingChangedHandler}
+                            onNewSportAdded={onNewSportAddedHandler}
+                            onNewMarketAdded={onNewMarketAddedHandler}
+                            onNewTournamentAdded={onNewTournamentAddedHandler}
                             defaultRows={pendingRows}
                             currencies={currencies}
                             possibleCounteragents={possibleCounterAgents}
@@ -683,8 +713,11 @@ export default function Hub(props: {
                             id='completed'
                             arePengindBets={false}
                             savedBet={savedPendingBet}
-                            notificationTotalOfTotalAmountsChanged={totalOfTotalAmountsForCompletedChangedHandler}
-                            notificationTotalProfitsChanged={totalOfProfitsForCompletedChangedHandler}
+                            onTotalOfTotalAmountsChanged={onTotalOfTotalAmountsForCompletedChangedHandler}
+                            onTotalProfitsChanged={onTotalOfProfitsForCompletedChangedHandler}
+                            onNewSportAdded={onNewSportAddedHandler}
+                            onNewMarketAdded={onNewMarketAddedHandler}
+                            onNewTournamentAdded={onNewTournamentAddedHandler}
                             selectBetIdFn={selectBetId}
                             setIsLoading={setIsLoading}
                             defaultRows={filteredCompletedRows}
