@@ -246,6 +246,7 @@ const upsertBet = async (bet: BetModel) => {
     const request = {
         id: bet.isSavedInDatabase ? Number(bet.id) : null,
         winStatus: bet.winStatus ? Number(bet.winStatus.id) : 0,
+        liveStatus: bet.liveStatus ? Number(bet.liveStatus.id) : 0,
         counteragentId: bet.counterAgent ? Number(bet.counterAgent.id) : '',
         sport: bet.sport ? bet.sport.id : '',
         tournament: bet.tournament ? bet.tournament.id : '',
