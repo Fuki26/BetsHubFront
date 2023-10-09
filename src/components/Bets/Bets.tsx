@@ -241,6 +241,18 @@ function Bets(props: {
 
   //#region Actions handlers
 
+  const handleClickOutsideGrid = () => {
+    const rowToBeSaved = rows.find((r) => {
+      return r.actionTypeApplied === ActionType.EDITED;
+    });
+
+    if(!rowToBeSaved) {
+      return;
+    }
+
+    handleSaveClick(rowToBeSaved?.id);
+  }
+
   const handleSaveClick = (id: GridRowId) => () => {
     setRows((previousRowsModel) => {
       return previousRowsModel.map((row: BetModel) => {
@@ -282,8 +294,6 @@ function Bets(props: {
 
     return '';
   };
-
-
 
   const handleCancelClick = (id: GridRowId) => () => {
     const canceledRow = rows.find((r) => r.id === id);
@@ -457,6 +467,10 @@ function Bets(props: {
   const onRowClick = (params: GridRowParams) => {
     const row = rows.find((row) => row.id === params.id);
     if (row) {
+      setRowModesModel((oldModel) => ({
+        ...oldModel,
+        [row.id]: { mode: GridRowModes.Edit },
+      }));
       selectBetIdFn(row.id);
     }
   };
