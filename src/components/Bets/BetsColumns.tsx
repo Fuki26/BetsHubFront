@@ -139,22 +139,20 @@ export const getBetsColumns = (props: {
                 options={possibleCounteragents ? possibleCounteragents : []}
                 renderInput={(params) => <TextField {...params} />}
                 onChange={(e, value: any) => {
-                  setRows((previousRowsModel) => {
-                    return previousRowsModel.map((row: BetModel) => {
-                      if (row.id === params.row.id) {
-                        return {
-                          ...row,
-                          counterAgent: value
-                            ? typeof value === 'string'
-                              ? { id: value, label: value }
-                              : value
-                            : undefined,
-                        };
-                      } else {
-                        return row;
-                      }
+                  if(value && value.id && value.label) {
+                    setRows((previousRowsModel) => {
+                      return previousRowsModel.map((row: BetModel) => {
+                        if (row.id === params.row.id) {
+                          return {
+                            ...row,
+                            counterAgent: value,
+                          };
+                        } else {
+                          return row;
+                        }
+                      });
                     });
-                  });
+                  }
                 }}
                 value={row.counterAgent}
                 sx={{

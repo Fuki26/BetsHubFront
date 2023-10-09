@@ -505,13 +505,28 @@ function Bets(props: {
   const processRowUpdate = async ( 
     newRow: GridRowModel<BetModel>
   ): Promise<BetModel> => {
-    if(!newRow.counterAgent) {
-      return newRow;
-    }
+    
 
     const currentRow = rows.find((row) => row.id === newRow.id);
     if (!currentRow) {
       return newRow;
+    }
+
+    if(!currentRow.counterAgent) {
+      toast(`You should provide couteragent.`, { position: 'top-center', });
+
+      setRowModesModel({});
+      setTimeout(() => {
+        setRows((previousRowsModel) => {
+          return previousRowsModel.filter((row) => {
+            if(row.id !== newRow!.id) {
+              return row;
+            }
+          });
+        });
+      }, 500);
+     
+      return currentRow;
     }
 
     let atLeastOneCurrencyIsPopulated = false;
@@ -589,7 +604,6 @@ function Bets(props: {
                 };
               } else {
                 return row;
-    
               }
             });
           });
