@@ -47,7 +47,15 @@ function Bets(props: {
 
   const tabKeyHandler: GridEventListener<'cellKeyDown'> 
     = (params, event) => {
-      if (event.key === 'Tab' && params.cellMode === 'edit') {
+      if (event.key === 'Enter' && params.cellMode === 'edit') {
+        const activeElement = document.activeElement;
+        if(activeElement) {
+          (activeElement as any).blur();
+        }
+
+        const saveButton = document.querySelectorAll('[aria-label="Save"]')[0];
+        (saveButton as any).click();
+      }else if (event.key === 'Tab' && params.cellMode === 'edit') {
         event.preventDefault(); // Prevent the default Tab behavior
 
         // [1-...]
@@ -240,18 +248,6 @@ function Bets(props: {
   //#endregion
 
   //#region Actions handlers
-
-  const handleClickOutsideGrid = () => {
-    const rowToBeSaved = rows.find((r) => {
-      return r.actionTypeApplied === ActionType.EDITED;
-    });
-
-    if(!rowToBeSaved) {
-      return;
-    }
-
-    handleSaveClick(rowToBeSaved?.id);
-  }
 
   const handleSaveClick = (id: GridRowId) => () => {
     setRows((previousRowsModel) => {
@@ -519,8 +515,6 @@ function Bets(props: {
   const processRowUpdate = async ( 
     newRow: GridRowModel<BetModel>
   ): Promise<BetModel> => {
-    
-
     const currentRow = rows.find((row) => row.id === newRow.id);
     if (!currentRow) {
       return newRow;
