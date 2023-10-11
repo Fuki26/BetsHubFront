@@ -472,10 +472,10 @@ function Bets(props: {
   };
 
   const onCellEditStop = (params: GridCellParams) => {
-    const row = rows.find((row) => row.id === params.id);
-    if (row) {
-      handleEditClick(row.id)();
-    }
+    // const row = rows.find((row) => row.id === params.id);
+    // if (row) {
+    //   handleEditClick(row.id)();
+    // }
   };
 
   const checkAndNotifyAboutNewSportTournamentOrMarket = (props: { sport?: string;
