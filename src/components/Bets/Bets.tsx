@@ -463,11 +463,17 @@ function Bets(props: {
   const onRowClick = (params: GridRowParams) => {
     const row = rows.find((row) => row.id === params.id);
     if (row) {
+      selectBetIdFn(row.id);
+    }
+  };
+
+  const onRowDoubleClick = (params: GridRowParams) => {
+    const row = rows.find((row) => row.id === params.id);
+    if (row) {
       setRowModesModel((oldModel) => ({
         ...oldModel,
         [row.id]: { mode: GridRowModes.Edit },
       }));
-      selectBetIdFn(row.id);
     }
   };
 
@@ -755,7 +761,12 @@ function Bets(props: {
       toast('Canceled', { position: 'top-center', });
     } else if(currentRow.actionTypeApplied === ActionType.EDITED 
         || currentRow.actionTypeApplied === ActionType.SAVED) {
-      toast(`Saved bet with id ${newRow!.id}`, { position: 'top-center', });
+      if(!toast.isActive(`Bet_Toast`)) {
+        toast(`Saved bet with id ${newRow!.id}`, {
+          toastId: `Bet_Toast`,
+          position: 'top-center', 
+        });
+      }
     }
     
 
@@ -851,6 +862,7 @@ function Bets(props: {
                     toolbar: { setRows, setRowModesModel, rows, currencies,  printOptions: { disableToolbarButton: true }},
                   }}
                   onRowClick={onRowClick}
+                  onRowDoubleClick={onRowDoubleClick}
                   onCellEditStop={onCellEditStop}
                   editMode='cell'
                   sx={{
