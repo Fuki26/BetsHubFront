@@ -544,11 +544,23 @@ export default function Hub(props: {
           : null
       }
 
-      <Paper sx={{ padding: '5%' ,width:'100% !important'}}>
+      <Paper sx={{ 
+          padding: '5%',
+          width:'100% !important', 
+          display: 'flex',
+          flexDirection: 'row', 
+          flexWrap: 'nowrap', 
+          justifyContent: 'normal'}}>
         {
           id === 'pending_bets' || id === 'completed_bets'
             ? (
-                <Paper className='parent-statistics' style={{ maxWidth: '70vw !important', display: 'flex', zIndex: '1', top: '60px', position: isSticky ? 'sticky' : 'static' }}>
+                <Paper className='parent-statistics' style={{ 
+                    width: '65%', 
+                    display: 'block', 
+                    zIndex: '1', 
+                    top: '60px', 
+                    position: isSticky ? 'sticky' : 'static' 
+                  }}>
                   <Paper className='statistics' style={{ marginRight: 'auto', }}>
                     <Typography variant='h4'>Statistics</Typography>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
@@ -611,9 +623,9 @@ export default function Hub(props: {
               )
             : null
         }
-
-        <Paper  style={{ display: 'flex', flexWrap: 'nowrap' }}>
-          <Paper style={{width:'100%'}}>
+      </Paper>
+      <Paper  style={{ display: 'flex', flexWrap: 'nowrap' }}>
+          <Paper style={{ width: '100%', marginLeft: '5%'}}>
             {
               pendingRows && id === 'pending_bets'
                 ? (
@@ -736,45 +748,44 @@ export default function Hub(props: {
               : null
             }
           </Paper>
-        </Paper>
-
-        {
-          filteredExpensesRows && id === 'expenses'
-            ? 
-              (
-                <>
-                  <Grid item xs={12} sx={{ maxWidth: '90vw !important' }}>
-                    <Typography variant='h4'>
-                      Expenses
-                      <IconButton
-                        onClick={handleExpandClickExpenses}
-                        aria-expanded={isExpensesTableExpanded}
-                        aria-label='show more'
-                        sx={{
-                          transform: isExpensesTableExpanded
-                            ? 'rotate(0deg)'
-                            : 'rotate(180deg)',
-                          transition: 'transform 0.3s',
-                        }}
-                      >
-                        <ExpandMoreIcon />
-                      </IconButton>
-                    </Typography>
-                    <Collapse sx={{ maxWidth: '90vw !important' }} in={isExpensesTableExpanded} timeout='auto' unmountOnExit>
-                    <Expenses
-                      displayExportToolbar={false}
-                      isRead={false}
-                      setIsLoading={setIsLoading}
-                      defaultRows={filteredExpensesRows}
-                      possibleCounterAgents={possibleCounterAgents}
-                    />
-                    </Collapse>
-                  </Grid>
-                </>
-            ) 
-            : null
-        }
       </Paper>
+
+      {
+        filteredExpensesRows && id === 'expenses'
+          ? 
+            (
+              <>
+                <Grid item xs={12} sx={{ width: '100%', marginLeft: '5%'}}>
+                  <Typography variant='h4'>
+                    Expenses
+                    <IconButton
+                      onClick={handleExpandClickExpenses}
+                      aria-expanded={isExpensesTableExpanded}
+                      aria-label='show more'
+                      sx={{
+                        transform: isExpensesTableExpanded
+                          ? 'rotate(0deg)'
+                          : 'rotate(180deg)',
+                        transition: 'transform 0.3s',
+                      }}
+                    >
+                      <ExpandMoreIcon />
+                    </IconButton>
+                  </Typography>
+                  <Collapse sx={{ maxWidth: '90vw !important' }} in={isExpensesTableExpanded} timeout='auto' unmountOnExit>
+                  <Expenses
+                    displayExportToolbar={false}
+                    isRead={false}
+                    setIsLoading={setIsLoading}
+                    defaultRows={filteredExpensesRows}
+                    possibleCounterAgents={possibleCounterAgents}
+                  />
+                  </Collapse>
+                </Grid>
+              </>
+          ) 
+          : null
+      }
     </>
   );
 }
