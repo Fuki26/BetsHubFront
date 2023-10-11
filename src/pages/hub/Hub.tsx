@@ -32,7 +32,7 @@ export default function Hub(props: {
 }) {
   const { id, } = props;
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [isSticky, setIsSticky]=React.useState<boolean>(false);
+  const [isSticky, setIsSticky] = React.useState<boolean>(false);
   const [isOpenedCalendar, setIsOpenedCalendar] = React.useState<boolean>(true);
   const location = useLocation();
 
@@ -570,8 +570,9 @@ export default function Hub(props: {
                       <FormControlLabel
                         onChange={() => {
                           setIsSticky(!isSticky)
-                          console.log(isSticky)
-                        }} control={<Checkbox />} label='Sticky' 
+                        }} 
+                        control={<Checkbox checked={isSticky}  />} 
+                        label='Sticky'
                       />
                     </div>
                     <DataGrid 
