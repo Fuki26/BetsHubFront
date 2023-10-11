@@ -644,7 +644,6 @@ export const getBetsColumns = (props: {
           type: 'number',
           editable: false,
           width: 100,
-          
         },
         {
           field: 'notes',

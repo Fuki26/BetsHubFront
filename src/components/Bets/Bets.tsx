@@ -862,9 +862,9 @@ function Bets(props: {
                     toolbar: { setRows, setRowModesModel, rows, currencies,  printOptions: { disableToolbarButton: true }},
                   }}
                   onRowClick={onRowClick}
-                  onRowDoubleClick={onRowDoubleClick}
-                  onCellEditStop={onCellEditStop}
-                  editMode='cell'
+                  onRowDoubleClick={props.id === 'pending' ? onRowDoubleClick : undefined}
+                  // onCellEditStop={onCellEditStop}
+                  editMode='row'
                   sx={{
                     height: 500,
                   }}
