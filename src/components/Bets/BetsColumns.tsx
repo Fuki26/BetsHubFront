@@ -418,7 +418,7 @@ export const getBetsColumns = (props: {
           field: 'tournament',
           headerName: 'Tournament',
           editable: true,
-          width: 150,
+          width: 370,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
             if (!row) {
@@ -500,7 +500,7 @@ export const getBetsColumns = (props: {
           field: 'selection',
           headerName: 'Selection',
           editable: true,
-          width: 150,
+          width: 400,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
             if (!row) {
@@ -650,7 +650,7 @@ export const getBetsColumns = (props: {
           headerName: 'Notes',
           type: 'string',
           editable: true,
-          width: 150,
+          width: 900,
         },        
         {
           field: 'actions',
