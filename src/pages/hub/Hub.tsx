@@ -561,7 +561,7 @@ export default function Hub(props: {
                     top: '60px', 
                     position: isSticky ? 'sticky' : 'static' 
                   }}>
-                  <Paper className='statistics' style={{ marginRight: 'auto', }}>
+                  <Paper className='statistics' style={{ marginRight: 'auto', height: '100%'}}>
                     <Typography variant='h4'>Statistics</Typography>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                       <RadioGroup
