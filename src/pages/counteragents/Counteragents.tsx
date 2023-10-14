@@ -254,9 +254,7 @@ export default function Counteragents(props: {}) {
     setOpenDeleteDialog(false);
 
     setRows((previousRows) => previousRows!.filter((row) => row.id !== deleteRowId));
-    setRowModesModel((previousRowModesModel) => {
-      return { ...previousRowModesModel, [deleteRowId]: { mode: GridRowModes.View } };
-    });
+    setRowModesModel({});
 
     setIsLoading(false);
   };
@@ -276,48 +274,30 @@ export default function Counteragents(props: {}) {
       return newRow;
     }
     
-    if(currentRow.actionTypeApplied === ActionType.SAVED
-        || currentRow.actionTypeApplied === ActionType.EDITED) {
+    if(newRow.actionTypeApplied === ActionType.SAVED || newRow.actionTypeApplied === ActionType.EDITED) {
         const isValidCounterAgentName = newRow.name.split(' ').every((s: string) => {
           return s.match('^[A-Za-z0-9]+$')
         });
 
-        if(!isValidCounterAgentName) {
-          // setRowModesModel((previousRowModesModel) => {
-          //   return { ...previousRowModesModel, [currentRow.id!]: { mode: GridRowModes.Edit } }
-          // });
-          toast(`Name should contain only latin characters and digits!`, {
+        if(!newRow.name || !currentRow.counteragentCategory || newRow.maxRate === null 
+            || (newRow.name && !isValidCounterAgentName)) {
+          toast(`Name, counteragent category and max rate should be specified and name should not contain any non latin characters or digits.`, {
             position: 'top-center',
           });
           
-          return newRow;
-        }
-
-        if(!newRow.name || !currentRow.counteragentCategory || newRow.maxRate === null) {
-          setRowModesModel((previousRowModesModel) => {
-            return { ...previousRowModesModel, [currentRow.id!]: { mode: GridRowModes.Edit } }
-          });
-          toast(`Name, counteragent category, max rate and user should be specified!`, {
-            position: 'top-center',
-          });
+          setTimeout(() => {
+            setRowModesModel((previousRowModesModel) => {
+              return { ...previousRowModesModel, [newRow.id]: { mode: GridRowModes.Edit } }
+            });
+          }, 300);
           
           return newRow;
         }
 
         const newRowData: CounteragentModel = {
-          ...currentRow,
-          name: newRow.name,
-          maxRate: newRow.maxRate,
-          dateCreated: currentRow.actionTypeApplied === ActionType.SAVED
-            ? new Date()
-            : newRow.dateCreated,
-          dateChanged: currentRow.actionTypeApplied === ActionType.EDITED
-            ? new Date()
-            : newRow.dateChanged,
-         
+          ...newRow as CounteragentModel,
+          counteragentCategory: currentRow.counteragentCategory!,
         };
-
-        
 
         setIsLoading(true);
         const loggedUser = JSON.parse(localStorage.getItem('user')!);
@@ -331,13 +311,20 @@ export default function Counteragents(props: {}) {
 
         if(!upsertCounteragentRequestResult || upsertCounteragentRequestResult.status !== 200) {
           setIsLoading(false);
-
-          setRowModesModel((previousRowModesModel) => {
-            return { ...previousRowModesModel, [currentRow.id!]: { mode: GridRowModes.Edit } }
-          });
-          toast(`Some of the parameters are invalid. Please specify valid ones.`, {
+          toast(`The name should be unique.`, {
             position: 'top-center',
           });
+
+          setRowModesModel({});
+          setTimeout(() => {
+            setRows((previousRowsModel) => {
+              return previousRowsModel!.filter((row) => {
+                if(row.id !== newRow!.id) {
+                  return row;
+                }
+              });
+            });
+          }, 500);
           
           return newRow;
         }
@@ -452,19 +439,21 @@ export default function Counteragents(props: {}) {
                           : value
                         : undefined;
 
-                      const isCounteragentCategoryExistsYet 
-                        = possibleCounteragentsCategories.some((pC) => {
-                          return pC.id === counteragentCategory.id;
-                        });
+                      if(counteragentCategory) {
+                        const isCounteragentCategoryExistsYet 
+                          = possibleCounteragentsCategories.some((pC) => {
+                            return pC.id === counteragentCategory.id;
+                          });
 
-                      if(!isCounteragentCategoryExistsYet) {
-                        setPossibleCounteragentsCategories((prevState) => {
-                          prevState.push(counteragentCategory);
+                        if(!isCounteragentCategoryExistsYet) {
+                          setPossibleCounteragentsCategories((prevState) => {
+                            prevState.push(counteragentCategory);
 
-                          return prevState;
-                        })
+                            return prevState;
+                          })
+                        }
                       }
-
+                      
                       return {
                         ...row,
                         counteragentCategory,
