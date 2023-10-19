@@ -3,6 +3,6 @@ export type StatisticItemModel = {
     periodType: 'all time' | 'last 3m' | 'last 6m',
     winRate: string;
     yield: string;
-    turnOver: number;
-    profit: number;
+    turnOver: string;
+    profit: string;
 };
