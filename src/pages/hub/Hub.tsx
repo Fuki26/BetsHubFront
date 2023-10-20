@@ -516,6 +516,14 @@ export default function Hub(props: {
     setTournaments(tournaments);
   }
 
+  const isStickyStylings = isSticky
+    ? {
+        position: 'sticky',
+        zIndex: 999,
+        top: '0%',
+      }
+    : {};
+
   return (
     <>
       {
@@ -550,7 +558,11 @@ export default function Hub(props: {
           display: 'flex',
           flexDirection: 'row', 
           flexWrap: 'nowrap', 
-          justifyContent: 'normal'}}>
+          justifyContent: 'normal',
+          marginBottom: '10%',
+          marginLeft: '1%',
+          ...isStickyStylings,
+      }}>
         {
           id === 'pending_bets' || id === 'completed_bets'
             ? (
