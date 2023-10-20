@@ -998,26 +998,26 @@ export default function Search() {
           {
             id: 1,
             periodType: 'all time',
-            profit: betStatistics.allTime.profit,
-            turnOver: betStatistics.allTime.turnOver,
-            winRate: (betStatistics.allTime.winRate * 100) + '%',
-            yield: (betStatistics.allTime.yield * 100) + '%',
+            profit: betStatistics.allTime.profit.toFixed(2),
+            turnOver: betStatistics.allTime.turnOver.toFixed(2),
+            winRate: (betStatistics.allTime.winRate * 100).toFixed(2) + '%',
+            yield: (betStatistics.allTime.yield * 100).toFixed(2) + '%',
           },
           {
             id: 2,
             periodType: 'last 3m',
-            profit: betStatistics.threeMonths.profit,
-            turnOver: betStatistics.threeMonths.turnOver,
-            winRate: (betStatistics.threeMonths.winRate * 100) + '%',
-            yield: (betStatistics.threeMonths.yield * 100) + '%',
+            profit: betStatistics.threeMonths.profit.toFixed(2),
+            turnOver: betStatistics.threeMonths.turnOver.toFixed(2),
+            winRate: (betStatistics.threeMonths.winRate * 100).toFixed(2) + '%',
+            yield: (betStatistics.threeMonths.yield * 100).toFixed(2) + '%',
           },
           {
             id: 3,
             periodType: 'last 6m',
-            profit: betStatistics.sixMonths.profit,
-            turnOver: betStatistics.sixMonths.turnOver,
-            winRate: (betStatistics.sixMonths.winRate * 100) + '%',
-            yield: (betStatistics.sixMonths.yield * 100) + '%',
+            profit: betStatistics.sixMonths.profit.toFixed(2),
+            turnOver: betStatistics.sixMonths.turnOver.toFixed(2),
+            winRate: (betStatistics.sixMonths.winRate * 100).toFixed(2) + '%',
+            yield: (betStatistics.sixMonths.yield * 100).toFixed(2) + '%',
           },
         ];
 
@@ -1209,7 +1209,12 @@ export default function Search() {
               <FormControlLabel value='Flat' control={<Radio />} label='Flat' />
               <FormControlLabel value='Real' control={<Radio />} label='Real' />
             </RadioGroup>
-            <DataGrid columns={statisticsColumns} rows={currentStatistcs} />
+            <DataGrid 
+              columns={statisticsColumns} 
+              rows={currentStatistcs} 
+              pageSizeOptions={[]}
+              autoPageSize={false}
+              hideFooterPagination/>
           </Paper>
         ) : null}
         <Paper>
@@ -1380,48 +1385,52 @@ export default function Search() {
             />
           </Paper>
           <Paper className='search-filters-container'>
-            <AutocompleteComponent
-              id='counteragentCategories-autocomplete'
-              label='CounteragentCategory'
-              options={distinctCounteragentCategories}
-              selectedOptions={counteragentCategoriesIds}
-              setStateFn={setCounteragentCategoriesIds}
-            />
-            <AutocompleteComponent
-              id='counteragents-autocomplete'
-              label='Counteragent'
-              options={distinctCounteragents}
-              selectedOptions={counteragentIds}
-              setStateFn={setCounteragentIds}
-            />
-            <AutocompleteComponent
-              id='sports-autocomplete'
-              label='Sport'
-              options={distinctSports}
-              selectedOptions={sportIds}
-              setStateFn={setSportIds}
-            />
-            <AutocompleteComponent
-              id='markets-autocomplete'
-              label='Market'
-              options={distinctMarkets}
-              selectedOptions={marketIds}
-              setStateFn={setMarketIds}
-            />
-            <AutocompleteComponent
-              id='tournaments-autocomplete'
-              label='Tournament'
-              options={distinctTournaments}
-              selectedOptions={tournamentIds}
-              setStateFn={setTournamentIds}
-            />
-            <AutocompleteComponent
-              id='liveStatuses-autocomplete'
-              label='LiveStatus'
-              options={distinctLiveStatuses}
-              selectedOptions={liveStatusIds}
-              setStateFn={setLiveStatusIds}
-            />
+            <Paper className='search-filters-small-container'>
+              <AutocompleteComponent
+                id='counteragentCategories-autocomplete'
+                label='CounteragentCategory'
+                options={distinctCounteragentCategories}
+                selectedOptions={counteragentCategoriesIds}
+                setStateFn={setCounteragentCategoriesIds}
+              />
+              <AutocompleteComponent
+                id='counteragents-autocomplete'
+                label='Counteragent'
+                options={distinctCounteragents}
+                selectedOptions={counteragentIds}
+                setStateFn={setCounteragentIds}
+              />
+              <AutocompleteComponent
+                id='sports-autocomplete'
+                label='Sport'
+                options={distinctSports}
+                selectedOptions={sportIds}
+                setStateFn={setSportIds}
+              />
+            </Paper>
+            <Paper className='search-filters-small-container'>
+              <AutocompleteComponent
+                id='markets-autocomplete'
+                label='Market'
+                options={distinctMarkets}
+                selectedOptions={marketIds}
+                setStateFn={setMarketIds}
+              />
+              <AutocompleteComponent
+                id='tournaments-autocomplete'
+                label='Tournament'
+                options={distinctTournaments}
+                selectedOptions={tournamentIds}
+                setStateFn={setTournamentIds}
+              />
+              <AutocompleteComponent
+                id='liveStatuses-autocomplete'
+                label='LiveStatus'
+                options={distinctLiveStatuses}
+                selectedOptions={liveStatusIds}
+                setStateFn={setLiveStatusIds}
+              />
+            </Paper>
             <AutocompleteComponent
               id='currencies-autocomplete'
               label='Currency'

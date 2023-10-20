@@ -326,26 +326,26 @@ export default function Hub(props: {
           {
             id: 1,
             periodType: 'all time',
-            profit: betStatistics.allTime.profit,
-            turnOver: betStatistics.allTime.turnOver,
-            winRate: (betStatistics.allTime.winRate * 100) + '%',
-            yield: (betStatistics.allTime.yield * 100) + '%',
+            profit: betStatistics.allTime.profit.toFixed(2),
+            turnOver: betStatistics.allTime.turnOver.toFixed(2),
+            winRate: (betStatistics.allTime.winRate * 100).toFixed(2) + '%',
+            yield: (betStatistics.allTime.yield * 100).toFixed(2) + '%',
           },
           {
             id: 2,
             periodType: 'last 3m',
-            profit: betStatistics.threeMonths.profit,
-            turnOver: betStatistics.threeMonths.turnOver,
-            winRate: (betStatistics.threeMonths.winRate * 100) + '%',
-            yield: (betStatistics.threeMonths.yield * 100) + '%',
+            profit: betStatistics.threeMonths.profit.toFixed(2),
+            turnOver: betStatistics.threeMonths.turnOver.toFixed(2),
+            winRate: (betStatistics.threeMonths.winRate * 100).toFixed(2) + '%',
+            yield: (betStatistics.threeMonths.yield * 100).toFixed(2) + '%',
           },
           {
             id: 3,
             periodType: 'last 6m',
-            profit: betStatistics.sixMonths.profit,
-            turnOver: betStatistics.sixMonths.turnOver,
-            winRate: (betStatistics.sixMonths.winRate * 100) + '%',
-            yield: (betStatistics.sixMonths.yield * 100) + '%',
+            profit: betStatistics.sixMonths.profit.toFixed(2),
+            turnOver: betStatistics.sixMonths.turnOver.toFixed(2),
+            winRate: (betStatistics.sixMonths.winRate * 100).toFixed(2) + '%',
+            yield: (betStatistics.sixMonths.yield * 100).toFixed(2) + '%',
           },
         ];
 
@@ -516,6 +516,14 @@ export default function Hub(props: {
     setTournaments(tournaments);
   }
 
+  const isStickyStylings = isSticky
+    ? {
+        position: 'sticky',
+        zIndex: 999,
+        top: '0%',
+      }
+    : {};
+
   return (
     <>
       {
@@ -550,7 +558,11 @@ export default function Hub(props: {
           display: 'flex',
           flexDirection: 'row', 
           flexWrap: 'nowrap', 
-          justifyContent: 'normal'}}>
+          justifyContent: 'normal',
+          marginBottom: '10%',
+          marginLeft: '1%',
+          ...isStickyStylings,
+      }}>
         {
           id === 'pending_bets' || id === 'completed_bets'
             ? (

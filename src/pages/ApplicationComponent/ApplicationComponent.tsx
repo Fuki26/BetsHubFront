@@ -121,9 +121,10 @@ export default function PersistentDrawerLeft(
         <Box
             component='nav'
             sx={{
-            flexGrow: 1,
-            px: 2,
-            py: 3
+              flexGrow: 1,
+              px: 2,
+              py: 3,
+              zIndex: 9999,
             }}
         >
             <Stack
