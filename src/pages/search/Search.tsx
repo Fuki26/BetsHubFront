@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { UserContext, getUserFromLocalStorate, useAuth } from '../../contexts/AuthContext';
-import { Autocomplete, Checkbox, CircularProgress, FormControl, FormControlLabel, 
+import { Autocomplete, Button, Checkbox, CircularProgress, FormControl, FormControlLabel, 
   Paper, Radio, RadioGroup, TextField, Typography} from '@mui/material';
   import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -148,29 +148,18 @@ export default function Search() {
   //#region Filters
 
   const [betId, setBetId] = React.useState<number | undefined>(undefined);
-  const [expenseId, setExpenseId] = React.useState<number | undefined>(
-    undefined
-  );
+  const [expenseId, setExpenseId] = React.useState<number | undefined>(undefined);
   const [dateFrom, setDateFrom] = React.useState<Date | undefined>(undefined);
   const [dateTo, setDateTo] = React.useState<Date | undefined>(undefined);
-  const [stakeFrom, setStakeFrom] = React.useState<number | undefined>(
-    undefined
-  );
+  const [stakeFrom, setStakeFrom] = React.useState<number | undefined>(undefined);
   const [stakeTo, setStakeTo] = React.useState<number | undefined>(undefined);
   const [oddFrom, setOddFrom] = React.useState<number | undefined>(undefined);
   const [oddTo, setOddTo] = React.useState<number | undefined>(undefined);
-  const [psLimitFrom, setPsLimitFrom] = React.useState<number | undefined>(
-    undefined
-  );
-  const [psLimitTo, setPsLimitTo] = React.useState<number | undefined>(
-    undefined
-  );
+  const [psLimitFrom, setPsLimitFrom] = React.useState<number | undefined>(undefined);
+  const [psLimitTo, setPsLimitTo] = React.useState<number | undefined>(undefined);
 
-  const [counteragentCategoriesIds, setCounteragentCategoriesIds] =
-    React.useState<Array<string>>([]);
-  const [counteragentIds, setCounteragentIds] = React.useState<Array<string>>(
-    []
-  );
+  const [counteragentCategoriesIds, setCounteragentCategoriesIds] = React.useState<Array<string>>([]);
+  const [counteragentIds, setCounteragentIds] = React.useState<Array<string>>([]);
   const [sportIds, setSportIds] = React.useState<Array<string>>([]);
   const [marketIds, setMarketIds] = React.useState<Array<string>>([]);
   const [tournamentIds, setTournamentIds] = React.useState<Array<string>>([]);
@@ -179,6 +168,8 @@ export default function Search() {
 
   const [totalOfTotals, setTotalOfTotals ] = React.useState<number>(0);
   const [totalOfProfits, setTotalProfits ] = React.useState<number>(0);
+
+  const [activateFilter, setActivateFilter ] = React.useState<boolean>(false);
 
   //#endregion Filters
 
@@ -821,22 +812,7 @@ export default function Search() {
       }
     });
   }, [
-    betId,
-    dateFrom,
-    dateTo,
-    stakeFrom,
-    stakeTo,
-    oddFrom,
-    oddTo,
-    psLimitFrom,
-    psLimitTo,
-    counteragentCategoriesIds,
-    counteragentIds,
-    sportIds,
-    marketIds,
-    tournamentIds,
-    liveStatusIds,
-    currencyIds,
+    activateFilter,
     rows,
     filterType,
   ]);
@@ -1154,69 +1130,77 @@ export default function Search() {
 
   return (
     <>
-      {isLoading ? (
-        <>
-          <div className='background-color-blur'>
-            <CircularProgress
-              color='success'
-              size={250}
-              disableShrink={true}
-              style={{
-                position: 'fixed',
-                top: '0',
-                right: '0',
-                bottom: '0',
-                left: '0',
-                margin: 'auto',
-                zIndex: 9999999999999,
-                transition: 'none',
-              }}
-            />
-          </div>
-        </>
-      ) : null}
+      {
+        isLoading 
+          ? (
+              <>
+                <div className='background-color-blur'>
+                <CircularProgress
+                    color='success'
+                    size={250}
+                    disableShrink={true}
+                    style={{
+                    position: 'fixed',
+                    top: '0',
+                    right: '0',
+                    bottom: '0',
+                    left: '0',
+                    margin: 'auto',
+                    zIndex: 9999999999999,
+                    transition: 'none',
+                  }}
+                  />
+                </div>
+              </>
+            ) 
+          : null
+      }
       <Paper sx={{ padding: '5%' }}>
         <Typography variant='h1' className='typography'>
           Search
         </Typography>
 
         <FormControl component='fieldset'>
-        <FormControlLabel
-          value='end'
-          control={<Checkbox />}
-          label='Are expenses shown'
-          labelPlacement='end'
-          onChange={(e, checked) => {
-            setAreExpensesShown(checked);
-            console.log(checked)
-          }}
-        />
-      </FormControl>
-        {currentStatistcs ? (
-          <Paper>
-            <Typography variant='h4'>Statistics</Typography>
-            <RadioGroup
-              aria-labelledby='demo-controlled-radio-buttons-group'
-              name='controlled-radio-buttons-group'
-              value={statisticsType}
-              onChange={(event) => {
-                const value: string = (event.target as HTMLInputElement).value;
-                setStatisticsType(
-                  value === 'Flat' ? StatisticType.Flat : StatisticType.Real
-                );
-              }}
-            >
-              <FormControlLabel value='Flat' control={<Radio />} label='Flat' />
-              <FormControlLabel value='Real' control={<Radio />} label='Real' />
-            </RadioGroup>
-            <DataGrid 
-              columns={statisticsColumns} 
-              rows={currentStatistcs} 
-              pageSizeOptions={[]}
-              autoPageSize={false}
-              hideFooterPagination/>
-          </Paper>
-        ) : null}
+          <FormControlLabel
+            value='end'
+            control={<Checkbox />}
+            label='Are expenses shown'
+            labelPlacement='end'
+            onChange={(e, checked) => {
+              setAreExpensesShown(checked);
+              console.log(checked)
+            }}
+          />
+        </FormControl>
+        {
+          currentStatistcs 
+            ? (
+                <Paper>
+                  <Typography variant='h4'>Statistics</Typography>
+                  <RadioGroup
+                    aria-labelledby='demo-controlled-radio-buttons-group'
+                    name='controlled-radio-buttons-group'
+                    value={statisticsType}
+                    onChange={(event) => {
+                      const value: string = (event.target as HTMLInputElement).value;
+                      setStatisticsType(
+                        value === 'Flat' ? StatisticType.Flat : StatisticType.Real
+                      );
+                    }}
+                  >
+                    <FormControlLabel value='Flat' control={<Radio />} label='Flat' />
+                    <FormControlLabel value='Real' control={<Radio />} label='Real' />
+                  </RadioGroup>
+                  <DataGrid 
+                    columns={statisticsColumns} 
+                    rows={currentStatistcs} 
+                    pageSizeOptions={[]}
+                    autoPageSize={false}
+                    hideFooterPagination/>
+                </Paper>
+              ) 
+            : null
+        }
         <Paper>
           <Typography variant='h4'>Filter type</Typography>
           <RadioGroup
@@ -1440,40 +1424,63 @@ export default function Search() {
             />
           </Paper>
         </Paper>
+        <Paper sx={{
+          width: '100%',
+        }}>
+          <Button onClick={() => setActivateFilter(!activateFilter)}
+            variant='contained' 
+            color='primary'
+            sx={{
+              width: '20%',
+              marginLetf: '40%',
+            }}>
+            Filter
+          </Button>
+        </Paper>
         <Typography variant='h4'>Bets</Typography>
         <Paper style={{ marginLeft: '60%', }}>
             Turnover: 
-            {Number(totalOfTotals).toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
+            {
+              Number(totalOfTotals).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })
+            }
 
-            { '  Profit:'} 
-            {Number(totalOfProfits).toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
+            {'  Profit:'} 
+            {
+              Number(totalOfProfits).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })
+            }
         </Paper>
-        {filteredRows ? (
-          <Bets
-            id='search'
-            arePengindBets={false}
-            savedBet={(bets: Array<BetModel>, bet: BetModel) => {}}
-            onTotalOfTotalAmountsChanged={onTotalOfTotalAmountsChangedHandler}
-            selectBetIdFn={selectBetId}
-            setIsLoading={setIsLoading}
-            defaultRows={filteredRows}
-            possibleCounteragents={allCounterAgents}
-            possibleSports={allSports}
-            possibleTournaments={allTournaments}
-            possibleSelections={[]}
-            possibleMarkets={allMarkets}
-            currencies={allCurrencies}
-          />
-        ) : null}
-        {Number(auth.user?.role) === 1 && (
-          <Typography variant='h4'>Expenses</Typography>
-        )}
+        {
+          filteredRows 
+            ? (
+                <Bets
+                  id='search'
+                  arePengindBets={false}
+                  savedBet={(bets: Array<BetModel>, bet: BetModel) => {}}
+                  onTotalOfTotalAmountsChanged={onTotalOfTotalAmountsChangedHandler}
+                  selectBetIdFn={selectBetId}
+                  setIsLoading={setIsLoading}
+                  defaultRows={filteredRows}
+                  possibleCounteragents={allCounterAgents}
+                  possibleSports={allSports}
+                  possibleTournaments={allTournaments}
+                  possibleSelections={[]}
+                  possibleMarkets={allMarkets}
+                  currencies={allCurrencies}
+                />
+              ) 
+            : null
+        }
+        {
+          Number(auth.user?.role) === 1 && (
+            <Typography variant='h4'>Expenses</Typography>
+          )
+        }
         {filteredExpenseRowsRows &&
         allCounterAgents &&
         allCounterAgents.length > 0 &&
