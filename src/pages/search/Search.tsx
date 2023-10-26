@@ -1159,19 +1159,6 @@ export default function Search() {
         <Typography variant='h1' className='typography'>
           Search
         </Typography>
-
-        <FormControl component='fieldset'>
-          <FormControlLabel
-            value='end'
-            control={<Checkbox />}
-            label='Are expenses shown'
-            labelPlacement='end'
-            onChange={(e, checked) => {
-              setAreExpensesShown(checked);
-              console.log(checked)
-            }}
-          />
-        </FormControl>
         {
           currentStatistcs 
             ? (
