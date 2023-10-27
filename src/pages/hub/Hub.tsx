@@ -60,6 +60,7 @@ export default function Hub(props: {
   const [totalOfTotalsPending, setTotalOfTotalsPending ] = React.useState<number>(0);
   const [totalOfTotalsCompleted, setTotalOfTotalsCompleted ] = React.useState<number>(0);
   const [totalOfProfitsCompleted, setTotalOfProfitsCompleted ] = React.useState<number>(0);
+  const [winrate, setWinrate ] = React.useState<number>(0);
 
   useEffect(() => {
     (async () => {
@@ -145,6 +146,12 @@ export default function Hub(props: {
             }, 0)
           : 0;
         setTotalOfProfitsCompleted(calculatedTotalOfProfitsCompleted);
+
+        const winRate = completedBetsFilteredByDate
+          ? (completedBetsFilteredByDate.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
+            || b.winStatus.id === '3')).length/completedBetsFilteredByDate.length) * 100
+          : 0;
+        setWinrate(winRate);
 
         const counterAgents: Array<IDropdownValue> | undefined =
           getCounteragentsResult
@@ -277,6 +284,12 @@ export default function Hub(props: {
             }, 0)
           : 0;
     setTotalOfProfitsCompleted(calculatedTotalOfProfitsCompleted);
+
+    const winRate = filteredCompletedBetsByDate
+          ? (filteredCompletedBetsByDate.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
+            || b.winStatus.id === '3')).length/filteredCompletedBetsByDate.length) * 100
+          : 0;
+    setWinrate(winRate);
 
     setFilteredExpensesRows((previousRowsModel: Array<ExpenseModel> | undefined) => {
       let filteredExpenses: Array<ExpenseModel> = [];
@@ -419,10 +432,17 @@ export default function Hub(props: {
             }, 0)
           : 0;
       setTotalOfProfitsCompleted(calculatedTotalProfisCompleted);
+
+      const winRate = filteredCompletedRowsByDate
+          ? (filteredCompletedRowsByDate.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
+            || b.winStatus.id === '3')).length/filteredCompletedRowsByDate.length) * 100
+          : 0;
+      setWinrate(winRate);
     } else {
       setFilteredCompletedRows([]);
       setTotalOfTotalsCompleted(0);
       setTotalOfProfitsCompleted(0);
+      setWinrate(0);
     }
     
     return;
@@ -722,16 +742,33 @@ export default function Hub(props: {
                             marginLeft: '60%',
                           }}>
                             Turnover: 
-                            {Number(totalOfTotalsCompleted).toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}
+                            {
+                              totalOfTotalsCompleted && !isNaN(totalOfTotalsCompleted)
+                                ? Number(totalOfTotalsCompleted).toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })
+                                : 0.00
+                            }
 
                             { '  Profit:'} 
-                            {Number(totalOfProfitsCompleted).toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}
+                            {
+                               totalOfProfitsCompleted && !isNaN(totalOfProfitsCompleted)
+                                ? Number(totalOfProfitsCompleted).toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })
+                                : 0.00
+                            }
+                            { '  Winrate:'} 
+                            {
+                              winrate && !isNaN(winrate)
+                                ? Number(winrate).toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })
+                                : 0.00
+                            }%
                         </Paper>
                         <Collapse in={isCompletedTableExpanded} timeout='auto' unmountOnExit>
                           <Bets
