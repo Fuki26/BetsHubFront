@@ -168,6 +168,8 @@ export default function Search() {
 
   const [totalOfTotals, setTotalOfTotals ] = React.useState<number>(0);
   const [totalOfProfits, setTotalProfits ] = React.useState<number>(0);
+  const [winrate, setWinrate ] = React.useState<number>(0);
+  const [totalOfYields, setTotalOfYields ] = React.useState<number>(0);
 
   const [activateFilter, setActivateFilter ] = React.useState<boolean>(false);
 
@@ -274,6 +276,23 @@ export default function Search() {
             }, 0)
           : 0;
 	      setTotalProfits(calculatedTotalProfits);
+
+        const winRate = filteredRows
+          ? (filteredRows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
+              || b.winStatus.id === '3')).length/filteredRows.length) * 100
+          : 0;
+        setWinrate(winRate);
+
+        let totalOfYields = filteredRows
+          ? filteredRows.reduce((accumulator, currentValue: BetModel) => {
+            if (currentValue.yield) {
+              return accumulator + Number(currentValue.yield);
+            } else {
+              return accumulator;
+            }
+          }, 0)
+          : 0;
+        setTotalOfYields(totalOfYields);
 
         //#endregion Bets
 
@@ -451,6 +470,23 @@ export default function Search() {
             }, 0)
           : 0;
         setTotalProfits(calculatedTotalProfits);
+
+        const winRate = rows
+          ? (rows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
+              || b.winStatus.id === '3')).length/rows.length) * 100
+          : 0;
+        setWinrate(winRate);
+
+        let totalOfYields = rows
+          ? rows.reduce((accumulator, currentValue: BetModel) => {
+            if (currentValue.yield) {
+              return accumulator + Number(currentValue.yield);
+            } else {
+              return accumulator;
+            }
+          }, 0)
+          : 0;
+        setTotalOfYields(totalOfYields);
 
         return rows ? rows : [];
       }
@@ -804,10 +840,29 @@ export default function Search() {
           : 0;
         setTotalProfits(calculatedTotalProfits);
 
+        const winRate = bets
+            ? (bets.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
+                || b.winStatus.id === '3')).length/bets.length) * 100
+            : 0;
+        setWinrate(winRate);
+
+        let totalOfYields = bets
+          ? bets.reduce((accumulator, currentValue: BetModel) => {
+            if (currentValue.yield) {
+              return accumulator + Number(currentValue.yield);
+            } else {
+              return accumulator;
+            }
+          }, 0)
+          : 0;
+        setTotalOfYields(totalOfYields);
+
         return bets;
       } else {
         setTotalOfTotals(0);
         setTotalProfits(0);
+        setWinrate(0);
+        setTotalOfYields(0);
         return [];
       }
     });
@@ -1428,18 +1483,42 @@ export default function Search() {
         <Paper style={{ marginLeft: '60%', }}>
             Turnover: 
             {
-              Number(totalOfTotals).toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })
+              totalOfTotals && !isNaN(totalOfTotals)
+                ? Number(totalOfTotals).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                : 0.00
             }
 
             {'  Profit:'} 
             {
-              Number(totalOfProfits).toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })
+              totalOfProfits && !isNaN(totalOfProfits)
+                ? Number(totalOfProfits).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                : 0.00
+            }
+
+            { '  Winrate:'} 
+            {
+              winrate && !isNaN(winrate)
+                ? Number(winrate).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                : 0.00
+            }%
+
+            { '  Total of yields:'} 
+            {
+              totalOfYields && !isNaN(totalOfYields)
+                ? Number(totalOfYields).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                : 0.00
             }
         </Paper>
         {

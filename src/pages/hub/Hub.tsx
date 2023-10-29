@@ -61,6 +61,7 @@ export default function Hub(props: {
   const [totalOfTotalsCompleted, setTotalOfTotalsCompleted ] = React.useState<number>(0);
   const [totalOfProfitsCompleted, setTotalOfProfitsCompleted ] = React.useState<number>(0);
   const [winrate, setWinrate ] = React.useState<number>(0);
+  const [totalOfYields, setTotalOfYields ] = React.useState<number>(0);
 
   useEffect(() => {
     (async () => {
@@ -149,9 +150,20 @@ export default function Hub(props: {
 
         const winRate = completedBetsFilteredByDate
           ? (completedBetsFilteredByDate.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-            || b.winStatus.id === '3')).length/completedBetsFilteredByDate.length) * 100
+              || b.winStatus.id === '3')).length/completedBetsFilteredByDate.length) * 100
           : 0;
         setWinrate(winRate);
+
+        let totalOfYields = completedBetsFilteredByDate
+          ? completedBetsFilteredByDate.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.yield) {
+                return accumulator + Number(currentValue.yield);
+              } else {
+                return accumulator;
+              }
+            }, 0)
+          : 0;
+        setTotalOfYields(totalOfYields);
 
         const counterAgents: Array<IDropdownValue> | undefined =
           getCounteragentsResult
@@ -287,9 +299,20 @@ export default function Hub(props: {
 
     const winRate = filteredCompletedBetsByDate
           ? (filteredCompletedBetsByDate.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-            || b.winStatus.id === '3')).length/filteredCompletedBetsByDate.length) * 100
+              || b.winStatus.id === '3')).length/filteredCompletedBetsByDate.length) * 100
           : 0;
     setWinrate(winRate);
+
+    let totalOfYields = filteredCompletedBetsByDate
+      ? filteredCompletedBetsByDate.reduce((accumulator, currentValue: BetModel) => {
+        if (currentValue.yield) {
+          return accumulator + Number(currentValue.yield);
+        } else {
+          return accumulator;
+        }
+      }, 0)
+      : 0;
+    setTotalOfYields(totalOfYields);
 
     setFilteredExpensesRows((previousRowsModel: Array<ExpenseModel> | undefined) => {
       let filteredExpenses: Array<ExpenseModel> = [];
@@ -435,14 +458,26 @@ export default function Hub(props: {
 
       const winRate = filteredCompletedRowsByDate
           ? (filteredCompletedRowsByDate.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-            || b.winStatus.id === '3')).length/filteredCompletedRowsByDate.length) * 100
+              || b.winStatus.id === '3')).length/filteredCompletedRowsByDate.length) * 100
           : 0;
       setWinrate(winRate);
+
+      let totalOfYields = filteredCompletedRowsByDate
+        ? filteredCompletedRowsByDate.reduce((accumulator, currentValue: BetModel) => {
+          if (currentValue.yield) {
+            return accumulator + Number(currentValue.yield);
+          } else {
+            return accumulator;
+          }
+        }, 0)
+        : 0;
+      setTotalOfYields(totalOfYields);
     } else {
       setFilteredCompletedRows([]);
       setTotalOfTotalsCompleted(0);
       setTotalOfProfitsCompleted(0);
       setWinrate(0);
+      setTotalOfYields(0);
     }
     
     return;
@@ -769,6 +804,15 @@ export default function Hub(props: {
                                   })
                                 : 0.00
                             }%
+                            { '  Total of yields:'} 
+                            {
+                              totalOfYields && !isNaN(totalOfYields)
+                                ? Number(totalOfYields).toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })
+                                : 0.00
+                            }
                         </Paper>
                         <Collapse in={isCompletedTableExpanded} timeout='auto' unmountOnExit>
                           <Bets

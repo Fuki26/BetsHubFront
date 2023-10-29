@@ -21,6 +21,7 @@ export type BetModel = {
     dateFinished?: Date;
     profits?: number;
     notes?: string;
+    yield?: number;
 
     actionTypeApplied?: ActionType;
     isSavedInDatabase: boolean;
