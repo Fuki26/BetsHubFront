@@ -1218,7 +1218,6 @@ export default function Search() {
           currentStatistcs 
             ? (
                 <Paper>
-                  <Typography variant='h4'>Statistics</Typography>
                   <RadioGroup
                     aria-labelledby='demo-controlled-radio-buttons-group'
                     name='controlled-radio-buttons-group'
