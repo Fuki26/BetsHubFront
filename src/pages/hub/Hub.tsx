@@ -154,15 +154,7 @@ export default function Hub(props: {
           : 0;
         setWinrate(winRate);
 
-        let totalOfYields = completedBetsFilteredByDate
-          ? completedBetsFilteredByDate.reduce((accumulator, currentValue: BetModel) => {
-              if (currentValue.yield) {
-                return accumulator + Number(currentValue.yield);
-              } else {
-                return accumulator;
-              }
-            }, 0)
-          : 0;
+        let totalOfYields = calculatedTotalOfTotalsCompleted === 0 ? 0 : calculatedTotalOfProfitsCompleted / calculatedTotalOfTotalsCompleted;
         setTotalOfYields(totalOfYields);
 
         const counterAgents: Array<IDropdownValue> | undefined =
@@ -303,15 +295,7 @@ export default function Hub(props: {
           : 0;
     setWinrate(winRate);
 
-    let totalOfYields = filteredCompletedBetsByDate
-      ? filteredCompletedBetsByDate.reduce((accumulator, currentValue: BetModel) => {
-        if (currentValue.yield) {
-          return accumulator + Number(currentValue.yield);
-        } else {
-          return accumulator;
-        }
-      }, 0)
-      : 0;
+    let totalOfYields = calculatedTotalOfTotalsCompleted === 0 ? 0 : calculatedTotalOfProfitsCompleted / calculatedTotalOfTotalsCompleted;
     setTotalOfYields(totalOfYields);
 
     setFilteredExpensesRows((previousRowsModel: Array<ExpenseModel> | undefined) => {
@@ -462,15 +446,7 @@ export default function Hub(props: {
           : 0;
       setWinrate(winRate);
 
-      let totalOfYields = filteredCompletedRowsByDate
-        ? filteredCompletedRowsByDate.reduce((accumulator, currentValue: BetModel) => {
-          if (currentValue.yield) {
-            return accumulator + Number(currentValue.yield);
-          } else {
-            return accumulator;
-          }
-        }, 0)
-        : 0;
+      let totalOfYields = calculatedTotalOfTotalsCompleted === 0 ? 0 : calculatedTotalProfisCompleted / calculatedTotalOfTotalsCompleted;
       setTotalOfYields(totalOfYields);
     } else {
       setFilteredCompletedRows([]);
@@ -806,11 +782,11 @@ export default function Hub(props: {
                             { '  Total of yields:'} 
                             {
                               totalOfYields && !isNaN(totalOfYields)
-                                ? Number(totalOfYields).toLocaleString(undefined, {
+                                ? (totalOfYields * 100).toLocaleString(undefined, {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2,
-                                  })
-                                : 0.00
+                                  }) + '%'
+                                : "0.00%"
                             }
                         </Paper>
                         <Collapse in={isCompletedTableExpanded} timeout='auto' unmountOnExit>

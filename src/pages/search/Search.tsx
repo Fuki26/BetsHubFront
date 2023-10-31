@@ -283,15 +283,17 @@ export default function Search() {
           : 0;
         setWinrate(winRate);
 
-        let totalOfYields = filteredRows
-          ? filteredRows.reduce((accumulator, currentValue: BetModel) => {
-            if (currentValue.yield) {
-              return accumulator + Number(currentValue.yield);
-            } else {
-              return accumulator;
-            }
-          }, 0)
-          : 0;
+        // let totalOfYields = filteredRows
+        //   ? filteredRows.reduce((accumulator, currentValue: BetModel) => {
+        //     if (currentValue.yield) {
+        //       return accumulator + Number(currentValue.yield);
+        //     } else {
+        //       return accumulator;
+        //     }
+        //   }, 0)
+        //   : 0;
+
+        let totalOfYields = totalOfTotals === 0 ? 0 : totalOfProfits / totalOfTotals;
         setTotalOfYields(totalOfYields);
 
         //#endregion Bets
@@ -477,15 +479,7 @@ export default function Search() {
           : 0;
         setWinrate(winRate);
 
-        let totalOfYields = rows
-          ? rows.reduce((accumulator, currentValue: BetModel) => {
-            if (currentValue.yield) {
-              return accumulator + Number(currentValue.yield);
-            } else {
-              return accumulator;
-            }
-          }, 0)
-          : 0;
+        let totalOfYields = totalOfTotals === 0 ? 0 : totalOfProfits / totalOfTotals;
         setTotalOfYields(totalOfYields);
 
         return rows ? rows : [];
@@ -846,15 +840,7 @@ export default function Search() {
             : 0;
         setWinrate(winRate);
 
-        let totalOfYields = bets
-          ? bets.reduce((accumulator, currentValue: BetModel) => {
-            if (currentValue.yield) {
-              return accumulator + Number(currentValue.yield);
-            } else {
-              return accumulator;
-            }
-          }, 0)
-          : 0;
+        let totalOfYields = totalOfTotals === 0 ? 0 : totalOfProfits / totalOfTotals;
         setTotalOfYields(totalOfYields);
 
         return bets;
@@ -1513,11 +1499,11 @@ export default function Search() {
             { '  Total of yields:'} 
             {
               totalOfYields && !isNaN(totalOfYields)
-                ? Number(totalOfYields).toLocaleString(undefined, {
+                ? (totalOfYields * 100).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
-                  })
-                : 0.00
+                  }) + '%'
+                : "0.00%"
             }
         </Paper>
         {
