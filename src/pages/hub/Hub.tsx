@@ -590,7 +590,7 @@ export default function Hub(props: {
           flexDirection: 'row', 
           flexWrap: 'nowrap', 
           justifyContent: 'normal',
-          marginBottom: '-1%',
+          marginBottom: '1%',
           marginLeft: '1%',
           ...isStickyStylings,
       }}>
