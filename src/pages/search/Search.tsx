@@ -168,7 +168,6 @@ export default function Search() {
   const [totalOfTotals, setTotalOfTotals ] = React.useState<number>(0);
   const [totalOfProfits, setTotalProfits ] = React.useState<number>(0);
   const [winrate, setWinrate ] = React.useState<number>(0);
-  const [totalOfYields, setTotalOfYields ] = React.useState<number>(0);
 
   const [activateFilter, setActivateFilter ] = React.useState<boolean>(false);
 
@@ -281,19 +280,6 @@ export default function Search() {
               || b.winStatus.id === '3')).length/filteredRows.length) * 100
           : 0;
         setWinrate(winRate);
-
-        // let totalOfYields = filteredRows
-        //   ? filteredRows.reduce((accumulator, currentValue: BetModel) => {
-        //     if (currentValue.yield) {
-        //       return accumulator + Number(currentValue.yield);
-        //     } else {
-        //       return accumulator;
-        //     }
-        //   }, 0)
-        //   : 0;
-
-        let totalOfYields = totalOfTotals === 0 ? 0 : totalOfProfits / totalOfTotals;
-        setTotalOfYields(totalOfYields);
 
         //#endregion Bets
 
@@ -477,9 +463,6 @@ export default function Search() {
               || b.winStatus.id === '3')).length/rows.length) * 100
           : 0;
         setWinrate(winRate);
-
-        let totalOfYields = totalOfTotals === 0 ? 0 : totalOfProfits / totalOfTotals;
-        setTotalOfYields(totalOfYields);
 
         return rows ? rows : [];
       }
@@ -839,15 +822,11 @@ export default function Search() {
             : 0;
         setWinrate(winRate);
 
-        let totalOfYields = totalOfTotals === 0 ? 0 : totalOfProfits / totalOfTotals;
-        setTotalOfYields(totalOfYields);
-
         return bets;
       } else {
         setTotalOfTotals(0);
         setTotalProfits(0);
         setWinrate(0);
-        setTotalOfYields(0);
         return [];
       }
     });
@@ -1552,8 +1531,8 @@ export default function Search() {
               YIELD:
             </Paper> 
             {
-              totalOfYields && !isNaN(totalOfYields)
-                ? (totalOfYields * 100).toLocaleString(undefined, {
+              totalOfProfits && !isNaN(totalOfProfits) && totalOfTotals && !isNaN(totalOfTotals)
+                ? ((totalOfProfits/totalOfTotals) * 100).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   }) + '%'

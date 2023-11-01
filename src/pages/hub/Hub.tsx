@@ -61,7 +61,6 @@ export default function Hub(props: {
   const [totalOfTotalsCompleted, setTotalOfTotalsCompleted ] = React.useState<number>(0);
   const [totalOfProfitsCompleted, setTotalOfProfitsCompleted ] = React.useState<number>(0);
   const [winrate, setWinrate ] = React.useState<number>(0);
-  const [totalOfYields, setTotalOfYields ] = React.useState<number>(0);
 
   useEffect(() => {
     (async () => {
@@ -153,9 +152,6 @@ export default function Hub(props: {
               || b.winStatus.id === '3')).length/completedBetsFilteredByDate.length) * 100
           : 0;
         setWinrate(winRate);
-
-        let totalOfYields = calculatedTotalOfTotalsCompleted === 0 ? 0 : calculatedTotalOfProfitsCompleted / calculatedTotalOfTotalsCompleted;
-        setTotalOfYields(totalOfYields);
 
         const counterAgents: Array<IDropdownValue> | undefined =
           getCounteragentsResult
@@ -294,9 +290,6 @@ export default function Hub(props: {
               || b.winStatus.id === '3')).length/filteredCompletedBetsByDate.length) * 100
           : 0;
     setWinrate(winRate);
-
-    let totalOfYields = calculatedTotalOfTotalsCompleted === 0 ? 0 : calculatedTotalOfProfitsCompleted / calculatedTotalOfTotalsCompleted;
-    setTotalOfYields(totalOfYields);
 
     setFilteredExpensesRows((previousRowsModel: Array<ExpenseModel> | undefined) => {
       let filteredExpenses: Array<ExpenseModel> = [];
@@ -445,15 +438,11 @@ export default function Hub(props: {
               || b.winStatus.id === '3')).length/filteredCompletedRowsByDate.length) * 100
           : 0;
       setWinrate(winRate);
-
-      let totalOfYields = calculatedTotalOfTotalsCompleted === 0 ? 0 : calculatedTotalProfisCompleted / calculatedTotalOfTotalsCompleted;
-      setTotalOfYields(totalOfYields);
     } else {
       setFilteredCompletedRows([]);
       setTotalOfTotalsCompleted(0);
       setTotalOfProfitsCompleted(0);
       setWinrate(0);
-      setTotalOfYields(0);
     }
     
     return;
@@ -760,14 +749,15 @@ export default function Hub(props: {
                                     YIELD:
                                   </Paper> 
                                   {
-                                    totalOfYields && !isNaN(totalOfYields)
-                                      ? (totalOfYields * 100).toLocaleString(undefined, {
+                                    totalOfProfitsCompleted && !isNaN(totalOfProfitsCompleted) && 
+                                      totalOfTotalsCompleted && !isNaN(totalOfTotalsCompleted)
+                                      ? ((totalOfProfitsCompleted/totalOfTotalsCompleted) * 100).toLocaleString(undefined, {
                                           minimumFractionDigits: 2,
                                           maximumFractionDigits: 2,
                                         }) + '%'
                                       : "0.00%"
                                   }
-                                </Paper>
+                                  </Paper>
                               )
                         }
                     </Paper>
