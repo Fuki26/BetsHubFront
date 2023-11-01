@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { useLocation } from 'react-router-dom';
-import { ButtonBase, CSSObject, Theme, } from '@mui/material';
+import { useLocation, Link, } from 'react-router-dom';
+import { CSSObject, Theme, } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -9,19 +9,13 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MuiDrawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
-import CssBaseline from '@mui/material/CssBaseline';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useAuth } from '../../contexts/AuthContext';
 import { items } from '../../components/side-navigation/config';
-import { SvgIcon } from '@mui/material';
-import { CopyrightSharp, PeopleRounded, SearchRounded, 
-  SupportAgentRounded, EuroRounded, VerifiedUserRounded, } from '@mui/icons-material';
-  import { Link } from 'react-router-dom';
 
-const drawerWidth = 240;
+const drawerWidth = 230;
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -30,6 +24,7 @@ const openedMixin = (theme: Theme): CSSObject => ({
     duration: theme.transitions.duration.enteringScreen,
   }),
   overflowX: 'hidden',
+  background: '#1C2536',
 });
 
 const closedMixin = (theme: Theme): CSSObject => ({
@@ -42,6 +37,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
   [theme.breakpoints.up('sm')]: {
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
+  background: '#1C2536',
 });
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -49,30 +45,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'flex-end',
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-}));
-
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
-}
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})<AppBarProps>(({ theme, open }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(['width', 'margin'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
 }));
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -92,17 +65,9 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
-}
-
 export default function PersistentDrawerLeft(
   props: { openSidebarCb: React.Dispatch<React.SetStateAction<boolean | undefined>>}) {
-  const {
-    auth,
-    // logIn,
-    // logout,
-  } = useAuth();
+  const { auth, } = useAuth();
   const { openSidebarCb, } = props;
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -123,7 +88,6 @@ export default function PersistentDrawerLeft(
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           {
@@ -134,10 +98,10 @@ export default function PersistentDrawerLeft(
                   </IconButton>
                 )
               : (
-                <IconButton onClick={handleDrawerOpen}>
-                  <ChevronRightIcon />
-                </IconButton>
-              )
+                  <IconButton onClick={handleDrawerOpen}>
+                    <ChevronRightIcon />
+                  </IconButton>
+                )
           }
           
         </DrawerHeader>
@@ -172,11 +136,11 @@ export default function PersistentDrawerLeft(
                             justifyContent: 'center',
                           }}
                         >
-                          
-                          {icon}
-                          
+                          {icon} 
                         </ListItemIcon>
-                        <ListItemText primary={item.title} sx={{ opacity: open ? 1 : 0 }} />
+                        <ListItemText primary={item.title} 
+                          sx={{ opacity: open ? 1 : 0, color: 'white' }} 
+                        />
                       </ListItemButton>
                     </ListItem>
                   );
