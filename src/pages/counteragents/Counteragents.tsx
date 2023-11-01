@@ -600,51 +600,48 @@ export default function Counteragents(props: {}) {
   }
 
   return (
-    <>
-    {
-  isLoading
-    ? (
-      <>
-      <div className='background-color-blur'>
-      <CircularProgress color='success' 
-          size={250}
-          disableShrink={true}
-          style={{
-            position: 'fixed', 
-            top: '0', 
-            right: '0',
-            bottom: '0',
-            left: '0',
-            margin: 'auto',
-            zIndex: 9999999999999,
-            transition: 'none',
-          }}
-        />
-      </div>
-      </>
-    )
-  : null
-}
-
-    <Paper sx={{ padding: '5%', }}>
-      <Typography variant='h3'>Counteragents</Typography>
-     
+    <Paper>
       {
-        rows
+        isLoading
+        ? 
+          (
+            <div className='background-color-blur'>
+              <CircularProgress
+                  color='success'
+                  size={250}
+                  disableShrink={true}
+                  style={{
+                  position: 'fixed', 
+                  top: '0', 
+                  right: '0',
+                  bottom: '0',
+                  left: '0',
+                  margin: 'auto',
+                  zIndex: 9999999999999,
+                  transition: 'none',
+                }}/>
+            </div>
+          )
+        : null
+      }
+      <Paper sx={{ paddingLeft: '2%'}}>
+        <Typography variant='h3'>Counteragents</Typography>
+        {
+          rows
           ? (
-              <>
+              <Paper>
                 <DataGrid
                   columns={columns}
                   columnBuffer={2} 
                   columnThreshold={2}
                   rows={rows}   
                   slots={{
-                    toolbar: editToolbar,
+                  toolbar: editToolbar,
                   }}
                   rowModesModel={rowModesModel}
                   processRowUpdate={processRowUpdate}
                   slotProps={{
-                    toolbar: { setRows, setRowModesModel },
+                  toolbar: { setRows, setRowModesModel },
                   }}
                   editMode='row'
                 />
@@ -662,13 +659,11 @@ export default function Counteragents(props: {}) {
                     <Button onClick={handleCloseOnDeleteDialog}>No</Button>
                   </DialogActions>
                 </Dialog>
-              </> 
+              </Paper>
             )
-          : null
-      }
+            : null
+        }
+      </Paper>
     </Paper>
-
-    </>
-    
   );
 }

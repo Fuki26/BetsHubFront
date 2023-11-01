@@ -540,7 +540,7 @@ export default function Expenses(props: {
   }
 
   return (
-    <Paper sx={{ padding: '5%', }}>
+    <Paper>
       {
         rows
           ? (

@@ -12,11 +12,6 @@
     margin-bottom: 5%;
 }
 
-.search-filters-container .search-filters-autocomplete {
-    margin-right: 2%;
-    max-width: 25%;
-}
-
 .search-filters-small-container {
     display: flex;
 	flex-direction: row;

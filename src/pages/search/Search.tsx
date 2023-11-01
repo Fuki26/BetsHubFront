@@ -65,11 +65,11 @@ const AutocompleteComponent = (props: {
   options: Array<IDropdownValue>;
   selectedOptions: Array<string>;
   setStateFn: React.Dispatch<React.SetStateAction<string[]>>;
+  width?: number;
 }) => {
-  const { id, label, options, selectedOptions, setStateFn, } = props;
+  const { id, label, options, selectedOptions, setStateFn, width, } = props;
   return (
     <Autocomplete
-      className='search-filters-autocomplete'
       multiple
       id={id}
       options={options}
@@ -94,7 +94,7 @@ const AutocompleteComponent = (props: {
           </li>
         )
       }}
-      style={{ width: 500 }}
+      style={{ width: width ? width : 500 }}
       renderInput={(params) => {
         return (
           <TextField {...params} label={label} placeholder={label} />
@@ -134,7 +134,6 @@ export default function Search() {
   const [selectedBetId, setSelectedBetId] = React.useState<number | undefined>(
     undefined
   );
-  const [areExpensesShown, setAreExpensesShown] = React.useState<boolean>(false);
   const [statisticsType, setStatisticsType] = React.useState<StatisticType>(
     StatisticType.Flat
   );
@@ -169,7 +168,6 @@ export default function Search() {
   const [totalOfTotals, setTotalOfTotals ] = React.useState<number>(0);
   const [totalOfProfits, setTotalProfits ] = React.useState<number>(0);
   const [winrate, setWinrate ] = React.useState<number>(0);
-  const [totalOfYields, setTotalOfYields ] = React.useState<number>(0);
 
   const [activateFilter, setActivateFilter ] = React.useState<boolean>(false);
 
@@ -282,19 +280,6 @@ export default function Search() {
               || b.winStatus.id === '3')).length/filteredRows.length) * 100
           : 0;
         setWinrate(winRate);
-
-        // let totalOfYields = filteredRows
-        //   ? filteredRows.reduce((accumulator, currentValue: BetModel) => {
-        //     if (currentValue.yield) {
-        //       return accumulator + Number(currentValue.yield);
-        //     } else {
-        //       return accumulator;
-        //     }
-        //   }, 0)
-        //   : 0;
-
-        let totalOfYields = totalOfTotals === 0 ? 0 : totalOfProfits / totalOfTotals;
-        setTotalOfYields(totalOfYields);
 
         //#endregion Bets
 
@@ -478,9 +463,6 @@ export default function Search() {
               || b.winStatus.id === '3')).length/rows.length) * 100
           : 0;
         setWinrate(winRate);
-
-        let totalOfYields = totalOfTotals === 0 ? 0 : totalOfProfits / totalOfTotals;
-        setTotalOfYields(totalOfYields);
 
         return rows ? rows : [];
       }
@@ -840,15 +822,11 @@ export default function Search() {
             : 0;
         setWinrate(winRate);
 
-        let totalOfYields = totalOfTotals === 0 ? 0 : totalOfProfits / totalOfTotals;
-        setTotalOfYields(totalOfYields);
-
         return bets;
       } else {
         setTotalOfTotals(0);
         setTotalProfits(0);
         setWinrate(0);
-        setTotalOfYields(0);
         return [];
       }
     });
@@ -1170,7 +1148,7 @@ export default function Search() {
   }
 
   return (
-    <>
+    <Paper>
       {
         isLoading 
           ? (
@@ -1196,8 +1174,8 @@ export default function Search() {
             ) 
           : null
       }
-      <Paper sx={{ padding: '5%' }}>
-        <Typography variant='h1' className='typography'>
+      <Paper sx={{ paddingLeft: '2%'}}>
+        <Typography variant='h1'>
           Search
         </Typography>
         {
@@ -1234,33 +1212,35 @@ export default function Search() {
             aria-labelledby='demo-controlled-radio-buttons-group'
             name='controlled-radio-buttons-group'
             value={filterType}
+            sx={{
+              flexDirection: 'row',
+            }}
             onChange={(event) => {
               const value: string = (event.target as HTMLInputElement).value;
               setFilterType(
                 value === 'Bets'
                   ? FilterType.Bets
                   : value === 'Expenses'
-                  ? FilterType.Expenses
-                  : FilterType.Both
+                    ? FilterType.Expenses
+                    : FilterType.Both
               );
             }}
           >
             <FormControlLabel value='Bets' control={<Radio />} label='Bets' />
-            <FormControlLabel
-              value='Expenses'
-              control={<Radio />}
-              label='Expenses'
-            />
+            <FormControlLabel value='Expenses' control={<Radio />} label='Expenses' />
             <FormControlLabel value='Both' control={<Radio />} label='Both' />
           </RadioGroup>
         </Paper>
-        <Paper className='margin-top-5'>
-          <Paper className='margin-top-1'>
+        <Paper>
+          <Paper sx={{ marginTop: '1%',}}>
             <TextField
               id='betId'
               label='Bet id'
               variant='outlined'
               type='number'
+              sx={{
+                width: '15%',
+              }}
               onChange={(e) => {
                 const betId = parseInt(e.target.value);
                 if (!isNaN(betId)) {
@@ -1275,6 +1255,10 @@ export default function Search() {
               label='Expense id'
               variant='outlined'
               type='number'
+              sx={{
+                marginRight: '1%',
+                width: '15%',
+              }}
               onChange={(e) => {
                 const expenseId = parseInt(e.target.value);
                 if (!isNaN(expenseId)) {
@@ -1284,33 +1268,41 @@ export default function Search() {
                 }
               }}
             />
-          </Paper>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label='From'
-              value={dayjs(dateFrom)}
-              onChange={(newValue) => {
-                setDateFrom(
-                  newValue ? new Date(newValue?.toISOString()) : undefined
-                );
-              }}
-            />
-            <DatePicker
-              label='To'
-              value={dayjs(dateTo)}
-              onChange={(newValue) => {
-                setDateTo(
-                  newValue ? new Date(newValue?.toISOString()) : undefined
-                );
-              }}
-            />
-          </LocalizationProvider>
-          <Paper className='margin-top-1'>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label='From'
+                value={dayjs(dateFrom)}
+                sx={{
+                  width: '15%',
+                }}
+                onChange={(newValue) => {
+                  setDateFrom(
+                    newValue ? new Date(newValue?.toISOString()) : undefined
+                  );
+                }}
+              />
+              <DatePicker
+                label='To'
+                value={dayjs(dateTo)}
+                sx={{
+                  marginRight: '1%',
+                  width: '15%',
+                }}
+                onChange={(newValue) => {
+                  setDateTo(
+                    newValue ? new Date(newValue?.toISOString()) : undefined
+                  );
+                }}
+              />
+            </LocalizationProvider>
             <TextField
               id='stake-from'
               label='Stake from'
               variant='outlined'
               type='number'
+              sx={{
+                width: '15%',
+              }}
               onChange={(e) => {
                 const stakeFrom = parseInt(e.target.value);
                 if (!isNaN(stakeFrom)) {
@@ -1325,6 +1317,9 @@ export default function Search() {
               label='Stake to'
               variant='outlined'
               type='number'
+              sx={{
+                width: '15%',
+              }}
               onChange={(e) => {
                 const stakeTo = parseInt(e.target.value);
                 if (!isNaN(stakeTo)) {
@@ -1335,12 +1330,15 @@ export default function Search() {
               }}
             />
           </Paper>
-          <Paper className='margin-top-1'>
+          <Paper sx={{ display: 'block', marginTop: '1%',}}>
             <TextField
               id='odd-from'
               label='Odd from'
               variant='outlined'
               type='number'
+              sx={{
+                width: '15%',
+              }}
               onChange={(e) => {
                 const oddFrom = parseInt(e.target.value);
                 if (!isNaN(oddFrom)) {
@@ -1355,6 +1353,10 @@ export default function Search() {
               label='Odd to'
               variant='outlined'
               type='number'
+              sx={{
+                marginRight: '1%',
+                width: '15%',
+              }}
               onChange={(e) => {
                 const oddTo = parseInt(e.target.value);
                 if (!isNaN(oddTo)) {
@@ -1364,13 +1366,15 @@ export default function Search() {
                 }
               }}
             />
-          </Paper>
-          <Paper className='margin-top-1'>
+
             <TextField
               id='psLimit-from'
               label='PsLimit from'
               variant='outlined'
               type='number'
+              sx={{
+                width: '15%',
+              }}
               onChange={(e) => {
                 const psLimitFrom = parseInt(e.target.value);
                 if (!isNaN(psLimitFrom)) {
@@ -1385,6 +1389,10 @@ export default function Search() {
               label='PsLimit to'
               variant='outlined'
               type='number'
+              sx={{
+                marginRight: '1%',
+                width: '15%',
+              }}
               onChange={(e) => {
                 const psLimitTo = parseInt(e.target.value);
                 if (!isNaN(psLimitTo)) {
@@ -1394,16 +1402,19 @@ export default function Search() {
                 }
               }}
             />
-          </Paper>
-          <Paper className='search-filters-container'>
-            <Paper className='search-filters-small-container'>
+            <Paper sx={{ display: 'inline-block',}}>
               <AutocompleteComponent
                 id='counteragentCategories-autocomplete'
                 label='CounteragentCategory'
                 options={distinctCounteragentCategories}
                 selectedOptions={counteragentCategoriesIds}
                 setStateFn={setCounteragentCategoriesIds}
+                width={515}
               />
+            </Paper>
+          </Paper>
+          <Paper>
+            <Paper sx={{ display: 'inline-block', marginRight: '2%', marginTop: '1%', }}>
               <AutocompleteComponent
                 id='counteragents-autocomplete'
                 label='Counteragent'
@@ -1411,6 +1422,8 @@ export default function Search() {
                 selectedOptions={counteragentIds}
                 setStateFn={setCounteragentIds}
               />
+            </Paper>
+            <Paper sx={{ display: 'inline-block', marginRight: '2%', marginTop: '1%', }}>
               <AutocompleteComponent
                 id='sports-autocomplete'
                 label='Sport'
@@ -1419,7 +1432,7 @@ export default function Search() {
                 setStateFn={setSportIds}
               />
             </Paper>
-            <Paper className='search-filters-small-container'>
+            <Paper sx={{ display: 'inline-block', marginRight: '2%', marginTop: '1%', }}>
               <AutocompleteComponent
                 id='markets-autocomplete'
                 label='Market'
@@ -1427,6 +1440,8 @@ export default function Search() {
                 selectedOptions={marketIds}
                 setStateFn={setMarketIds}
               />
+            </Paper>
+            <Paper sx={{ display: 'inline-block', marginRight: '2%', marginTop: '1%', }}>
               <AutocompleteComponent
                 id='tournaments-autocomplete'
                 label='Tournament'
@@ -1434,6 +1449,8 @@ export default function Search() {
                 selectedOptions={tournamentIds}
                 setStateFn={setTournamentIds}
               />
+            </Paper>
+            <Paper sx={{ display: 'inline-block', marginRight: '2%',  marginTop: '1%',}}>
               <AutocompleteComponent
                 id='liveStatuses-autocomplete'
                 label='LiveStatus'
@@ -1442,18 +1459,18 @@ export default function Search() {
                 setStateFn={setLiveStatusIds}
               />
             </Paper>
-            <AutocompleteComponent
-              id='currencies-autocomplete'
-              label='Currency'
-              options={distinctCurrencies}
-              selectedOptions={currencyIds}
-              setStateFn={setCurrencyIds}
-            />
+            <Paper sx={{ display: 'inline-block', marginRight: '2%', marginTop: '1%',}}>
+              <AutocompleteComponent
+                id='currencies-autocomplete'
+                label='Currency'
+                options={distinctCurrencies}
+                selectedOptions={currencyIds}
+                setStateFn={setCurrencyIds}
+              />
+            </Paper>
           </Paper>
         </Paper>
-        <Paper sx={{
-          width: '100%',
-        }}>
+        <Paper sx={{ width: '100%', marginTop: '1%', marginBottom: '1%'}}>
           <Button onClick={() => setActivateFilter(!activateFilter)}
             variant='contained' 
             color='primary'
@@ -1466,7 +1483,11 @@ export default function Search() {
         </Paper>
         <Typography variant='h4'>Bets</Typography>
         <Paper style={{ marginLeft: '60%', }}>
-            Turnover: 
+            <Paper className='aggregatedLabel' sx={{
+              display: 'inline-block',
+            }}>
+              TURNOVER:
+            </Paper> 
             {
               totalOfTotals && !isNaN(totalOfTotals)
                 ? Number(totalOfTotals).toLocaleString(undefined, {
@@ -1476,7 +1497,11 @@ export default function Search() {
                 : 0.00
             }
 
-            {'  Profit:'} 
+            <Paper className='aggregatedLabel' sx={{
+              display: 'inline-block',
+            }}>
+              PROFIT:
+            </Paper>
             {
               totalOfProfits && !isNaN(totalOfProfits)
                 ? Number(totalOfProfits).toLocaleString(undefined, {
@@ -1486,7 +1511,11 @@ export default function Search() {
                 : 0.00
             }
 
-            { '  Winrate:'} 
+            <Paper className='aggregatedLabel' sx={{
+              display: 'inline-block',
+            }}>
+              WINRATE:
+            </Paper>
             {
               winrate && !isNaN(winrate)
                 ? Number(winrate).toLocaleString(undefined, {
@@ -1496,10 +1525,14 @@ export default function Search() {
                 : 0.00
             }%
 
-            { '  Total of yields:'} 
+            <Paper className='aggregatedLabel' sx={{
+              display: 'inline-block',
+            }}>
+              YIELD:
+            </Paper> 
             {
-              totalOfYields && !isNaN(totalOfYields)
-                ? (totalOfYields * 100).toLocaleString(undefined, {
+              totalOfProfits && !isNaN(totalOfProfits) && totalOfTotals && !isNaN(totalOfTotals)
+                ? ((totalOfProfits/totalOfTotals) * 100).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   }) + '%'
@@ -1532,20 +1565,20 @@ export default function Search() {
             <Typography variant='h4'>Expenses</Typography>
           )
         }
-        {filteredExpenseRowsRows &&
-        allCounterAgents &&
-        allCounterAgents.length > 0 &&
-        areExpensesShown &&
-        Number(auth.user?.role) === 1 ? (
-          <Expenses
-            displayExportToolbar={true}
-            isRead={false}
-            setIsLoading={setIsLoading}
-            defaultRows={filteredExpenseRowsRows}
-            possibleCounterAgents={allCounterAgents}
-          />
-        ) : null}
+        
+        {
+          filteredExpenseRowsRows && allCounterAgents && allCounterAgents.length > 0 &&
+          Number(auth.user?.role) === 1 ? (
+            <Expenses
+              displayExportToolbar={true}
+              isRead={false}
+              setIsLoading={setIsLoading}
+              defaultRows={filteredExpenseRowsRows}
+              possibleCounterAgents={allCounterAgents}
+            />
+          ) : null
+        }
       </Paper>
-    </>
+    </Paper>
   );
 }
