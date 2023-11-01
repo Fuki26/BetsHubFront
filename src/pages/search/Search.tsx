@@ -65,11 +65,11 @@ const AutocompleteComponent = (props: {
   options: Array<IDropdownValue>;
   selectedOptions: Array<string>;
   setStateFn: React.Dispatch<React.SetStateAction<string[]>>;
+  width?: number;
 }) => {
-  const { id, label, options, selectedOptions, setStateFn, } = props;
+  const { id, label, options, selectedOptions, setStateFn, width, } = props;
   return (
     <Autocomplete
-      className='search-filters-autocomplete'
       multiple
       id={id}
       options={options}
@@ -94,7 +94,7 @@ const AutocompleteComponent = (props: {
           </li>
         )
       }}
-      style={{ width: 500 }}
+      style={{ width: width ? width : 500 }}
       renderInput={(params) => {
         return (
           <TextField {...params} label={label} placeholder={label} />
@@ -1196,7 +1196,7 @@ export default function Search() {
           : null
       }
       <Paper sx={{ paddingLeft: '2%'}}>
-        <Typography variant='h1' className='typography'>
+        <Typography variant='h1'>
           Search
         </Typography>
         {
@@ -1233,33 +1233,35 @@ export default function Search() {
             aria-labelledby='demo-controlled-radio-buttons-group'
             name='controlled-radio-buttons-group'
             value={filterType}
+            sx={{
+              flexDirection: 'row',
+            }}
             onChange={(event) => {
               const value: string = (event.target as HTMLInputElement).value;
               setFilterType(
                 value === 'Bets'
                   ? FilterType.Bets
                   : value === 'Expenses'
-                  ? FilterType.Expenses
-                  : FilterType.Both
+                    ? FilterType.Expenses
+                    : FilterType.Both
               );
             }}
           >
             <FormControlLabel value='Bets' control={<Radio />} label='Bets' />
-            <FormControlLabel
-              value='Expenses'
-              control={<Radio />}
-              label='Expenses'
-            />
+            <FormControlLabel value='Expenses' control={<Radio />} label='Expenses' />
             <FormControlLabel value='Both' control={<Radio />} label='Both' />
           </RadioGroup>
         </Paper>
         <Paper>
-          <Paper className='margin-top-1'>
+          <Paper sx={{ marginTop: '1%',}}>
             <TextField
               id='betId'
               label='Bet id'
               variant='outlined'
               type='number'
+              sx={{
+                width: '15%',
+              }}
               onChange={(e) => {
                 const betId = parseInt(e.target.value);
                 if (!isNaN(betId)) {
@@ -1276,6 +1278,7 @@ export default function Search() {
               type='number'
               sx={{
                 marginRight: '1%',
+                width: '15%',
               }}
               onChange={(e) => {
                 const expenseId = parseInt(e.target.value);
@@ -1290,6 +1293,9 @@ export default function Search() {
               <DatePicker
                 label='From'
                 value={dayjs(dateFrom)}
+                sx={{
+                  width: '15%',
+                }}
                 onChange={(newValue) => {
                   setDateFrom(
                     newValue ? new Date(newValue?.toISOString()) : undefined
@@ -1301,6 +1307,7 @@ export default function Search() {
                 value={dayjs(dateTo)}
                 sx={{
                   marginRight: '1%',
+                  width: '15%',
                 }}
                 onChange={(newValue) => {
                   setDateTo(
@@ -1314,6 +1321,9 @@ export default function Search() {
               label='Stake from'
               variant='outlined'
               type='number'
+              sx={{
+                width: '15%',
+              }}
               onChange={(e) => {
                 const stakeFrom = parseInt(e.target.value);
                 if (!isNaN(stakeFrom)) {
@@ -1328,6 +1338,9 @@ export default function Search() {
               label='Stake to'
               variant='outlined'
               type='number'
+              sx={{
+                width: '15%',
+              }}
               onChange={(e) => {
                 const stakeTo = parseInt(e.target.value);
                 if (!isNaN(stakeTo)) {
@@ -1338,12 +1351,15 @@ export default function Search() {
               }}
             />
           </Paper>
-          <Paper className='margin-top-1' sx={{ display: 'block'}}>
+          <Paper sx={{ display: 'block', marginTop: '1%',}}>
             <TextField
               id='odd-from'
               label='Odd from'
               variant='outlined'
               type='number'
+              sx={{
+                width: '15%',
+              }}
               onChange={(e) => {
                 const oddFrom = parseInt(e.target.value);
                 if (!isNaN(oddFrom)) {
@@ -1360,6 +1376,7 @@ export default function Search() {
               type='number'
               sx={{
                 marginRight: '1%',
+                width: '15%',
               }}
               onChange={(e) => {
                 const oddTo = parseInt(e.target.value);
@@ -1376,6 +1393,9 @@ export default function Search() {
               label='PsLimit from'
               variant='outlined'
               type='number'
+              sx={{
+                width: '15%',
+              }}
               onChange={(e) => {
                 const psLimitFrom = parseInt(e.target.value);
                 if (!isNaN(psLimitFrom)) {
@@ -1392,6 +1412,7 @@ export default function Search() {
               type='number'
               sx={{
                 marginRight: '1%',
+                width: '15%',
               }}
               onChange={(e) => {
                 const psLimitTo = parseInt(e.target.value);
@@ -1409,11 +1430,12 @@ export default function Search() {
                 options={distinctCounteragentCategories}
                 selectedOptions={counteragentCategoriesIds}
                 setStateFn={setCounteragentCategoriesIds}
+                width={515}
               />
             </Paper>
           </Paper>
           <Paper>
-            <Paper sx={{ display: 'inline-block',}}>
+            <Paper sx={{ display: 'inline-block', marginRight: '2%', marginTop: '1%', }}>
               <AutocompleteComponent
                 id='counteragents-autocomplete'
                 label='Counteragent'
@@ -1422,7 +1444,7 @@ export default function Search() {
                 setStateFn={setCounteragentIds}
               />
             </Paper>
-            <Paper sx={{ display: 'inline-block',}}>
+            <Paper sx={{ display: 'inline-block', marginRight: '2%', marginTop: '1%', }}>
               <AutocompleteComponent
                 id='sports-autocomplete'
                 label='Sport'
@@ -1431,7 +1453,7 @@ export default function Search() {
                 setStateFn={setSportIds}
               />
             </Paper>
-            <Paper sx={{ display: 'inline-block',}}>
+            <Paper sx={{ display: 'inline-block', marginRight: '2%', marginTop: '1%', }}>
               <AutocompleteComponent
                 id='markets-autocomplete'
                 label='Market'
@@ -1440,7 +1462,7 @@ export default function Search() {
                 setStateFn={setMarketIds}
               />
             </Paper>
-            <Paper sx={{ display: 'inline-block',}}>
+            <Paper sx={{ display: 'inline-block', marginRight: '2%', marginTop: '1%', }}>
               <AutocompleteComponent
                 id='tournaments-autocomplete'
                 label='Tournament'
@@ -1449,7 +1471,7 @@ export default function Search() {
                 setStateFn={setTournamentIds}
               />
             </Paper>
-            <Paper sx={{ display: 'inline-block',}}>
+            <Paper sx={{ display: 'inline-block', marginRight: '2%',  marginTop: '1%',}}>
               <AutocompleteComponent
                 id='liveStatuses-autocomplete'
                 label='LiveStatus'
@@ -1458,7 +1480,7 @@ export default function Search() {
                 setStateFn={setLiveStatusIds}
               />
             </Paper>
-            <Paper sx={{ display: 'inline-block',}}>
+            <Paper sx={{ display: 'inline-block', marginRight: '2%', marginTop: '1%',}}>
               <AutocompleteComponent
                 id='currencies-autocomplete'
                 label='Currency'
@@ -1469,7 +1491,7 @@ export default function Search() {
             </Paper>
           </Paper>
         </Paper>
-        <Paper sx={{ width: '100%',}}>
+        <Paper sx={{ width: '100%', marginTop: '1%', marginBottom: '1%'}}>
           <Button onClick={() => setActivateFilter(!activateFilter)}
             variant='contained' 
             color='primary'
@@ -1482,7 +1504,11 @@ export default function Search() {
         </Paper>
         <Typography variant='h4'>Bets</Typography>
         <Paper style={{ marginLeft: '60%', }}>
-            Turnover: 
+            <Paper className='aggregatedLabel' sx={{
+              display: 'inline-block',
+            }}>
+              Turnover:
+            </Paper> 
             {
               totalOfTotals && !isNaN(totalOfTotals)
                 ? Number(totalOfTotals).toLocaleString(undefined, {
@@ -1492,7 +1518,11 @@ export default function Search() {
                 : 0.00
             }
 
-            {'  Profit:'} 
+            <Paper className='aggregatedLabel' sx={{
+              display: 'inline-block',
+            }}>
+              Profit:
+            </Paper>
             {
               totalOfProfits && !isNaN(totalOfProfits)
                 ? Number(totalOfProfits).toLocaleString(undefined, {
@@ -1502,7 +1532,11 @@ export default function Search() {
                 : 0.00
             }
 
-            { '  Winrate:'} 
+            <Paper className='aggregatedLabel' sx={{
+              display: 'inline-block',
+            }}>
+              Winrate:
+            </Paper>
             {
               winrate && !isNaN(winrate)
                 ? Number(winrate).toLocaleString(undefined, {
@@ -1512,7 +1546,11 @@ export default function Search() {
                 : 0.00
             }%
 
-            { '  Total of yields:'} 
+            <Paper className='aggregatedLabel' sx={{
+              display: 'inline-block',
+            }}>
+              Yield:
+            </Paper> 
             {
               totalOfYields && !isNaN(totalOfYields)
                 ? (totalOfYields * 100).toLocaleString(undefined, {

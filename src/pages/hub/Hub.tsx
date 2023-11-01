@@ -700,7 +700,11 @@ export default function Hub(props: {
                           id === 'pending_bets'
                             ? (
                                 <Paper>
-                                  Turnover: 
+                                  <Paper className='aggregatedLabel' sx={{
+                                    display: 'inline-block',
+                                  }}>
+                                    Turnover:
+                                  </Paper>
                                   {
                                     Number(totalOfTotalsPending).toLocaleString(undefined, {
                                       minimumFractionDigits: 2,
@@ -711,7 +715,11 @@ export default function Hub(props: {
                               )
                             : (
                                 <Paper>
-                                  Turnover: 
+                                  <Paper className='aggregatedLabel' sx={{
+                                    display: 'inline-block',
+                                  }}>
+                                    Turnover:
+                                  </Paper>
                                   {
                                     totalOfTotalsCompleted && !isNaN(totalOfTotalsCompleted)
                                       ? Number(totalOfTotalsCompleted).toLocaleString(undefined, {
@@ -720,7 +728,11 @@ export default function Hub(props: {
                                         })
                                       : 0.00
                                   }
-                                  { '  Profit:'} 
+                                  <Paper className='aggregatedLabel' sx={{
+                                    display: 'inline-block',
+                                  }}>
+                                    Profit:
+                                  </Paper> 
                                   {
                                       totalOfProfitsCompleted && !isNaN(totalOfProfitsCompleted)
                                         ? Number(totalOfProfitsCompleted).toLocaleString(undefined, {
@@ -729,7 +741,11 @@ export default function Hub(props: {
                                           })
                                         : 0.00
                                   }
-                                  { '  Winrate:'} 
+                                  <Paper className='aggregatedLabel' sx={{
+                                    display: 'inline-block',
+                                  }}>
+                                    Winrate:
+                                  </Paper> 
                                   {
                                     winrate && !isNaN(winrate)
                                       ? Number(winrate).toLocaleString(undefined, {
@@ -738,7 +754,11 @@ export default function Hub(props: {
                                         })
                                       : 0.00
                                   }%
-                                  { '  Total of yields:'} 
+                                  <Paper className='aggregatedLabel' sx={{
+                                    display: 'inline-block',
+                                  }}>
+                                    Yield:
+                                  </Paper> 
                                   {
                                     totalOfYields && !isNaN(totalOfYields)
                                       ? (totalOfYields * 100).toLocaleString(undefined, {
