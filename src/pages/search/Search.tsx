@@ -1507,7 +1507,7 @@ export default function Search() {
             <Paper className='aggregatedLabel' sx={{
               display: 'inline-block',
             }}>
-              Turnover:
+              TURNOVER:
             </Paper> 
             {
               totalOfTotals && !isNaN(totalOfTotals)
@@ -1521,7 +1521,7 @@ export default function Search() {
             <Paper className='aggregatedLabel' sx={{
               display: 'inline-block',
             }}>
-              Profit:
+              PROFIT:
             </Paper>
             {
               totalOfProfits && !isNaN(totalOfProfits)
@@ -1535,7 +1535,7 @@ export default function Search() {
             <Paper className='aggregatedLabel' sx={{
               display: 'inline-block',
             }}>
-              Winrate:
+              WINRATE:
             </Paper>
             {
               winrate && !isNaN(winrate)
@@ -1549,7 +1549,7 @@ export default function Search() {
             <Paper className='aggregatedLabel' sx={{
               display: 'inline-block',
             }}>
-              Yield:
+              YIELD:
             </Paper> 
             {
               totalOfYields && !isNaN(totalOfYields)

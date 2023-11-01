@@ -703,7 +703,7 @@ export default function Hub(props: {
                                   <Paper className='aggregatedLabel' sx={{
                                     display: 'inline-block',
                                   }}>
-                                    Turnover:
+                                    TURNOVER:
                                   </Paper>
                                   {
                                     Number(totalOfTotalsPending).toLocaleString(undefined, {
@@ -718,7 +718,7 @@ export default function Hub(props: {
                                   <Paper className='aggregatedLabel' sx={{
                                     display: 'inline-block',
                                   }}>
-                                    Turnover:
+                                    TURNOVER:
                                   </Paper>
                                   {
                                     totalOfTotalsCompleted && !isNaN(totalOfTotalsCompleted)
@@ -731,7 +731,7 @@ export default function Hub(props: {
                                   <Paper className='aggregatedLabel' sx={{
                                     display: 'inline-block',
                                   }}>
-                                    Profit:
+                                    PROFIT:
                                   </Paper> 
                                   {
                                       totalOfProfitsCompleted && !isNaN(totalOfProfitsCompleted)
@@ -744,7 +744,7 @@ export default function Hub(props: {
                                   <Paper className='aggregatedLabel' sx={{
                                     display: 'inline-block',
                                   }}>
-                                    Winrate:
+                                    WINRATE:
                                   </Paper> 
                                   {
                                     winrate && !isNaN(winrate)
@@ -757,7 +757,7 @@ export default function Hub(props: {
                                   <Paper className='aggregatedLabel' sx={{
                                     display: 'inline-block',
                                   }}>
-                                    Yield:
+                                    YIELD:
                                   </Paper> 
                                   {
                                     totalOfYields && !isNaN(totalOfYields)
