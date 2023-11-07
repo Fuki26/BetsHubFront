@@ -616,7 +616,7 @@ export default function Hub(props: {
                         />
                       </div>
                       <DataGrid 
-                        style={{ height: '70%', borderWidth: '0' }} 
+                        style={{ borderWidth: '0' }} 
                         columns={statisticsColumns}
                         rows={currentStatistcs || []}
                         pageSizeOptions={[]}

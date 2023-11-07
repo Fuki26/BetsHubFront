@@ -134,12 +134,8 @@ export default function Search() {
   const [selectedBetId, setSelectedBetId] = React.useState<number | undefined>(
     undefined
   );
-  const [statisticsType, setStatisticsType] = React.useState<StatisticType>(
-    StatisticType.Flat
-  );
-  const [filterType, setFilterType] = React.useState<FilterType>(
-    FilterType.Both
-  );
+  const [statisticsType, setStatisticsType] = React.useState<StatisticType>(StatisticType.Flat);
+  const [filterType, setFilterType] = React.useState<FilterType>(FilterType.Both);
   const [currentStatistcs, setCurrentStatistcs] = React.useState<
     Array<StatisticItemModel> | undefined
   >(undefined);
@@ -1481,66 +1477,79 @@ export default function Search() {
             Filter
           </Button>
         </Paper>
-        <Typography variant='h4'>Bets</Typography>
-        <Paper style={{ marginLeft: '60%', }}>
-            <Paper className='aggregatedLabel' sx={{
-              display: 'inline-block',
-            }}>
-              TURNOVER:
-            </Paper> 
-            {
-              totalOfTotals && !isNaN(totalOfTotals)
-                ? Number(totalOfTotals).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })
-                : 0.00
-            }
-
-            <Paper className='aggregatedLabel' sx={{
-              display: 'inline-block',
-            }}>
-              PROFIT:
-            </Paper>
-            {
-              totalOfProfits && !isNaN(totalOfProfits)
-                ? Number(totalOfProfits).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })
-                : 0.00
-            }
-
-            <Paper className='aggregatedLabel' sx={{
-              display: 'inline-block',
-            }}>
-              WINRATE:
-            </Paper>
-            {
-              winrate && !isNaN(winrate)
-                ? Number(winrate).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })
-                : 0.00
-            }%
-
-            <Paper className='aggregatedLabel' sx={{
-              display: 'inline-block',
-            }}>
-              YIELD:
-            </Paper> 
-            {
-              totalOfProfits && !isNaN(totalOfProfits) && totalOfTotals && !isNaN(totalOfTotals)
-                ? ((totalOfProfits/totalOfTotals) * 100).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  }) + '%'
-                : "0.00%"
-            }
-        </Paper>
         {
-          filteredRows 
+
+          filterType === FilterType.Bets || filterType === FilterType.Both
+            ? (
+                <Typography variant='h4'>Bets</Typography>
+              )
+            : <></>
+        }
+        {   
+          filterType === FilterType.Bets || filterType === FilterType.Both
+            ? (
+                <Paper style={{ marginLeft: '60%', }}>
+                  <Paper className='aggregatedLabel' sx={{
+                    display: 'inline-block',
+                  }}>
+                    TURNOVER:
+                  </Paper> 
+                  {
+                    totalOfTotals && !isNaN(totalOfTotals)
+                      ? Number(totalOfTotals).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })
+                      : 0.00
+                  }
+      
+                  <Paper className='aggregatedLabel' sx={{
+                    display: 'inline-block',
+                  }}>
+                    PROFIT:
+                  </Paper>
+                  {
+                    totalOfProfits && !isNaN(totalOfProfits)
+                      ? Number(totalOfProfits).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })
+                      : 0.00
+                  }
+      
+                  <Paper className='aggregatedLabel' sx={{
+                    display: 'inline-block',
+                  }}>
+                    WINRATE:
+                  </Paper>
+                  {
+                    winrate && !isNaN(winrate)
+                      ? Number(winrate).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })
+                      : 0.00
+                  }%
+      
+                  <Paper className='aggregatedLabel' sx={{
+                    display: 'inline-block',
+                  }}>
+                    YIELD:
+                  </Paper> 
+                  {
+                    totalOfProfits && !isNaN(totalOfProfits) && totalOfTotals && !isNaN(totalOfTotals)
+                      ? ((totalOfProfits/totalOfTotals) * 100).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }) + '%'
+                      : "0.00%"
+                  }
+              </Paper>
+              )
+            : <></>
+        }
+        {
+          filteredRows && (filterType === FilterType.Bets || filterType === FilterType.Both)
             ? (
                 <Bets
                   id='search'
@@ -1561,13 +1570,14 @@ export default function Search() {
             : null
         }
         {
-          Number(auth.user?.role) === 1 && (
+          Number(auth.user?.role) === 1 && (filterType === FilterType.Expenses || filterType === FilterType.Both) && (
             <Typography variant='h4'>Expenses</Typography>
           )
         }
         
         {
           filteredExpenseRowsRows && allCounterAgents && allCounterAgents.length > 0 &&
+            (filterType === FilterType.Expenses || filterType === FilterType.Both) && 
           Number(auth.user?.role) === 1 ? (
             <Expenses
               displayExportToolbar={true}
