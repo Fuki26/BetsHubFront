@@ -653,7 +653,7 @@ export default function Hub(props: {
               : null
           }
         </Paper>
-        <Paper  style={{ display: 'flex', flexWrap: 'nowrap', width: '100%', }}>
+        <Paper  style={{ display: 'flex', flexWrap: 'nowrap', width: '100%', marginTop: '2%',}}>
           {
             (pendingRows && id === 'pending_bets') || (filteredCompletedRows && id === 'completed_bets')
               ? (
