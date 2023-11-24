@@ -618,7 +618,33 @@ export default function Hub(props: {
                       <DataGrid 
                         style={{ borderWidth: '0' }} 
                         columns={statisticsColumns}
-                        rows={currentStatistcs || []}
+                        rows={currentStatistcs ? currentStatistcs : [
+                            {
+                              id: 1,
+                              periodType: 'all time',
+                              winRate: '',
+                              yield: '',
+                              turnOver: '',
+                              profit: '',
+                            },
+                            {
+                              id: 2,
+                              periodType: 'last 3m',
+                              winRate: '',
+                              yield: '',
+                              turnOver: '',
+                              profit: '',
+                            },
+                            {
+                              id: 3,
+                              periodType: 'last 6m',
+                              winRate: '',
+                              yield: '',
+                              turnOver: '',
+                              profit: '',
+                            },
+                          ]
+                        }
                         pageSizeOptions={[]}
                         autoPageSize={false}
                         hideFooterPagination
