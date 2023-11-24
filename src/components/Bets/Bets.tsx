@@ -867,6 +867,7 @@ function Bets(props: {
                   editMode='row'
                   sx={{
                     height: 500,
+                    fontSize: 18,
                   }}
                 />
                 <Dialog
