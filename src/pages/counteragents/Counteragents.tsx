@@ -275,9 +275,10 @@ export default function Counteragents(props: {}) {
     }
     
     if(newRow.actionTypeApplied === ActionType.SAVED || newRow.actionTypeApplied === ActionType.EDITED) {
-        const isValidCounterAgentName = newRow.name.split(' ').every((s: string) => {
-          return s.match('^[A-Za-z0-9]+$')
-        });
+        // const isValidCounterAgentName = newRow.name.split(' ').every((s: string) => {
+        //   return s.match('^[A-Za-z0-9]+$')
+        // });
+        const isValidCounterAgentName = true;
 
         if(!newRow.name || !currentRow.counteragentCategory || newRow.maxRate === null 
             || (newRow.name && !isValidCounterAgentName)) {
