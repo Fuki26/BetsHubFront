@@ -553,10 +553,10 @@ function Bets(props: {
           atLeastOneCurrencyIsPopulated = true;
         }
 
-        if (
-          typeof amounts[key] === 'string')
-           {
+        if (typeof amounts[key] === 'string') {
           amounts[key] = evaluate(amounts[key]);
+        } else {
+          amounts[key] = 0;
         }
       }
 
