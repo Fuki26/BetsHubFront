@@ -120,6 +120,35 @@ function Bets(props: {
       }
   };
 
+  const detectZoom = () => {
+    var ratio = 0;
+
+    if (window.devicePixelRatio !== undefined) {
+        ratio = window.devicePixelRatio;
+    } else if (window.outerWidth !== undefined && window.innerWidth !== undefined) {
+        ratio = window.outerWidth / window.innerWidth;
+    }
+
+    if (ratio) {
+        return Math.round(ratio * 100);
+    } else {
+        return 100; // default value
+    }
+  }
+
+  const updateElementSize = () => {
+    var zoomLevel = detectZoom();
+    var elements: HTMLCollectionOf<Element> = document.getElementsByClassName('MuiDataGrid-root');
+    if(elements && elements[0]) {
+      for(var i = 0; i <= elements.length - 1; i++) {
+        (elements[i] as any).style.height = 500 * (100/zoomLevel) + 'px';
+      }
+    }
+    console.log(`Zoom level: ${zoomLevel}`);
+  };
+
+  window.addEventListener('resize', updateElementSize);
+
   const [rows, setRows] = useState<Array<BetModel>>(
     defaultRows ? sortBets(defaultRows) : []
   );
