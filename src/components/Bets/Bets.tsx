@@ -140,9 +140,9 @@ function Bets(props: {
     var zoomLevel = detectZoom();
     var elements: HTMLCollectionOf<Element> = document.getElementsByClassName('MuiDataGrid-root');
     if(elements && elements[0]) {
-      for(var i = 0; i <= elements.length - 1; i++) {
-        (elements[i] as any).style.height = 500 * (100/zoomLevel) + 'px';
-      }
+      // for(var i = 0; i <= elements.length - 1; i++) {
+        (elements[1] as any).style.height = 500 * (100/zoomLevel) + 'px';
+      // }
     }
     console.log(`Zoom level: ${zoomLevel}`);
   };

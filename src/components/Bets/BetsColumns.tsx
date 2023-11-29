@@ -119,6 +119,20 @@ export const getBetsColumns = (props: {
           field: 'counterAgent',
           headerName: 'Counteragent',
           editable: true,
+          sortable: true,
+          sortComparator: (value1: { id: string; label: string; }, 
+            value2: { id: string; label: string; }) => {
+              const stringA = value1.label.toLowerCase();
+              const stringB = value2.label.toLowerCase();
+          
+              if (stringA < stringB) {
+                  return -1;
+              } else if (stringA > stringB) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          },
           width: 180,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
@@ -174,6 +188,20 @@ export const getBetsColumns = (props: {
           field: 'sport',
           headerName: 'Sport',
           editable: true,
+          sortable: true,
+          sortComparator: (value1: { id: string; label: string; }, 
+            value2: { id: string; label: string; }) => {
+              const stringA = value1.label.toLowerCase();
+              const stringB = value2.label.toLowerCase();
+          
+              if (stringA < stringB) {
+                  return -1;
+              } else if (stringA > stringB) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          },
           width: 150,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
@@ -256,6 +284,20 @@ export const getBetsColumns = (props: {
           field: 'liveStatus',
           headerName: 'Live status',
           editable: true,
+          sortable: true,
+          sortComparator: (value1: { id: string; label: string; }, 
+            value2: { id: string; label: string; }) => {
+              const stringA = value1.label.toLowerCase();
+              const stringB = value2.label.toLowerCase();
+          
+              if (stringA < stringB) {
+                  return -1;
+              } else if (stringA > stringB) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          },
           width: 150,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
@@ -328,6 +370,20 @@ export const getBetsColumns = (props: {
           field: 'market',
           headerName: 'Market',
           editable: true,
+          sortable: true,
+          sortComparator: (value1: { id: string; label: string; }, 
+            value2: { id: string; label: string; }) => {
+              const stringA = value1.label.toLowerCase();
+              const stringB = value2.label.toLowerCase();
+          
+              if (stringA < stringB) {
+                  return -1;
+              } else if (stringA > stringB) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          },
           width: 120,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
@@ -418,6 +474,20 @@ export const getBetsColumns = (props: {
           field: 'tournament',
           headerName: 'Tournament',
           editable: true,
+          sortable: true,
+          sortComparator: (value1: { id: string; label: string; }, 
+            value2: { id: string; label: string; }) => {
+              const stringA = value1.label.toLowerCase();
+              const stringB = value2.label.toLowerCase();
+          
+              if (stringA < stringB) {
+                  return -1;
+              } else if (stringA > stringB) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          },
           width: 300,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
@@ -500,6 +570,20 @@ export const getBetsColumns = (props: {
           field: 'selection',
           headerName: 'Selection',
           editable: true,
+          sortable: true,
+          sortComparator: (value1: { id: string; label: string; }, 
+            value2: { id: string; label: string; }) => {
+              const stringA = value1.label.toLowerCase();
+              const stringB = value2.label.toLowerCase();
+          
+              if (stringA < stringB) {
+                  return -1;
+              } else if (stringA > stringB) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          },
           width: 450,
           renderCell: (params: GridRenderCellParams<BetModel>) => {
             const row = rows.find((r) => r.id === params.row.id);
