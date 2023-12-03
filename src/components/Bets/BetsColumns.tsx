@@ -9,6 +9,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import HistoryIcon from '@mui/icons-material/History';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+import ColorizeIcon from '@mui/icons-material/Colorize';
 import CancelIcon from '@mui/icons-material/Close';
 import { BetModel, IDropdownValue, WinStatus, LiveStatus } from '../../models';
 import { Currency, } from '../../database-models';
@@ -31,12 +32,13 @@ export const getBetsColumns = (props: {
     handleHistoryClick: (params: GridRowParams) => Promise<void>,
     handleCopyBetClick: (id: GridRowId) => () => void,
     handleClickOpenOnDeleteDialog: (id: GridRowId) => () => void,
+    handleClickOpenOnColorDialog: (id: GridRowId) => () => void;
   }): Array<GridColDef>  => {
     const { rows, setRows, possibleCounteragents, possibleSports, 
       possibleTournaments, possibleSelections, possibleMarkets, 
       currencies, rowModesModel,  id, isMobile, 
       handleSaveClick, handleCancelClick, handleEditClick, handleHistoryClick, 
-      handleCopyBetClick, handleClickOpenOnDeleteDialog, } = props;
+      handleCopyBetClick, handleClickOpenOnDeleteDialog, handleClickOpenOnColorDialog, } = props;
 
     const columns: Array<GridColDef> = [
         {
@@ -740,7 +742,7 @@ export const getBetsColumns = (props: {
           field: 'actions',
           headerName: 'Actions',
           type: 'actions',
-          width: 150,
+          width: 180,
           cellClassName: 'actions',
           getActions: (params) => {
             const isInEditMode =
@@ -841,6 +843,12 @@ export const getBetsColumns = (props: {
                         color='inherit'
                       />,
                       <GridActionsCellItem
+                        icon={<ColorizeIcon />}
+                        label='Color'
+                        onClick={handleClickOpenOnColorDialog(params.id)}
+                        color='inherit'
+                      />,
+                      <GridActionsCellItem
                         icon={<AddIcon />}
                         label='Copy bet'
                         onClick={handleCopyBetClick(params.id)}
@@ -907,6 +915,12 @@ export const getBetsColumns = (props: {
                         icon={<DeleteIcon />}
                         label='Delete'
                         onClick={handleClickOpenOnDeleteDialog(params.id)}
+                        color='inherit'
+                      />,
+                      <GridActionsCellItem
+                        icon={<ColorizeIcon />}
+                        label='Color'
+                        onClick={handleClickOpenOnColorDialog(params.id)}
                         color='inherit'
                       />,
                     ]

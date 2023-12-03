@@ -1,11 +1,11 @@
 .row-win-status-winner {
-  background: #b9d7a6;
+  background: #b9d7a6 !important;
 }
 div.row-win-status-winner:hover {
   background-color: #b9d7a6 !important;
 }
 .row-win-status-loser {
-  background: #d86564;
+  background: #d86564 !important;
 }
 
 .row-win-status-loser:hover {
@@ -13,19 +13,19 @@ div.row-win-status-winner:hover {
 }
 
 .row-win-status-halfwin {
-  background: #daead2;
+  background: #daead2 !important;
 }
 .row-win-status-halfwin:hover {
   background: #daead2 !important;
 }
 .row-win-status-halfloss {
-  background: #f1cccc;
+  background: #f1cccc !important;
 }
 .row-win-status-halfloss.MuiDataGrid-row:hover {
   background: #f1cccc !important;
 }
 .row-win-status-void {
-  background:#cccccc;
+  background:#cccccc !important;
 }
 .row-win-status-void:hover {
   background:#cccccc !important;

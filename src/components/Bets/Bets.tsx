@@ -157,6 +157,10 @@ function Bets(props: {
   const [deleteRowId, setDeleteRowId] = useState<number | undefined>(undefined);
   const [deleteDialogIsOpened, setOpenDeleteDialog] = useState(false);
 
+  const [color, setColor] = useState<string>('FFF');
+  const [colorRowId, setColorRowId] = useState<number | undefined>(undefined);
+  const [colorDialogIsOpened, setOpenColorDialog] = useState<boolean>(false);
+
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [history, setHistory] = useState(null);
 
@@ -213,10 +217,7 @@ function Bets(props: {
           stake: undefined,
           counterAgent: undefined,
           sport: undefined,
-          liveStatus: {
-            id: LiveStatus.PreLive.toString(),
-            label: LiveStatus[LiveStatus.PreLive],
-          },
+          liveStatus: undefined,
           psLimit: undefined,
           market: undefined,
           tournament: undefined,
@@ -276,6 +277,22 @@ function Bets(props: {
 
   //#endregion
 
+  //#region Color picker
+
+  const handleClickOpenOnColorDialog = (id: GridRowId) => () => {
+    setColor('FFF');
+    setColorRowId(parseInt(id.toString(), 10));
+    setOpenColorDialog(true);
+  };
+
+  const handleCloseOnColorDialog = () => {
+    setColor('FFF');
+    setColorRowId(undefined);
+    setOpenColorDialog(false);
+  };
+
+  //#endregion
+
   //#region Actions handlers
 
   const handleSaveClick = (id: GridRowId) => () => {
@@ -300,7 +317,26 @@ function Bets(props: {
 
   const getRowClassName = (params : any) => {
     const row = rows.find((r) => r.id === params.id);
-    if (!props.arePengindBets && row && row.winStatus?.label) {
+    if(!row) {
+      return '';
+    }
+
+    if(row.color) {
+      switch (row.color) {
+        case 'b9d7a6':
+          return 'row-win-status-winner';
+        case 'd86564':
+          return 'row-win-status-loser';
+        case 'daead2':
+          return 'row-win-status-halfwin';
+        case 'f1cccc':
+          return 'row-win-status-halfloss';
+        case 'cccccc':
+          return 'row-win-status-void';
+        default:
+          return '';
+      }
+    } else if (!props.arePengindBets && row && row.winStatus?.label) {
       switch (row.winStatus.label) {
         case WinStatus[1]:
           return 'row-win-status-winner';
@@ -443,6 +479,31 @@ function Bets(props: {
       delete previousRowModesModel[deleteRowId];
       return previousRowModesModel;
     });
+
+    setIsLoading(false);
+  };
+
+  const handleChangeColorClick = async () => {
+    if (!color || !colorRowId) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    setRows((previousRowsModel) => {
+      return previousRowsModel.map((row) => {
+        if (row.id === colorRowId) {
+          return {
+            ...row,
+            color,
+          };
+        } else {
+          return row;
+        }
+      });
+    });
+    
+    setOpenColorDialog(false);
 
     setIsLoading(false);
   };
@@ -651,7 +712,7 @@ function Bets(props: {
             });
           });
 
-        return newRowData;
+          return newRowData;
       } 
 
       const rowData = await upsertBet(newRowData);
@@ -839,6 +900,7 @@ function Bets(props: {
     currencies, rowModesModel, id: props.id,
     isMobile, handleSaveClick, handleCancelClick, handleEditClick,
     handleHistoryClick, handleCopyBetClick, handleClickOpenOnDeleteDialog,
+    handleClickOpenOnColorDialog
   });
 
   const handleModalClose = () => setShowHistoryModal(false);
@@ -913,6 +975,87 @@ function Bets(props: {
                       Yes
                     </Button>
                     <Button onClick={handleCloseOnDeleteDialog}>No</Button>
+                  </DialogActions>
+                </Dialog>
+                <Dialog
+                  open={colorDialogIsOpened}
+                  onClose={handleCloseOnColorDialog}
+                  aria-labelledby='alert-dialog-title'
+                  aria-describedby='alert-dialog-description'
+                >
+                  <DialogTitle id='alert-dialog-title'>
+                    <Paper sx={{
+                      display: 'flex'
+                    }}>
+                      <Button 
+                        sx={{ 
+                          border: '1px solid white',
+                          width: '200px',
+                          height: '200px',
+                          marginRight: '10px',
+                        }} 
+                        className='row-win-status-winner' 
+                        onClick={() => {
+                          setColor('b9d7a6')
+                        }}
+                      />
+                      <Button 
+                        sx={{ 
+                          border: '1px solid white',
+                          width: '200px',
+                          height: '200px',
+                          marginRight: '10px',
+                        }} 
+                        className='row-win-status-loser' 
+                        onClick={() => {
+                          setColor('d86564')
+                        }}
+                      />
+                      <Button 
+                        sx={{ 
+                          border: '1px solid white',
+                          width: '200px',
+                          height: '200px',
+                          marginRight: '10px',
+                        }} 
+                        className='row-win-status-halfwin' 
+                        onClick={() => {
+                          setColor('daead2')
+                        }}
+                      />
+                      <Button 
+                        sx={{ 
+                          border: '1px solid white',
+                          width: '200px',
+                          height: '200px',
+                          marginRight: '10px',
+                        }} 
+                        className='row-win-status-halfloss' 
+                        onClick={() => {
+                          setColor('f1cccc')
+                        }}
+                      />
+                      <Button 
+                        sx={{ 
+                          border: '1px solid white',
+                          width: '200px',
+                          height: '200px',
+                          marginRight: '10px',
+                        }} 
+                        className='row-win-status-void' 
+                        onClick={() => {
+                          setColor('cccccc')
+                        }}
+                      />
+                    </Paper>
+                  </DialogTitle>
+                  <DialogActions>
+                    <Button onClick={handleChangeColorClick} autoFocus>
+                      Yes
+                    </Button>
+                    <Button onClick={handleCloseOnColorDialog}>
+                      No
+                    </Button>
                   </DialogActions>
                 </Dialog>
               </>

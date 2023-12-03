@@ -22,6 +22,7 @@ export type BetModel = {
     profits?: number;
     notes?: string;
     yield?: number;
+    color?: string;
 
     actionTypeApplied?: ActionType;
     isSavedInDatabase: boolean;
