@@ -25,6 +25,7 @@ export type Bet = {
     dateFinished?: string;
     profits?: number;
     notes?: string;
+    color?: string;
     yield?: number;
     totalAmount?: number;
 

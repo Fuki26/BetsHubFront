@@ -8,7 +8,7 @@ import { Button, Dialog, DialogActions, DialogTitle, Paper,
   } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { BetModel, EditToolbarProps, BetStatus, 
-  WinStatus, LiveStatus, IDropdownValue, ActionType ,} from '../../models';
+  WinStatus, IDropdownValue, ActionType ,} from '../../models';
 import { deleteBet, upsertBet, getBetHistory, } from '../../api';
 import { Currency, } from '../../database-models';
 import Modal from '../UI/Modal';
@@ -502,6 +502,13 @@ function Bets(props: {
         }
       });
     });
+
+    const row = rows.find((r) => r.id === colorRowId);
+    if(!row) {
+      return;
+    }
+
+    await upsertBet({ ...row, color, });
     
     setOpenColorDialog(false);
 

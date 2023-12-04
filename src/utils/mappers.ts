@@ -53,6 +53,7 @@ export const betToBetModelMapper = (bet: Bet) => {
     notes: bet.notes,
     yield: bet.yield,
     amounts: bet.currencyAmounts,
+    color: bet.color, 
     totalAmount: bet.totalAmount,
     actionTypeApplied: undefined,
     isSavedInDatabase: true,

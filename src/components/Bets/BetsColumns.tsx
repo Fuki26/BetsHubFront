@@ -917,12 +917,6 @@ export const getBetsColumns = (props: {
                         onClick={handleClickOpenOnDeleteDialog(params.id)}
                         color='inherit'
                       />,
-                      <GridActionsCellItem
-                        icon={<ColorizeIcon />}
-                        label='Color'
-                        onClick={handleClickOpenOnColorDialog(params.id)}
-                        color='inherit'
-                      />,
                     ]
                   : [
                       <GridActionsCellItem

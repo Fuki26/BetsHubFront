@@ -261,6 +261,7 @@ const upsertBet = async (bet: BetModel) => {
         profits: bet.profits ? bet.profits : 0,
         notes: bet.notes ? bet.notes : '',
         selection: bet.selection ? bet.selection.label : '',
+        color: bet.color ? bet.color : '',
       };
       
     return await instance.post(`${domain}/UpsertBets`, request, {
