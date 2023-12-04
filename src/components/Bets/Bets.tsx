@@ -321,7 +321,7 @@ function Bets(props: {
       return '';
     }
 
-    if(row.color) {
+    if(props.arePengindBets && row.color) {
       switch (row.color) {
         case 'b9d7a6':
           return 'row-win-status-winner';
@@ -336,7 +336,7 @@ function Bets(props: {
         default:
           return '';
       }
-    } else if (!props.arePengindBets && row && row.winStatus?.label) {
+    } else if (!props.arePengindBets && row.winStatus?.label) {
       switch (row.winStatus.label) {
         case WinStatus[1]:
           return 'row-win-status-winner';
