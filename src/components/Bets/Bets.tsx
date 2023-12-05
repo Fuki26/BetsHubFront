@@ -92,16 +92,12 @@ function Bets(props: {
           { currentColumnId: currentPointer + 1, focusColumnId: currentPointer + 2, },
           { currentColumnId: currentPointer + 2, focusColumnId: currentPointer + 3, },
           { currentColumnId: currentPointer + 3, focusColumnId: currentPointer + 4, },
-          { currentColumnId: currentPointer + 4, focusColumnId: currentPointer + 6, },
+          { currentColumnId: currentPointer + 4, focusColumnId: currentPointer + 5, },
           { currentColumnId: currentPointer + 5, focusColumnId: currentPointer + 6, },
-          { currentColumnId: currentPointer + 6, focusColumnId: currentPointer + 10, },
-          { currentColumnId: currentPointer + 7, focusColumnId: currentPointer + 10, },
-          { currentColumnId: currentPointer + 8, focusColumnId: currentPointer + 10, },
-          { currentColumnId: currentPointer + 9, focusColumnId: currentPointer + 10, },
-          { currentColumnId: currentPointer + 10, focusColumnId: 2, },
+          { currentColumnId: currentPointer + 6, focusColumnId: 2, },
         ]);
         
-        let elementToBeFocused = null;
+        let elementToBeFocused: any = null;
         while(!elementToBeFocused) {
           let columnIndexToBeFocused = focusColumnsIds.find((c) => {
             return c.currentColumnId === columnIndex;
@@ -110,6 +106,7 @@ function Bets(props: {
           elementToBeFocused = document.querySelector(`[aria-colindex='${columnIndexToBeFocused!.focusColumnId}'] input`);
           if(elementToBeFocused) {
             (elementToBeFocused! as any).focus();
+            break;
           } else {
             columnIndex++;
             if(columnIndex > 20) {
