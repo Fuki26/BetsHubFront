@@ -102,10 +102,11 @@ function Bets(props: {
           let columnIndexToBeFocused = focusColumnsIds.find((c) => {
             return c.currentColumnId === columnIndex;
           });
-
           elementToBeFocused = document.querySelector(`[aria-colindex='${columnIndexToBeFocused!.focusColumnId}'] input`);
           if(elementToBeFocused) {
-            (elementToBeFocused! as any).focus();
+            setTimeout(() => {
+              (elementToBeFocused! as any).focus();
+            }, 1);
             break;
           } else {
             columnIndex++;
