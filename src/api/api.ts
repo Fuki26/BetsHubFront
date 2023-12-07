@@ -238,7 +238,7 @@ const upsertBet = async (bet: BetModel) => {
   try {
     const amounts = Object.fromEntries(
       Object.entries(bet).filter(([key, value]) => key.startsWith('amount')).map(([key, value]) => {
-        if(!value || value.constructor === Array) return [];
+        if(value.constructor === Array) return [];
         return [key.replace('amount', ''), value ? evaluate(value.toString()) : 0 ]
       })
     );
