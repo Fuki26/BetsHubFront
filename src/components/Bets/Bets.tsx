@@ -23,6 +23,7 @@ function Bets(props: {
   arePengindBets: boolean;
   onTotalOfTotalAmountsChanged?: (totalOfTotals: number) => void;
   onTotalProfitsChanged?: (totalOfProfits: number) => void;
+  onWinRateChanged?: (winRate: number) => void;
   onNewSportAdded?: (sport: string) => void;
   onNewMarketAdded?: (market: string) => void;
   onNewTournamentAdded?: (tournament: string) => void;
@@ -40,7 +41,7 @@ function Bets(props: {
   possibleMarkets: Array<IDropdownValue> | undefined;
 }) {
   const {
-    arePengindBets, onTotalOfTotalAmountsChanged, onTotalProfitsChanged,
+    arePengindBets, onTotalOfTotalAmountsChanged, onTotalProfitsChanged, onWinRateChanged,
     onNewSportAdded, onNewMarketAdded, onNewTournamentAdded, selectBetIdFn, setIsLoading,
     defaultRows, currencies, possibleCounteragents, possibleSports,
     possibleTournaments, possibleSelections, possibleMarkets, } = props;
@@ -466,6 +467,16 @@ function Bets(props: {
 
       onTotalProfitsChanged(calculatedTotalOfProfits);
     }
+
+    if(onWinRateChanged) {
+      const winRate: number =  rows 
+        ? (rows.filter((r) => r.id !== deleteRowId && (
+            r.winStatus &&  (r.winStatus.id === '1' || r.winStatus.id === '3')
+          )).length/rows.length) * 100
+        : 0;
+      
+      onWinRateChanged(winRate);
+    }
     
     setDeleteRowId(undefined);
     setOpenDeleteDialog(false);
@@ -841,6 +852,16 @@ function Bets(props: {
         calculatedTotalOfProfits += newRow.profits ? Number(newRow.profits) : 0;
 
         onTotalProfitsChanged(calculatedTotalOfProfits);
+      }
+
+      if(onWinRateChanged) {
+        const winRate: number =  rows 
+          ? (rows.filter((r) => r.id !== deleteRowId && (
+              r.winStatus &&  (r.winStatus.id === '1' || r.winStatus.id === '3')
+            )).length/rows.length) * 100
+          : 0;
+        
+        onWinRateChanged(winRate);
       }
     } else {
       

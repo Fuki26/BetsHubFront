@@ -509,6 +509,10 @@ export default function Hub(props: {
     setTotalOfProfitsCompleted(totalOfProfits);
   }
 
+  const onWinRateChanged = (winRate: number) => {
+    setWinrate(winRate);
+  }
+
   const onNewSportAddedHandler = (sport: string) => {
     var sports = possibleSports;
     sports?.push({
@@ -818,6 +822,7 @@ export default function Hub(props: {
                                   savedBet={savedPendingBet}
                                   onTotalOfTotalAmountsChanged={onTotalOfTotalAmountsForCompletedChangedHandler}
                                   onTotalProfitsChanged={onTotalOfProfitsForCompletedChangedHandler}
+                                  onWinRateChanged={onWinRateChanged}
                                   onNewSportAdded={onNewSportAddedHandler}
                                   onNewMarketAdded={onNewMarketAddedHandler}
                                   onNewTournamentAdded={onNewTournamentAddedHandler}
