@@ -662,7 +662,7 @@ function Bets(props: {
         if (typeof amounts[key] === 'string') {
           amounts[key] = evaluate(amounts[key]);
         } else {
-          amounts[key] = 0;
+          amounts[key] = !!amounts[key] ? amounts[key] : 0;
         }
       }
 
