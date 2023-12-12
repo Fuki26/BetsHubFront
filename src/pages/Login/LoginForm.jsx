@@ -2,6 +2,12 @@
 import { Button, TextField, Box } from "@mui/material";
 
 const LoginForm = ({ userName, password, setUserName, setPassword, onSubmit }) => {
+  setTimeout(() => {
+    const loginInput = document.getElementById('loginFormInputId');
+    if(loginInput) {
+      loginInput.focus();
+    }
+  }, (500));
   return (
     <Box
       component="form"
@@ -17,6 +23,7 @@ const LoginForm = ({ userName, password, setUserName, setPassword, onSubmit }) =
       autoComplete="off"
     >
       <TextField
+        id={'loginFormInputId'}
         sx={{ marginBottom: 2 }}
         label="Username"
         value={userName}

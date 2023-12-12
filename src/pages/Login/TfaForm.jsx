@@ -2,6 +2,12 @@
 import { Button, TextField, Box } from "@mui/material";
 
 const TfaForm = ({ tfaCode, setTfaCode, onSubmit }) => {
+  setTimeout(() => {
+    const tfaInput = document.getElementById('tfaFormInputId');
+    if(tfaInput) {
+      tfaInput.focus();
+    }
+  }, (500));
   return (
     <Box
       component="form"
@@ -18,6 +24,7 @@ const TfaForm = ({ tfaCode, setTfaCode, onSubmit }) => {
       autoComplete="off"
     >
       <TextField
+        id={'tfaFormInputId'}
         sx={{ marginBottom: 2 }}
         label="2FA Code"
         type="text"
