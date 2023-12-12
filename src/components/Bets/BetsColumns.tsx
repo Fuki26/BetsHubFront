@@ -193,9 +193,17 @@ export const getBetsColumns = (props: {
           sortable: true,
           sortComparator: (value1: { id: string; label: string; }, 
             value2: { id: string; label: string; }) => {
+              if(value1 && !value2) {
+                return 1;
+              } else if(!value1 && value2) {
+                return -1;
+              } else if(!value1 && !value2) {
+                return 0;
+              }
+
               const stringA = value1.label.toLowerCase();
               const stringB = value2.label.toLowerCase();
-          
+
               if (stringA < stringB) {
                   return -1;
               } else if (stringA > stringB) {
