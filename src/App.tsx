@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate, } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -11,7 +11,6 @@ import PersistentDrawerLeft from './pages/ApplicationComponent/ApplicationCompon
 import Search from './pages/search/Search';
 import Login from './pages/Login/Login';
 import RequireAuth from './contexts/providers/RequireAuthProvider';
-// import useSession from './hooks/useSession';
 import './App.css'
 
 const LayoutRoot = styled('div')<{ isOpenSideBar: boolean | undefined }>(
@@ -33,7 +32,6 @@ const LayoutContainer = styled('div')({
 
 function App() {
   const [isOpenSideBar, setIsOpenSideBar] = useState<boolean>();
-  // useSession();
 
   return (
     <>
@@ -133,6 +131,7 @@ function App() {
               </RequireAuth>
             }
           />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
         <PersistentDrawerLeft openSidebarCb={setIsOpenSideBar} />
       </BrowserRouter>
