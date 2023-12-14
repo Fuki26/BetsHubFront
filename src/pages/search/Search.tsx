@@ -12,10 +12,9 @@ import './Search.css';
 import Bets from '../../components/Bets/Bets';
 import { BetModel, ExpenseModel, IDropdownValue, ISelectionsResult, StatisticItemModel } from '../../models';
 import { getBetStatistics, getCompletedBets, getCounterAgents, 
-  getCurrencies, getExpenses, getMarkets, 
-  getPendingBets, getSports, getTournaments } from '../../api';
+  getCurrencies, getExpenses, getMarkets, getSports, getTournaments } from '../../api';
 import { Currency, Expense, Statistics } from '../../database-models';
-import { FilterType, StatisticType } from '../../models/enums';
+import { FilterType, StatisticType, } from '../../models/enums';
 import Expenses from '../../components/Expenses/Expenses';
 import { betToBetModelMapper } from '../../utils';
 
@@ -226,18 +225,14 @@ export default function Search() {
 
         //#region Bets
 
-        let pendingBets: Array<BetModel> = (await getPendingBets())!.map(
-          betToBetModelMapper
-        );
         let completedBets: Array<BetModel> = (await getCompletedBets())!.map(
           betToBetModelMapper
         );
-        const allBets: Array<BetModel> = pendingBets.concat(completedBets);
 
-        setRows(allBets);
+        setRows(completedBets);
         const filteredRows: Array<BetModel> =
           filterType === FilterType.Bets || filterType === FilterType.Both
-            ? allBets.filter((b) => {
+            ? completedBets.filter((b) => {
                 if (b.dateCreated) {
                   return (
                     b.dateCreated.getTime() > dateFrom.getTime() &&
@@ -247,7 +242,7 @@ export default function Search() {
                   return false;
                 }
               })
-            : allBets;
+            : completedBets;
         setFilteredRows(filteredRows);
         let calculatedTotalOfTotals = filteredRows
           ? filteredRows.reduce((accumulator, currentValue: BetModel) => {
