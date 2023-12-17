@@ -1,13 +1,18 @@
-// LoginForm.js
+import { useEffect, } from 'react';
 import { Button, TextField, Box } from "@mui/material";
 
 const LoginForm = ({ userName, password, setUserName, setPassword, onSubmit }) => {
-  setTimeout(() => {
-    const loginInput = document.getElementById('loginFormInputId');
-    if(loginInput) {
-      loginInput.focus();
-    }
-  }, (500));
+  
+
+  useEffect(() => {	
+    setTimeout(() => {
+      const loginInput = document.getElementById('loginFormInputId');
+      if(loginInput) {
+        loginInput.focus();
+      }
+    }, (500));
+  }, []);
+
   return (
     <Box
       component="form"
