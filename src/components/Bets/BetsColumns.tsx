@@ -54,6 +54,44 @@ export const getBetsColumns = (props: {
 
             return params.id;
           },
+          sortable: true,
+          sortingOrder: [ 'asc', 'desc', ],
+          sortComparator: (
+            value1: number, 
+            value2: number, 
+            cellParam1: GridSortCellParams,
+            cellParam2: GridSortCellParams, 
+          ) => {
+              const sortingModel: GridSortModel = apiRef.current.getSortModel();
+              const columnSortingModel = sortingModel.find((model) => {
+                return model.field === 'id';
+              });
+
+              if(parseInt(cellParam1.id.toString()) > 10000 
+                || parseInt(cellParam2.id.toString()) > 10000) {
+                if(columnSortingModel!.sort === 'asc') {
+                  return 1;
+                } else {
+                  return -1;
+                }
+              }
+
+              if(value1 && !value2) {
+                return 1;
+              } else if(!value1 && value2) {
+                return -1;
+              } else if(!value1 && !value2) {
+                return 0;
+              }
+
+              if (value1 < value2) {
+                  return -1;
+              } else if (value1 > value2) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          },
         },
         {
           field: 'winStatus',
@@ -450,6 +488,44 @@ export const getBetsColumns = (props: {
           editable: true,
           width: 150,
           align: 'center',
+          sortable: true,
+          sortingOrder: [ 'asc', 'desc', ],
+          sortComparator: (
+            value1: number, 
+            value2: number, 
+            cellParam1: GridSortCellParams,
+            cellParam2: GridSortCellParams, 
+          ) => {
+              const sortingModel: GridSortModel = apiRef.current.getSortModel();
+              const columnSortingModel = sortingModel.find((model) => {
+                return model.field === 'psLimit';
+              });
+
+              if(parseInt(cellParam1.id.toString()) > 10000 
+                || parseInt(cellParam2.id.toString()) > 10000) {
+                if(columnSortingModel!.sort === 'asc') {
+                  return 1;
+                } else {
+                  return -1;
+                }
+              }
+
+              if(value1 && !value2) {
+                return 1;
+              } else if(!value1 && value2) {
+                return -1;
+              } else if(!value1 && !value2) {
+                return 0;
+              }
+
+              if (value1 < value2) {
+                  return -1;
+              } else if (value1 > value2) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          },
         },
         {
           field: 'market',
@@ -711,6 +787,44 @@ export const getBetsColumns = (props: {
           type: 'number',
           editable: true,
           width: 100,
+          sortable: true,
+          sortingOrder: [ 'asc', 'desc', ],
+          sortComparator: (
+            value1: number, 
+            value2: number, 
+            cellParam1: GridSortCellParams,
+            cellParam2: GridSortCellParams, 
+          ) => {
+              const sortingModel: GridSortModel = apiRef.current.getSortModel();
+              const columnSortingModel = sortingModel.find((model) => {
+                return model.field === 'odd';
+              });
+
+              if(parseInt(cellParam1.id.toString()) > 10000 
+                || parseInt(cellParam2.id.toString()) > 10000) {
+                if(columnSortingModel!.sort === 'asc') {
+                  return 1;
+                } else {
+                  return -1;
+                }
+              }
+
+              if(value1 && !value2) {
+                return 1;
+              } else if(!value1 && value2) {
+                return -1;
+              } else if(!value1 && !value2) {
+                return 0;
+              }
+
+              if (value1 < value2) {
+                  return -1;
+              } else if (value1 > value2) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          },
         },
         {
           field: 'notes',
@@ -718,6 +832,7 @@ export const getBetsColumns = (props: {
           type: 'string',
           editable: true,
           width: 600,
+          sortable: false,
         }, 
         {
           field: 'tournament',
@@ -848,7 +963,45 @@ export const getBetsColumns = (props: {
           type: 'number',
           editable: true,
           width: 120,
-          align: 'right'
+          align: 'right',
+          sortable: true,
+          sortingOrder: [ 'asc', 'desc', ],
+          sortComparator: (
+            value1: number, 
+            value2: number, 
+            cellParam1: GridSortCellParams,
+            cellParam2: GridSortCellParams, 
+          ) => {
+              const sortingModel: GridSortModel = apiRef.current.getSortModel();
+              const columnSortingModel = sortingModel.find((model) => {
+                return model.field === 'stake';
+              });
+
+              if(parseInt(cellParam1.id.toString()) > 10000 
+                || parseInt(cellParam2.id.toString()) > 10000) {
+                if(columnSortingModel!.sort === 'asc') {
+                  return 1;
+                } else {
+                  return -1;
+                }
+              }
+
+              if(value1 && !value2) {
+                return 1;
+              } else if(!value1 && value2) {
+                return -1;
+              } else if(!value1 && !value2) {
+                return 0;
+              }
+
+              if (value1 < value2) {
+                  return -1;
+              } else if (value1 > value2) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          },
         },
         {
           field: 'dateCreated',
@@ -856,6 +1009,44 @@ export const getBetsColumns = (props: {
           type: 'date',
           editable: false,
           width: 180,
+          sortable: true,
+          sortingOrder: [ 'asc', 'desc', ],
+          sortComparator: (
+            value1: Date, 
+            value2: Date, 
+            cellParam1: GridSortCellParams,
+            cellParam2: GridSortCellParams, 
+          ) => {
+              const sortingModel: GridSortModel = apiRef.current.getSortModel();
+              const columnSortingModel = sortingModel.find((model) => {
+                return model.field === 'dateCreated';
+              });
+
+              if(parseInt(cellParam1.id.toString()) > 10000 
+                || parseInt(cellParam2.id.toString()) > 10000) {
+                if(columnSortingModel!.sort === 'asc') {
+                  return 1;
+                } else {
+                  return -1;
+                }
+              }
+
+              if(value1 && !value2) {
+                return 1;
+              } else if(!value1 && value2) {
+                return -1;
+              } else if(!value1 && !value2) {
+                return 0;
+              }
+
+              if (value1.getTime() < value2.getTime()) {
+                  return -1;
+              } else if (value1.getTime() > value2.getTime()) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          },
           renderCell: (params) => {
             const row = rows.find((r) => r.id === params.id);
     
@@ -878,6 +1069,44 @@ export const getBetsColumns = (props: {
           type: 'date',
           editable: false,
           width: 180,
+          sortable: true,
+          sortingOrder: [ 'asc', 'desc', ],
+          sortComparator: (
+            value1: Date, 
+            value2: Date, 
+            cellParam1: GridSortCellParams,
+            cellParam2: GridSortCellParams, 
+          ) => {
+              const sortingModel: GridSortModel = apiRef.current.getSortModel();
+              const columnSortingModel = sortingModel.find((model) => {
+                return model.field === 'dateFinished';
+              });
+
+              if(parseInt(cellParam1.id.toString()) > 10000 
+                || parseInt(cellParam2.id.toString()) > 10000) {
+                if(columnSortingModel!.sort === 'asc') {
+                  return 1;
+                } else {
+                  return -1;
+                }
+              }
+
+              if(value1 && !value2) {
+                return 1;
+              } else if(!value1 && value2) {
+                return -1;
+              } else if(!value1 && !value2) {
+                return 0;
+              }
+
+              if (value1.getTime() < value2.getTime()) {
+                  return -1;
+              } else if (value1.getTime() > value2.getTime()) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          },
         },
         {
           field: 'totalAmount',
@@ -885,6 +1114,44 @@ export const getBetsColumns = (props: {
           type: 'number',
           editable: false,
           width: 180,
+          sortable: true,
+          sortingOrder: [ 'asc', 'desc', ],
+          sortComparator: (
+            value1: number, 
+            value2: number, 
+            cellParam1: GridSortCellParams,
+            cellParam2: GridSortCellParams, 
+          ) => {
+              const sortingModel: GridSortModel = apiRef.current.getSortModel();
+              const columnSortingModel = sortingModel.find((model) => {
+                return model.field === 'totalAmount';
+              });
+
+              if(parseInt(cellParam1.id.toString()) > 10000 
+                || parseInt(cellParam2.id.toString()) > 10000) {
+                if(columnSortingModel!.sort === 'asc') {
+                  return 1;
+                } else {
+                  return -1;
+                }
+              }
+
+              if(value1 && !value2) {
+                return 1;
+              } else if(!value1 && value2) {
+                return -1;
+              } else if(!value1 && !value2) {
+                return 0;
+              }
+
+              if (value1 < value2) {
+                  return -1;
+              } else if (value1 > value2) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          },
           valueGetter: (params) => {
             if (!currencies || currencies.length === 0) {
               return 0;
@@ -901,6 +1168,44 @@ export const getBetsColumns = (props: {
           type: 'number',
           editable: false,
           width: 100,
+          sortable: true,
+          sortingOrder: [ 'asc', 'desc', ],
+          sortComparator: (
+            value1: number, 
+            value2: number, 
+            cellParam1: GridSortCellParams,
+            cellParam2: GridSortCellParams, 
+          ) => {
+              const sortingModel: GridSortModel = apiRef.current.getSortModel();
+              const columnSortingModel = sortingModel.find((model) => {
+                return model.field === 'profits';
+              });
+
+              if(parseInt(cellParam1.id.toString()) > 10000 
+                || parseInt(cellParam2.id.toString()) > 10000) {
+                if(columnSortingModel!.sort === 'asc') {
+                  return 1;
+                } else {
+                  return -1;
+                }
+              }
+
+              if(value1 && !value2) {
+                return 1;
+              } else if(!value1 && value2) {
+                return -1;
+              } else if(!value1 && !value2) {
+                return 0;
+              }
+
+              if (value1 < value2) {
+                  return -1;
+              } else if (value1 > value2) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          },
         },      
         {
           field: 'actions',

@@ -945,7 +945,7 @@ function Bets(props: {
     columns = columns.filter((c) => c.headerName !== 'Profits');
   }
 
-  insertCurrenciesIntoColumns(columns, abbreviations);
+  insertCurrenciesIntoColumns(columns, abbreviations, apiRef);
 
   return (
     <Paper sx={{ paddingTop: '1%' }}>
