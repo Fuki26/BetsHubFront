@@ -122,6 +122,13 @@ export const getBetsColumns = (props: {
                   { id: '4', label: WinStatus[4] },
                   { id: '5', label: WinStatus[5] },
                 ]}
+                renderOption={(props, option) => {
+                  return (
+                    <span {...props} style={{ backgroundColor: 'white' }}>
+                      {option.label}
+                    </span>
+                  );
+                }}
                 renderInput={(params) => <TextField {...params} />}
                 onChange={(e, value: any) => {
                   setRows((previousRowsModel) => {
@@ -220,6 +227,13 @@ export const getBetsColumns = (props: {
             return (
               <Autocomplete
                 options={possibleCounteragents ? possibleCounteragents : []}
+                renderOption={(props, option) => {
+                  return (
+                    <span {...props} style={{ backgroundColor: 'white' }}>
+                      {option.label}
+                    </span>
+                  );
+                }}
                 renderInput={(params) => <TextField {...params} />}
                 onChange={(e, value: any) => {
                   if(value && value.id && value.label) {
@@ -317,6 +331,13 @@ export const getBetsColumns = (props: {
               <Autocomplete
                 freeSolo
                 options={possibleSports ? possibleSports : []}
+                renderOption={(props, option) => {
+                  return (
+                    <span {...props} style={{ backgroundColor: 'white' }}>
+                      {option.label}
+                    </span>
+                  );
+                }}
                 renderInput={(params) => <TextField {...params}
                   onBlurCapture={(p) => {
                     const value = (p.target as any).value;
@@ -446,6 +467,13 @@ export const getBetsColumns = (props: {
                   { id: '4', label: LiveStatus[4] },
                   { id: '5', label: LiveStatus[5] },
                 ]}
+                renderOption={(props, option) => {
+                  return (
+                    <span {...props} style={{ backgroundColor: 'white' }}>
+                      {option.label}
+                    </span>
+                  );
+                }}
                 renderInput={(params) => <TextField {...params} />}
                 onChange={(e, value: any) => {
                   setRows((previousRowsModel) => {
@@ -591,6 +619,13 @@ export const getBetsColumns = (props: {
               <Autocomplete
                 freeSolo
                 options={possibleMarkets ? possibleMarkets : []}
+                renderOption={(props, option) => {
+                  return (
+                    <span {...props} style={{ backgroundColor: 'white' }}>
+                      {option.label}
+                    </span>
+                  );
+                }}
                 renderInput={(params) => <TextField {...params}
                   onBlurCapture={(p) => {
                     const value = (p.target as any).value;
@@ -723,6 +758,13 @@ export const getBetsColumns = (props: {
               <Autocomplete
                 freeSolo
                 options={possibleSelectionsForBet}
+                renderOption={(props, option) => {
+                  return (
+                    <span {...props} style={{ backgroundColor: 'white' }}>
+                      {option.label}
+                    </span>
+                  );
+                }}
                 renderInput={(params) => <TextField {...params} 
                 onBlurCapture={(p) => { 
                   const value = (p.target as any).value;
@@ -898,6 +940,13 @@ export const getBetsColumns = (props: {
               <Autocomplete
                 freeSolo
                 options={possibleTournaments ? possibleTournaments : []}
+                renderOption={(props, option) => {
+                  return (
+                    <span {...props} style={{ backgroundColor: 'white' }}>
+                      {option.label}
+                    </span>
+                  );
+                }}
                 renderInput={(params) => <TextField {...params}
                   onBlurCapture={(p) => {
                     const value = (p.target as any).value;
