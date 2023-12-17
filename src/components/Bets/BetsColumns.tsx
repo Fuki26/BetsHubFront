@@ -1,7 +1,7 @@
 import {
     GridActionsCellItem, GridColDef, GridRenderCellParams,
     GridRenderEditCellParams, GridRowId, GridRowModes,
-    GridRowModesModel, GridRowParams, GridValueGetterParams,
+    GridRowModesModel, GridRowParams, GridSortCellParams, GridSortModel, GridValueGetterParams,
 } from '@mui/x-data-grid';
 import { Tooltip, Autocomplete, TextField, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -13,10 +13,12 @@ import ColorizeIcon from '@mui/icons-material/Colorize';
 import CancelIcon from '@mui/icons-material/Close';
 import { BetModel, IDropdownValue, WinStatus, LiveStatus } from '../../models';
 import { Currency, } from '../../database-models';
+import { GridApiCommunity } from '@mui/x-data-grid/internals';
 
 export const getBetsColumns = (props: { 
     rows: Array<BetModel>, 
     setRows: React.Dispatch<React.SetStateAction<Array<BetModel>>>,
+    apiRef: React.MutableRefObject<GridApiCommunity>,
     possibleCounteragents: Array<IDropdownValue> | undefined,
     possibleSports: Array<IDropdownValue> | undefined,
     possibleTournaments: Array<IDropdownValue> | undefined,
@@ -34,7 +36,7 @@ export const getBetsColumns = (props: {
     handleClickOpenOnDeleteDialog: (id: GridRowId) => () => void,
     handleClickOpenOnColorDialog: (id: GridRowId) => () => void;
   }): Array<GridColDef>  => {
-    const { rows, setRows, possibleCounteragents, possibleSports, 
+    const { rows, setRows, apiRef, possibleCounteragents, possibleSports, 
       possibleTournaments, possibleSelections, possibleMarkets, 
       currencies, rowModesModel,  id, isMobile, 
       handleSaveClick, handleCancelClick, handleEditClick, handleHistoryClick, 
@@ -122,8 +124,27 @@ export const getBetsColumns = (props: {
           headerName: 'Counteragent',
           editable: true,
           sortable: true,
-          sortComparator: (value1: { id: string; label: string; }, 
-            value2: { id: string; label: string; }) => {
+          sortingOrder: [ 'asc', 'desc', ],
+          sortComparator: (
+            value1: { id: string; label: string; }, 
+            value2: { id: string; label: string; },
+            cellParam1: GridSortCellParams,
+            cellParam2: GridSortCellParams,
+          ) => {
+              const sortingModel: GridSortModel = apiRef.current.getSortModel();
+              const columnSortingModel = sortingModel.find((model) => {
+                return model.field === 'counterAgent';
+              });
+
+              if(parseInt(cellParam1.id.toString()) > 10000 
+                || parseInt(cellParam2.id.toString()) > 10000) {
+                if(columnSortingModel!.sort === 'asc') {
+                  return 1;
+                } else {
+                  return -1;
+                }
+              }
+
               if(value1 && !value2) {
                 return 1;
               } else if(!value1 && value2) {
@@ -199,8 +220,27 @@ export const getBetsColumns = (props: {
           headerName: 'Sport',
           editable: true,
           sortable: true,
-          sortComparator: (value1: { id: string; label: string; }, 
-            value2: { id: string; label: string; }) => {
+          sortingOrder: [ 'asc', 'desc', ],
+          sortComparator: (
+            value1: { id: string; label: string; }, 
+            value2: { id: string; label: string; }, 
+            cellParam1: GridSortCellParams,
+            cellParam2: GridSortCellParams, 
+          ) => {
+              const sortingModel: GridSortModel = apiRef.current.getSortModel();
+              const columnSortingModel = sortingModel.find((model) => {
+                return model.field === 'sport';
+              });
+
+              if(parseInt(cellParam1.id.toString()) > 10000 
+                || parseInt(cellParam2.id.toString()) > 10000) {
+                if(columnSortingModel!.sort === 'asc') {
+                  return 1;
+                } else {
+                  return -1;
+                }
+              }
+
               if(value1 && !value2) {
                 return 1;
               } else if(!value1 && value2) {
@@ -303,8 +343,27 @@ export const getBetsColumns = (props: {
           headerName: 'Live status',
           editable: true,
           sortable: true,
-          sortComparator: (value1: { id: string; label: string; }, 
-            value2: { id: string; label: string; }) => {
+          sortingOrder: [ 'asc', 'desc', ],
+          sortComparator: (
+            value1: { id: string; label: string; }, 
+            value2: { id: string; label: string; }, 
+            cellParam1: GridSortCellParams,
+            cellParam2: GridSortCellParams, 
+          ) => {
+              const sortingModel: GridSortModel = apiRef.current.getSortModel();
+              const columnSortingModel = sortingModel.find((model) => {
+                return model.field === 'liveStatus';
+              });
+
+              if(parseInt(cellParam1.id.toString()) > 10000 
+                || parseInt(cellParam2.id.toString()) > 10000) {
+                if(columnSortingModel!.sort === 'asc') {
+                  return 1;
+                } else {
+                  return -1;
+                }
+              }
+
               if(value1 && !value2) {
                 return 1;
               } else if(!value1 && value2) {
@@ -397,8 +456,27 @@ export const getBetsColumns = (props: {
           headerName: 'Market',
           editable: true,
           sortable: true,
-          sortComparator: (value1: { id: string; label: string; }, 
-            value2: { id: string; label: string; }) => {
+          sortingOrder: [ 'asc', 'desc', ],
+          sortComparator: (
+            value1: { id: string; label: string; }, 
+            value2: { id: string; label: string; }, 
+            cellParam1: GridSortCellParams,
+            cellParam2: GridSortCellParams, 
+          ) => {
+              const sortingModel: GridSortModel = apiRef.current.getSortModel();
+              const columnSortingModel = sortingModel.find((model) => {
+                return model.field === 'market';
+              });
+
+              if(parseInt(cellParam1.id.toString()) > 10000 
+                || parseInt(cellParam2.id.toString()) > 10000) {
+                if(columnSortingModel!.sort === 'asc') {
+                  return 1;
+                } else {
+                  return -1;
+                }
+              }
+
               if(value1 && !value2) {
                 return 1;
               } else if(!value1 && value2) {
@@ -501,8 +579,27 @@ export const getBetsColumns = (props: {
           headerName: 'Selection',
           editable: true,
           sortable: true,
-          sortComparator: (value1: { id: string; label: string; }, 
-            value2: { id: string; label: string; }) => {
+          sortingOrder: [ 'asc', 'desc', ],
+          sortComparator: (
+            value1: { id: string; label: string; }, 
+            value2: { id: string; label: string; }, 
+            cellParam1: GridSortCellParams,
+            cellParam2: GridSortCellParams, 
+          ) => {
+              const sortingModel: GridSortModel = apiRef.current.getSortModel();
+              const columnSortingModel = sortingModel.find((model) => {
+                return model.field === 'selection';
+              });
+
+              if(parseInt(cellParam1.id.toString()) > 10000 
+                || parseInt(cellParam2.id.toString()) > 10000) {
+                if(columnSortingModel!.sort === 'asc') {
+                  return 1;
+                } else {
+                  return -1;
+                }
+              }
+
               if(value1 && !value2) {
                 return 1;
               } else if(!value1 && value2) {
@@ -627,8 +724,27 @@ export const getBetsColumns = (props: {
           headerName: 'Tournament',
           editable: true,
           sortable: true,
-          sortComparator: (value1: { id: string; label: string; }, 
-            value2: { id: string; label: string; }) => {
+          sortingOrder: [ 'asc', 'desc', ],
+          sortComparator: (
+            value1: { id: string; label: string; }, 
+            value2: { id: string; label: string; }, 
+            cellParam1: GridSortCellParams,
+            cellParam2: GridSortCellParams, 
+          ) => {
+              const sortingModel: GridSortModel = apiRef.current.getSortModel();
+              const columnSortingModel = sortingModel.find((model) => {
+                return model.field === 'tournament';
+              });
+
+              if(parseInt(cellParam1.id.toString()) > 10000 
+                || parseInt(cellParam2.id.toString()) > 10000) {
+                if(columnSortingModel!.sort === 'asc') {
+                  return 1;
+                } else {
+                  return -1;
+                }
+              }
+
               if(value1 && !value2) {
                 return 1;
               } else if(!value1 && value2) {

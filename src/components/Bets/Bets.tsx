@@ -3,7 +3,7 @@ import { toast, } from 'react-toastify';
 import { isMobile, } from 'react-device-detect';
 import { DataGrid, GridColDef, GridRowId, GridRowModel, GridRowModes,
   GridRowModesModel, GridRowParams, GridCellParams, GridToolbarContainer, 
-  GridEventListener, } from '@mui/x-data-grid';
+  GridEventListener,useGridApiRef, } from '@mui/x-data-grid';
 import { Button, Dialog, DialogActions, DialogTitle, Paper, 
   } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -16,6 +16,7 @@ import { getBetsColumns, } from './BetsColumns';
 import CustomToolbar from '../CustomToolbar/CustomToolbar';
 import './Bets.css';
 import { insertCurrenciesIntoColumns, sortBets, } from '.';
+import { GridApiCommunity } from '@mui/x-data-grid/internals';
 const { evaluate } = require('mathjs');
 
 function Bets(props: {
@@ -45,6 +46,8 @@ function Bets(props: {
     onNewSportAdded, onNewMarketAdded, onNewTournamentAdded, selectBetIdFn, setIsLoading,
     defaultRows, currencies, possibleCounteragents, possibleSports,
     possibleTournaments, possibleSelections, possibleMarkets, } = props;
+
+  const apiRef: React.MutableRefObject<GridApiCommunity> = useGridApiRef();
 
   const tabKeyHandler: GridEventListener<'cellKeyDown'> 
     = (params, event) => {
@@ -139,11 +142,8 @@ function Bets(props: {
     var zoomLevel = detectZoom();
     var elements: HTMLCollectionOf<Element> = document.getElementsByClassName('MuiDataGrid-root');
     if(elements && elements[0]) {
-      // for(var i = 0; i <= elements.length - 1; i++) {
-        (elements[1] as any).style.height = 500 * (100/zoomLevel) + 'px';
-      // }
+      (elements[1] as any).style.height = 500 * (100/zoomLevel) + 'px';
     }
-    console.log(`Zoom level: ${zoomLevel}`);
   };
 
   window.addEventListener('resize', updateElementSize);
@@ -920,7 +920,7 @@ function Bets(props: {
   };
 
   let columns: Array<GridColDef> = getBetsColumns({ 
-    rows, setRows,
+    rows, setRows, apiRef,
     possibleCounteragents, possibleSports, possibleTournaments,
     possibleSelections: betsSelections, possibleMarkets,
     currencies, rowModesModel, id: props.id,
@@ -955,6 +955,7 @@ function Bets(props: {
             (
               <>
                 <DataGrid
+                  apiRef={apiRef}
                   onCellKeyDown={tabKeyHandler}
                   columns={columns}
                   initialState={{

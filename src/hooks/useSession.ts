@@ -11,15 +11,12 @@ const useSession = () => {
 
         const windowFocusEventHandler = () => {
             if (!alreadyFocused) {
-                console.log('windowFocusEventHandler');
                 setAlreadyFocused(true);
             }
         }
         const windowBlurEventHandler = () => {
             if (!document.hidden) return;
             const elapsedSeconds = Math.floor((Date.now() - lastActiveTime) / 1000);
-            // setActiveTime(activeTime => activeTime + elapsedSeconds);
-            console.log('windowBlurEventHandler');
             setAlreadyFocused(false);
             localStorage.setItem('activeTime', elapsedSeconds.toString());
         }
