@@ -215,7 +215,7 @@ export default function Search() {
         //#region Filters
 
         const dateFrom: Date = new Date();
-        dateFrom.setMonth(dateFrom.getMonth() - 1);
+        dateFrom.setMonth(dateFrom.getMonth() - 6);
         const now = new Date();
 
         setDateFrom(dateFrom);

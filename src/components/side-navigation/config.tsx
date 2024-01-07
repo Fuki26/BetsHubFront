@@ -1,6 +1,9 @@
 import { SvgIcon } from '@mui/material';
-import { CopyrightSharp, PeopleRounded, SearchRounded, 
+import { PeopleRounded, SearchRounded, 
   SupportAgentRounded, EuroRounded, VerifiedUserRounded, } from '@mui/icons-material';
+import PendingIcon from '@mui/icons-material/Pending';
+import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
+import PaymentIcon from '@mui/icons-material/Payment';
 
 export const items = [
   {
@@ -8,7 +11,7 @@ export const items = [
     path: '/pending_bets',
     icon: (
       <SvgIcon fontSize='small'>
-        <CopyrightSharp />
+        <PendingIcon />
       </SvgIcon>
     ),
     requireAuthentication: true,
@@ -18,7 +21,7 @@ export const items = [
     path: '/completed_bets',
     icon: (
       <SvgIcon fontSize='small'>
-        <CopyrightSharp />
+        <DoneOutlineIcon />
       </SvgIcon>
     ),
     requireAuthentication: true,
@@ -28,7 +31,7 @@ export const items = [
     path: '/expenses',
     icon: (
       <SvgIcon fontSize='small'>
-        <CopyrightSharp />
+        <PaymentIcon />
       </SvgIcon>
     ),
     requireAuthentication: true,
