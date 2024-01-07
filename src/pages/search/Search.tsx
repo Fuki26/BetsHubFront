@@ -66,7 +66,8 @@ const AutocompleteComponent = (props: {
   setStateFn: React.Dispatch<React.SetStateAction<string[]>>;
   width?: number;
 }) => {
-  const { id, label, options, selectedOptions, setStateFn, width, } = props;
+  const { id, label, selectedOptions, setStateFn, width, } = props;
+  const options = props.options.sort((a, b) => a.label.localeCompare(b.label));
   return (
     <Autocomplete
       multiple
