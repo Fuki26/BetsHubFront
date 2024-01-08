@@ -165,6 +165,9 @@ export default function Search() {
   const [totalOfProfits, setTotalProfits ] = React.useState<number>(0);
   const [winrate, setWinrate ] = React.useState<number>(0);
 
+  const [totalOfTotalsFlat, setTotalOfTotalsFlat ] = React.useState<number>(0);
+  const [totalOfProfitsFlat, setTotalOfProfitsFlat ] = React.useState<number>(0);
+
   const [activateFilter, setActivateFilter ] = React.useState<boolean>(false);
 
   //#endregion Filters
@@ -255,6 +258,7 @@ export default function Search() {
             }, 0)
           : 0;
 	      setTotalOfTotals(calculatedTotalOfTotals);
+        setTotalOfTotalsFlat(filteredRows ? filteredRows.length : 0);
 
         let calculatedTotalProfits = filteredRows
           ? filteredRows.reduce((accumulator, currentValue: BetModel) => {
@@ -266,6 +270,17 @@ export default function Search() {
             }, 0)
           : 0;
 	      setTotalProfits(calculatedTotalProfits);
+
+        let calculatedTotalProfitsFlat = filteredRows
+          ? filteredRows.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.profits) {
+                return accumulator + 1;
+              } else {
+                return accumulator;
+              }
+            }, 0)
+          : 0;
+	      setTotalOfProfitsFlat(calculatedTotalProfitsFlat);
 
         const winRate = filteredRows
           ? (filteredRows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
@@ -438,6 +453,7 @@ export default function Search() {
             }, 0)
           : 0;
 	      setTotalOfTotals(calculatedTotalOfTotals);
+        setTotalOfTotalsFlat(rows ? rows.length : 0);
 
         let calculatedTotalProfits = rows
           ? rows.reduce((accumulator, currentValue: BetModel) => {
@@ -449,6 +465,17 @@ export default function Search() {
             }, 0)
           : 0;
         setTotalProfits(calculatedTotalProfits);
+
+        let calculatedTotalProfitsFlat = rows
+          ? rows.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.profits) {
+                return accumulator + 1;
+              } else {
+                return accumulator;
+              }
+            }, 0)
+          : 0;
+	      setTotalOfProfitsFlat(calculatedTotalProfitsFlat);
 
         const winRate = rows
           ? (rows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
@@ -796,6 +823,7 @@ export default function Search() {
           : 0;
 
         setTotalOfTotals(calculatedTotalOfTotals);
+        setTotalOfTotalsFlat(bets ? bets.length : 0);
 
         let calculatedTotalProfits = bets
           ? bets.reduce((accumulator, currentValue: BetModel) => {
@@ -808,6 +836,17 @@ export default function Search() {
           : 0;
         setTotalProfits(calculatedTotalProfits);
 
+        let calculatedTotalProfitsFlat = bets
+          ? bets.reduce((accumulator, currentValue: BetModel) => {
+              if (currentValue.profits) {
+                return accumulator + 1;
+              } else {
+                return accumulator;
+              }
+            }, 0)
+          : 0;
+	      setTotalOfProfitsFlat(calculatedTotalProfitsFlat);
+
         const winRate = bets
             ? (bets.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
                 || b.winStatus.id === '3')).length/bets.length) * 100
@@ -819,6 +858,8 @@ export default function Search() {
         setTotalOfTotals(0);
         setTotalProfits(0);
         setWinrate(0);
+        setTotalOfTotalsFlat(0);
+        setTotalOfProfitsFlat(0);
         return [];
       }
     });
@@ -1488,7 +1529,7 @@ export default function Search() {
                   <Paper className='aggregatedLabel' sx={{
                     display: 'inline-block',
                   }}>
-                    TURNOVER:
+                    REAL TURNOVER:
                   </Paper> 
                   {
                     totalOfTotals && !isNaN(totalOfTotals)
@@ -1502,7 +1543,7 @@ export default function Search() {
                   <Paper className='aggregatedLabel' sx={{
                     display: 'inline-block',
                   }}>
-                    PROFIT:
+                    REAL PROFIT:
                   </Paper>
                   {
                     totalOfProfits && !isNaN(totalOfProfits)
@@ -1530,7 +1571,7 @@ export default function Search() {
                   <Paper className='aggregatedLabel' sx={{
                     display: 'inline-block',
                   }}>
-                    YIELD:
+                    REAL YIELD:
                   </Paper> 
                   {
                     totalOfProfits && !isNaN(totalOfProfits) && totalOfTotals && !isNaN(totalOfTotals)
@@ -1540,7 +1581,49 @@ export default function Search() {
                         }) + '%'
                       : "0.00%"
                   }
-              </Paper>
+                  <br></br>
+                  <Paper className='aggregatedLabel' sx={{
+                    display: 'inline-block',
+                  }}>
+                    FLAT TURNOVER:
+                  </Paper> 
+                  {
+                    totalOfTotalsFlat && !isNaN(totalOfTotalsFlat)
+                      ? Number(totalOfTotalsFlat).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })
+                      : 0.00
+                  }
+      
+                  <Paper className='aggregatedLabel' sx={{
+                    display: 'inline-block',
+                  }}>
+                    FLAT PROFIT:
+                  </Paper>
+                  {
+                    totalOfProfitsFlat && !isNaN(totalOfProfitsFlat)
+                      ? Number(totalOfProfitsFlat).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })
+                      : 0.00
+                  }
+                  <Paper className='aggregatedLabel' sx={{
+                    display: 'inline-block',
+                  }}>
+                    FLAT YIELD:
+                  </Paper> 
+                  {
+                    totalOfProfitsFlat && !isNaN(totalOfProfitsFlat) && totalOfTotalsFlat && !isNaN(totalOfTotalsFlat)
+                      ? ((totalOfProfitsFlat/totalOfTotalsFlat) * 100).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }) + '%'
+                      : "0.00%"
+                  }
+                </Paper>
+                
               )
             : <></>
         }
