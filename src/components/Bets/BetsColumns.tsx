@@ -1305,6 +1305,13 @@ export const getBetsColumns = (props: {
                         onClick={handleEditClick(params.id)}
                         color='inherit'
                       />,
+                      <GridActionsCellItem
+                        icon={<HistoryIcon />}
+                        label='Bet History'
+                        className='textPrimary'
+                        onClick={() => handleHistoryClick(params) as any}
+                        color='inherit'
+                      />,
                     ]
                   : [];
             } else if(id === 'pending') {
