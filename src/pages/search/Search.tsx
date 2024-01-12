@@ -158,6 +158,7 @@ export default function Search() {
   const [sportIds, setSportIds] = React.useState<Array<string>>([]);
   const [marketIds, setMarketIds] = React.useState<Array<string>>([]);
   const [tournamentIds, setTournamentIds] = React.useState<Array<string>>([]);
+  const [selectionIds, setSelectionIds] = React.useState<Array<string>>([]);
   const [liveStatusIds, setLiveStatusIds] = React.useState<Array<string>>([]);
   const [currencyIds, setCurrencyIds] = React.useState<Array<string>>([]);
 
@@ -570,6 +571,20 @@ export default function Search() {
               tournamentIds.indexOf(currentRow.tournament.id) !== -1;
 
             if (!matchTournaments) {
+              continue;
+            }
+          }
+
+          //#endregion Tournament filter
+
+          //#region Tournament filter
+
+          if (selectionIds.length > 0) {
+            const matchSelections =
+              !!currentRow.selection &&
+              selectionIds.indexOf(currentRow.selection.id) !== -1;
+
+            if (!matchSelections) {
               continue;
             }
           }
@@ -1146,6 +1161,20 @@ export default function Search() {
     return { id: b, label: b } as IDropdownValue;
   });
 
+  const distinctSelections: Array<IDropdownValue> = (
+    filteredRows
+      ? [
+          ...new Set(
+            filteredRows
+              .filter((b: BetModel) => !!b.selection)
+              .map((b: BetModel) => b.selection!.id)
+          ),
+        ]
+      : []
+  ).map((b) => {
+    return { id: b, label: b } as IDropdownValue;
+  });
+
   const distinctLiveStatuses: Array<IDropdownValue> = (
     filteredRows
       ? [
@@ -1481,6 +1510,15 @@ export default function Search() {
                 options={distinctTournaments}
                 selectedOptions={tournamentIds}
                 setStateFn={setTournamentIds}
+              />
+            </Paper>
+            <Paper sx={{ display: 'inline-block', marginRight: '2%', marginTop: '1%', }}>
+              <AutocompleteComponent
+                id='selections-autocomplete'
+                label='Selections'
+                options={distinctSelections}
+                selectedOptions={selectionIds}
+                setStateFn={setSelectionIds}
               />
             </Paper>
             <Paper sx={{ display: 'inline-block', marginRight: '2%',  marginTop: '1%',}}>
