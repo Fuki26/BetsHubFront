@@ -142,7 +142,7 @@ function Bets(props: {
     var zoomLevel = detectZoom();
     var elements: HTMLCollectionOf<Element> = document.getElementsByClassName('MuiDataGrid-root');
     if(elements && elements[0]) {
-      (elements[1] as any).style.height = 500 * (100/zoomLevel) + 'px';
+      (elements[1] as any).style.height = 5400 * (100/zoomLevel) + 'px';
     }
   };
 
@@ -967,7 +967,6 @@ function Bets(props: {
                   }}
                   onColumnVisibilityModelChange={handleColumnVisibilityChange}
                   getRowClassName={getRowClassName}
-                  columnBuffer={50}
                   rows={rows}
                   slots={{
                     toolbar: props.id === 'completed' || props.id === 'search' 
@@ -984,7 +983,7 @@ function Bets(props: {
                   // onCellEditStop={onCellEditStop}
                   editMode='row'
                   sx={{
-                    height: 500,
+                    height: 5400,
                     fontSize: 18,
                   }}
                 />
