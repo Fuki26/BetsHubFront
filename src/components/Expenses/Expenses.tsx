@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { isMobile } from 'react-device-detect';
 import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
   GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams,
-  GridToolbarExport, GridRowParams, } from '@mui/x-data-grid';
+  GridToolbarExport, GridRowParams, GridEventListener, } from '@mui/x-data-grid';
 import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, Paper, TextField,Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
@@ -97,6 +97,19 @@ export default function Expenses(props: {
         )
       : <></>;
   }
+
+  const tabKeyHandler: GridEventListener<'cellKeyDown'> 
+  = (params, event) => {
+    if(event.key === 'Enter' && params.cellMode === 'edit') {
+      const activeElement = document.activeElement;
+      if(activeElement) {
+        (activeElement as any).blur();
+      }
+
+      const saveButton = document.querySelectorAll('[aria-label="Save"]')[0];
+      (saveButton as any).click();
+    } 
+  };
 
 
   //#region Delete dialog
@@ -556,6 +569,7 @@ export default function Expenses(props: {
                   columns={columns}
                   columnBuffer={2} 
                   columnThreshold={2}
+                  onCellKeyDown={tabKeyHandler}
                   rows={rows}   
                   slots={{
                     toolbar: props.displayExportToolbar
