@@ -1312,6 +1312,12 @@ export const getBetsColumns = (props: {
                         onClick={() => handleHistoryClick(params) as any}
                         color='inherit'
                       />,
+                      <GridActionsCellItem
+                        icon={<DeleteIcon />}
+                        label='Delete'
+                        onClick={handleClickOpenOnDeleteDialog(params.id)}
+                        color='inherit'
+                      />,
                     ]
                   : [];
             } else if(id === 'pending') {

@@ -67,7 +67,17 @@ const AutocompleteComponent = (props: {
   width?: number;
 }) => {
   const { id, label, selectedOptions, setStateFn, width, } = props;
-  const options = props.options.sort((a, b) => a.label.localeCompare(b.label));
+  const options = props.options.sort((a, b) => {
+    if(a.label && b.label) {
+      return a.label.localeCompare(b.label);
+    } else if(a.label && !b.label) {
+      return 1;
+    } else if(!a.label && b.label) {
+      return -1;
+    } else {
+      return 0;
+    }
+  });
   return (
     <Autocomplete
       multiple
