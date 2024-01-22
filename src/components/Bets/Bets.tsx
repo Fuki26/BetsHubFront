@@ -8,7 +8,7 @@ import { Button, Dialog, DialogActions, DialogTitle, Paper,
   } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { BetModel, EditToolbarProps, BetStatus, 
-  WinStatus, IDropdownValue, ActionType ,} from '../../models';
+  WinStatus, IDropdownValue, ActionType, BetsHistoryItemModel,} from '../../models';
 import { deleteBet, upsertBet, getBetHistory, } from '../../api';
 import { Currency, } from '../../database-models';
 import Modal from '../UI/Modal';
@@ -161,7 +161,7 @@ function Bets(props: {
   const [colorDialogIsOpened, setOpenColorDialog] = useState<boolean>(false);
 
   const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [history, setHistory] = useState(null);
+  const [history, setHistory] = useState<Array<BetsHistoryItemModel> | null>(null);
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState<Record<string, boolean>>({});
 
@@ -426,10 +426,17 @@ function Bets(props: {
       return;
     }
 
-    const history = await getBetHistory(row.id);
+    let historyItems: Array<BetsHistoryItemModel> = await getBetHistory(row.id);
+    historyItems = historyItems.filter((historyItem) => {
+      if(historyItem.operation === 'Insert' && historyItem.field !== 'Id') {
+        return false;
+      }
+
+      return true;
+    });
 
     setShowHistoryModal(true);
-    setHistory(history);
+    setHistory(historyItems);
   };
 
   const handleDeleteClick = async () => {

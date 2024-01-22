@@ -1,22 +1,13 @@
 import {Modal as MUIModal} from '@mui/material';
-import { dateTimeHelper } from '../../utils/date';
+import { dateTimeHelper, } from '../../utils/date';
+import { BetsHistoryItemModel, } from '../../models';
 import './Modal.css';
 
-interface BetsHistory {
-    id: number;
-    betId: number;
-    field?: string;
-    oldValue?: string;
-    newValue?: string;
-    operation?: string;
-    userName?: string;
-    operationDate?: string;
-};
 
 interface ModalProps {
     open: boolean;
     handleClose: () => void;
-    betsHistory: BetsHistory[];
+    betsHistory: Array<BetsHistoryItemModel>;
 }
 
 const Modal = ({open, handleClose, betsHistory}: ModalProps) => {
@@ -26,13 +17,23 @@ const Modal = ({open, handleClose, betsHistory}: ModalProps) => {
             onClose={handleClose}
         >
             <ul className='wrapper'>
-                {betsHistory.map(({id, field, oldValue, newValue, userName, operation, operationDate}: BetsHistory) => {
-                    return (
-                        <ol key={id}>
-                            Changed field: {field || 'Unknown'}, from {oldValue || 'Missing value'} to {newValue || 'Missing value'}. By { userName  || 'Unknown'}. Operation type {operation}. Date {dateTimeHelper(operationDate)}
-                        </ol>
-                    )
-                })}
+                {
+                    betsHistory.map(({id, field, oldValue, newValue, userName, operation, operationDate}: BetsHistoryItemModel) => {
+                        if(operation && operation === 'Insert') {
+                            return (
+                                <ol key={id}>
+                                    The row is created at {dateTimeHelper(operationDate)}
+                                </ol>
+                            );
+                        } else {
+                            return (
+                                <ol key={id}>
+                                    Changed field: {field || 'Unknown'}, from {oldValue || 'Missing value'} to {newValue || 'Missing value'}. By { userName  || 'Unknown'}. Operation type {operation}. Date {dateTimeHelper(operationDate)}
+                                </ol>
+                            );
+                        }
+                    })
+                }
             </ul>
         </MUIModal>
     );

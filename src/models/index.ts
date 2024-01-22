@@ -1,5 +1,6 @@
 export * from './enums';
 export * from './BetModel';
+export * from './BetsHistoryItemModel';
 export * from './CounteragentModel';
 export * from './CurrencyModel';
 export * from './EditToolbarProps';
