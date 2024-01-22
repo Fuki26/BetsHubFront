@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { isMobile } from 'react-device-detect';
 import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRenderEditCellParams, GridRowId, 
   GridRowModel, GridRowModes, GridRowModesModel,  GridToolbarContainer, GridValueGetterParams,
-  GridToolbarExport, GridRowParams, GridEventListener, } from '@mui/x-data-grid';
+  GridToolbarExport, GridRowParams, GridEventListener, GridSortCellParams, GridSortModel, useGridApiRef, } from '@mui/x-data-grid';
 import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, Paper, TextField,Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
@@ -16,6 +16,7 @@ import { deleteExpense, getExpenseHistory, upsertExpense } from '../../api';
 import ExpensesToolbar from '../ExpensesToolbar/ExpensesToolbar';
 import Modal from '../UI/Modal';
 import { useState } from 'react';
+import { GridApiCommunity } from '@mui/x-data-grid/internals';
 
 export default function Expenses(props: { 
   isRead: boolean;
@@ -33,6 +34,8 @@ export default function Expenses(props: {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [history, setHistory] = useState(null);
   const [ totalOfTotals, setTotalOfTotals, ] = React.useState(0);
+
+  const apiRef: React.MutableRefObject<GridApiCommunity> = useGridApiRef();
 
   React.useEffect(() => {
     setRows((oldRows) => {
@@ -352,13 +355,92 @@ export default function Expenses(props: {
             return null;
           }
           return params.id;
-        }
+        },
+        sortable: true,
+        sortingOrder: [ 'asc', 'desc', ],
+        sortComparator: (
+          value1: number, 
+          value2: number, 
+          cellParam1: GridSortCellParams,
+          cellParam2: GridSortCellParams, 
+        ) => {
+            const sortingModel: GridSortModel = apiRef.current.getSortModel();
+            const columnSortingModel = sortingModel.find((model) => {
+              return model.field === 'id';
+            });
+
+            if(parseInt(cellParam1.id.toString()) > 10000 
+              || parseInt(cellParam2.id.toString()) > 10000) {
+              if(columnSortingModel!.sort === 'asc') {
+                return 1;
+              } else {
+                return -1;
+              }
+            }
+
+            if(value1 && !value2) {
+              return 1;
+            } else if(!value1 && value2) {
+              return -1;
+            } else if(!value1 && !value2) {
+              return 0;
+            }
+
+            if (value1 < value2) {
+                return -1;
+            } else if (value1 > value2) {
+                return 1;
+            } else {
+                return 0;
+            }
+        },
     },
     {
       field: 'counterAgent',
       headerName: 'Counteragent',
       editable: true,
       width: 170,
+      sortable: true,
+      sortingOrder: [ 'asc', 'desc', ],
+      sortComparator: (
+        value1: { id: string; label: string; }, 
+        value2: { id: string; label: string; },
+        cellParam1: GridSortCellParams,
+        cellParam2: GridSortCellParams,
+      ) => {
+          const sortingModel: GridSortModel = apiRef.current.getSortModel();
+          const columnSortingModel = sortingModel.find((model) => {
+            return model.field === 'counterAgent';
+          });
+
+          if(parseInt(cellParam1.id.toString()) > 10000 
+            || parseInt(cellParam2.id.toString()) > 10000) {
+            if(columnSortingModel!.sort === 'asc') {
+              return 1;
+            } else {
+              return -1;
+            }
+          }
+
+          if(value1 && !value2) {
+            return 1;
+          } else if(!value1 && value2) {
+            return -1;
+          } else if(!value1 && !value2) {
+            return 0;
+          }
+
+          const stringA = value1.label.toLowerCase();
+          const stringB = value2.label.toLowerCase();
+      
+          if (stringA < stringB) {
+              return -1;
+          } else if (stringA > stringB) {
+              return 1;
+          } else {
+              return 0;
+          }
+      },
       valueFormatter: ({ value }) => {
         if(value) {
           return value.label;
@@ -448,6 +530,44 @@ export default function Expenses(props: {
       editable: true,
       width: 150,
       align: 'center',
+      sortable: true,
+      sortingOrder: [ 'asc', 'desc', ],
+      sortComparator: (
+          value1: string, 
+          value2: string, 
+          cellParam1: GridSortCellParams,
+          cellParam2: GridSortCellParams, 
+      ) => {
+          const sortingModel: GridSortModel = apiRef.current.getSortModel();
+          const columnSortingModel = sortingModel.find((model) => {
+              return model.field === 'amount';
+          });
+
+          if(parseInt(cellParam1.id.toString()) > 10000 
+              || parseInt(cellParam2.id.toString()) > 10000) {
+              if(columnSortingModel!.sort === 'asc') {
+                  return 1;
+              } else {
+                  return -1;
+              }
+          }
+
+          if(value1 && !value2) {
+              return 1;
+          } else if(!value1 && value2) {
+              return -1;
+          } else if(!value1 && !value2) {
+              return 0;
+          }
+
+          if (parseInt(value1) < parseInt(value2)) {
+              return -1;
+          } else if (parseInt(value1) > parseInt(value2)) {
+              return 1;
+          } else {
+              return 0;
+          }
+      },
       valueFormatter: (params) => {
                return params.value ? params.value : '0.00';
       },
@@ -458,6 +578,7 @@ export default function Expenses(props: {
         type: 'string',
         editable: true,
         width: 150,
+        sortable: false,
     },
     {
       field: 'dateCreated',
@@ -480,8 +601,45 @@ export default function Expenses(props: {
           </Tooltip>
         );
       },
+      sortable: true,
+      sortingOrder: [ 'asc', 'desc', ],
+      sortComparator: (
+        value1: Date, 
+        value2: Date, 
+        cellParam1: GridSortCellParams,
+        cellParam2: GridSortCellParams, 
+      ) => {
+          const sortingModel: GridSortModel = apiRef.current.getSortModel();
+          const columnSortingModel = sortingModel.find((model) => {
+            return model.field === 'dateCreated';
+          });
+
+          if(parseInt(cellParam1.id.toString()) > 10000 
+            || parseInt(cellParam2.id.toString()) > 10000) {
+            if(columnSortingModel!.sort === 'asc') {
+              return 1;
+            } else {
+              return -1;
+            }
+          }
+
+          if(value1 && !value2) {
+            return 1;
+          } else if(!value1 && value2) {
+            return -1;
+          } else if(!value1 && !value2) {
+            return 0;
+          }
+
+          if (value1.getTime() < value2.getTime()) {
+              return -1;
+          } else if (value1.getTime() > value2.getTime()) {
+              return 1;
+          } else {
+              return 0;
+          }
+      },
     },
-    
   ];
 
   if(!isMobile) {
@@ -566,6 +724,7 @@ export default function Expenses(props: {
                   })}
                 </Paper>
                 <DataGrid
+                  apiRef={apiRef}
                   columns={columns}
                   columnBuffer={2} 
                   columnThreshold={2}
