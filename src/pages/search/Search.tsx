@@ -284,8 +284,43 @@ export default function Search() {
 
         let calculatedTotalProfitsFlat = filteredRows
           ? filteredRows.reduce((accumulator, currentValue: BetModel) => {
-              if (currentValue.profits) {
-                return accumulator + 1;
+              if (currentValue.profits && currentValue.winStatus) {
+                switch(currentValue.winStatus.id) {
+                  case "0": {
+                    //None
+                    return accumulator;
+                  }
+                  case "1": {
+                    // Winner
+                    if(currentValue.odd) {
+                      return accumulator + currentValue.odd! + 1;
+                    } else {
+                      return accumulator;
+                    }
+                  }
+                  case "2": {
+                    //Loser
+                    return accumulator -1;
+                  }
+                  case "3": {
+                    //HalfWin
+                    if(currentValue.odd) {
+                      return accumulator + 0.5 * currentValue.odd! - 0.5;
+                    } else {
+                      return accumulator;
+                    }
+                  }
+                  case "4": {
+                    //HalfLoss
+                    return accumulator + -0.5;
+                  }
+                  case "5": {
+                    //Void
+                    return accumulator;
+                  }
+                }
+
+                return accumulator;
               } else {
                 return accumulator;
               }
@@ -295,7 +330,7 @@ export default function Search() {
 
         const winRate = filteredRows
           ? (filteredRows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-              || b.winStatus.id === '3')).length/filteredRows.length) * 100
+              || b.winStatus.id === '3') && b.totalAmount && b.totalAmount > 0).length/filteredRows.length) * 100
           : 0;
         setWinrate(winRate);
 
@@ -479,18 +514,53 @@ export default function Search() {
 
         let calculatedTotalProfitsFlat = rows
           ? rows.reduce((accumulator, currentValue: BetModel) => {
-              if (currentValue.profits) {
-                return accumulator + 1;
-              } else {
-                return accumulator;
+            if (currentValue.profits && currentValue.winStatus) {
+              switch(currentValue.winStatus.id) {
+                case "0": {
+                  //None
+                  return accumulator;
+                }
+                case "1": {
+                  // Winner
+                  if(currentValue.odd) {
+                    return accumulator + currentValue.odd! + 1;
+                  } else {
+                    return accumulator;
+                  }
+                }
+                case "2": {
+                  //Loser
+                  return accumulator -1;
+                }
+                case "3": {
+                  //HalfWin
+                  if(currentValue.odd) {
+                    return accumulator + 0.5 * currentValue.odd! - 0.5;
+                  } else {
+                    return accumulator;
+                  }
+                }
+                case "4": {
+                  //HalfLoss
+                  return accumulator + -0.5;
+                }
+                case "5": {
+                  //Void
+                  return accumulator;
+                }
               }
-            }, 0)
+
+              return accumulator;
+            } else {
+              return accumulator;
+            }
+          }, 0)
           : 0;
 	      setTotalOfProfitsFlat(calculatedTotalProfitsFlat);
 
         const winRate = rows
           ? (rows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-              || b.winStatus.id === '3')).length/rows.length) * 100
+              || b.winStatus.id === '3') && b.totalAmount && b.totalAmount > 0).length/rows.length) * 100
           : 0;
         setWinrate(winRate);
 
@@ -863,18 +933,53 @@ export default function Search() {
 
         let calculatedTotalProfitsFlat = bets
           ? bets.reduce((accumulator, currentValue: BetModel) => {
-              if (currentValue.profits) {
-                return accumulator + 1;
-              } else {
-                return accumulator;
+            if (currentValue.profits && currentValue.winStatus) {
+              switch(currentValue.winStatus.id) {
+                case "0": {
+                  //None
+                  return accumulator;
+                }
+                case "1": {
+                  // Winner
+                  if(currentValue.odd) {
+                    return accumulator + currentValue.odd! + 1;
+                  } else {
+                    return accumulator;
+                  }
+                }
+                case "2": {
+                  //Loser
+                  return accumulator -1;
+                }
+                case "3": {
+                  //HalfWin
+                  if(currentValue.odd) {
+                    return accumulator + 0.5 * currentValue.odd! - 0.5;
+                  } else {
+                    return accumulator;
+                  }
+                }
+                case "4": {
+                  //HalfLoss
+                  return accumulator + -0.5;
+                }
+                case "5": {
+                  //Void
+                  return accumulator;
+                }
               }
-            }, 0)
+
+              return accumulator;
+            } else {
+              return accumulator;
+            }
+          }, 0)
           : 0;
 	      setTotalOfProfitsFlat(calculatedTotalProfitsFlat);
 
         const winRate = bets
             ? (bets.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-                || b.winStatus.id === '3')).length/bets.length) * 100
+                || b.winStatus.id === '3') && b.totalAmount && b.totalAmount > 0).length/bets.length) * 100
             : 0;
         setWinrate(winRate);
 
@@ -1623,7 +1728,7 @@ export default function Search() {
                   </Paper> 
                   {
                     totalOfProfits && !isNaN(totalOfProfits) && totalOfTotals && !isNaN(totalOfTotals)
-                      ? ((totalOfProfits/totalOfTotals) * 100).toLocaleString(undefined, {
+                      ? (totalOfProfits/totalOfTotals).toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         }) + '%'
@@ -1664,7 +1769,7 @@ export default function Search() {
                   </Paper> 
                   {
                     totalOfProfitsFlat && !isNaN(totalOfProfitsFlat) && totalOfTotalsFlat && !isNaN(totalOfTotalsFlat)
-                      ? ((totalOfProfitsFlat/totalOfTotalsFlat) * 100).toLocaleString(undefined, {
+                      ? (totalOfProfitsFlat/totalOfTotalsFlat).toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         }) + '%'

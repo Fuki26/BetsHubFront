@@ -161,7 +161,11 @@ function Bets(props: {
   const [colorDialogIsOpened, setOpenColorDialog] = useState<boolean>(false);
 
   const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [history, setHistory] = useState<Array<BetsHistoryItemModel> | null>(null);
+  const [history, setHistory] = useState<{
+    betId: number;
+    insertStatement: string;
+    history: Array<BetsHistoryItemModel>;
+  } | null>(null);
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState<Record<string, boolean>>({});
 
@@ -426,17 +430,14 @@ function Bets(props: {
       return;
     }
 
-    let historyItems: Array<BetsHistoryItemModel> = await getBetHistory(row.id);
-    historyItems = historyItems.filter((historyItem) => {
-      if(historyItem.operation === 'Insert' && historyItem.field !== 'Id') {
-        return false;
-      }
-
-      return true;
-    });
+    let historyItemsData: {
+      betId: number;
+      insertStatement: string;
+      history: Array<BetsHistoryItemModel>;
+    } = await getBetHistory(row.id);
 
     setShowHistoryModal(true);
-    setHistory(historyItems);
+    setHistory(historyItemsData);
   };
 
   const handleDeleteClick = async () => {

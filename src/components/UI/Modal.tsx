@@ -7,7 +7,11 @@ import './Modal.css';
 interface ModalProps {
     open: boolean;
     handleClose: () => void;
-    betsHistory: Array<BetsHistoryItemModel>;
+    betsHistory: {
+        betId: number;
+        insertStatement: string;
+        history: Array<BetsHistoryItemModel>;
+    };
 }
 
 const Modal = ({open, handleClose, betsHistory}: ModalProps) => {
@@ -18,20 +22,15 @@ const Modal = ({open, handleClose, betsHistory}: ModalProps) => {
         >
             <ul className='wrapper'>
                 {
-                    betsHistory.map(({id, field, oldValue, newValue, userName, operation, operationDate}: BetsHistoryItemModel) => {
-                        if(operation && operation === 'Insert') {
-                            return (
-                                <ol key={id}>
-                                    The row is created at {dateTimeHelper(operationDate)}
-                                </ol>
-                            );
-                        } else {
-                            return (
-                                <ol key={id}>
-                                    Changed field: {field || 'Unknown'}, from {oldValue || 'Missing value'} to {newValue || 'Missing value'}. By { userName  || 'Unknown'}. Operation type {operation}. Date {dateTimeHelper(operationDate)}
-                                </ol>
-                            );
-                        }
+                    betsHistory.insertStatement
+                }
+                {
+                    betsHistory.history.map(({id, field, oldValue, newValue, userName, operation, operationDate}: BetsHistoryItemModel) => {
+                        return (
+                            <ol key={id}>
+                                Changed field: {field || 'Unknown'}, from {oldValue || 'Missing value'} to {newValue || 'Missing value'}. By { userName  || 'Unknown'}. Operation type {operation}. Date {dateTimeHelper(operationDate)}
+                            </ol>
+                        );
                     })
                 }
             </ul>
