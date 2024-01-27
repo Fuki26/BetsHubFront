@@ -635,89 +635,90 @@ function Bets(props: {
   const processRowUpdate = async ( 
     newRow: GridRowModel<BetModel>
   ): Promise<BetModel> => {
-    const currentRow = rows.find((row) => row.id === newRow.id);
-    if (!currentRow) {
-      return newRow;
-    }
-
-    if(!currentRow.counterAgent) {
-      toast(`You should provide couteragent.`, { position: 'top-center', });
-
-      setRowModesModel({});
-      setTimeout(() => {
-        setRows((previousRowsModel) => {
-          return previousRowsModel.filter((row) => {
-            if(row.id !== newRow!.id) {
-              return row;
-            }
-          });
-        });
-      }, 500);
-     
-      return currentRow;
-    }
-
-    let atLeastOneCurrencyIsPopulated = false;
-    if (currentRow.actionTypeApplied === ActionType.SAVED ||
-      currentRow.actionTypeApplied === ActionType.EDITED) {
-      
-      let amounts = Object.fromEntries(Object.entries(newRow).filter(([key, value]) => key.startsWith('amount')));
-      for (let key in amounts) {
-        if(amounts[key] as number > 0) {
-          atLeastOneCurrencyIsPopulated = true;
-        }
-
-        if (typeof amounts[key] === 'string') {
-          amounts[key] = evaluate(amounts[key]);
-        } else {
-          amounts[key] = !!amounts[key] ? amounts[key] : 0;
-        }
+    try {
+      const currentRow = rows.find((row) => row.id === newRow.id);
+      if (!currentRow) {
+        return newRow;
       }
 
-      const newRowData: BetModel = {
-        ...currentRow,
-        dateCreated: newRow.dateCreated,
-        betStatus: currentRow.betStatus,
-        winStatus: currentRow.winStatus,
-        liveStatus: currentRow.liveStatus,
-        counterAgent: currentRow.counterAgent,
-        sport: currentRow.sport,
-        tournament: currentRow.tournament,
-        selection: currentRow.selection,
-        market: currentRow.market,
+      if(!currentRow.counterAgent) {
+        toast(`You should provide couteragent.`, { position: 'top-center', });
 
-        stake: newRow.stake,
-        psLimit: newRow.psLimit,
-        ...amounts,
-        totalAmount: newRow.totalAmount 
-          ? Number(newRow.totalAmount.toFixed(2))
-          : 0,
-        odd: newRow.odd,
-        dateFinished: new Date(),
-        profits: newRow.profits 
-          ? newRow.profits
-          : 0,
-        notes: newRow.notes,
-      };
-      setIsLoading(true);
-      newRow = newRowData;
-      if(arePengindBets 
-            && 
-            (
-              !newRowData.liveStatus || !newRowData.counterAgent || !newRowData.sport
-                || !newRowData.tournament || !newRowData.market
-                || !atLeastOneCurrencyIsPopulated && !newRowData.odd
-            ) 
-            && 
+        setRowModesModel({});
+        setTimeout(() => {
+          setRows((previousRowsModel) => {
+            return previousRowsModel.filter((row) => {
+              if(row.id !== newRow!.id) {
+                return row;
+              }
+            });
+          });
+        }, 500);
+
+        return currentRow;
+      }
+
+      let atLeastOneCurrencyIsPopulated = false;
+      if (currentRow.actionTypeApplied === ActionType.SAVED ||
+        currentRow.actionTypeApplied === ActionType.EDITED) {
+
+        let amounts = Object.fromEntries(Object.entries(newRow).filter(([key, value]) => key.startsWith('amount')));
+        for (let key in amounts) {
+          if(amounts[key] as number > 0) {
+            atLeastOneCurrencyIsPopulated = true;
+          }
+
+          if (typeof amounts[key] === 'string') {
+            amounts[key] = evaluate(amounts[key]);
+          } else {
+            amounts[key] = !!amounts[key] ? amounts[key] : 0;
+          }
+        }
+
+        const newRowData: BetModel = {
+          ...currentRow,
+          dateCreated: newRow.dateCreated,
+          betStatus: currentRow.betStatus,
+          winStatus: currentRow.winStatus,
+          liveStatus: currentRow.liveStatus,
+          counterAgent: currentRow.counterAgent,
+          sport: currentRow.sport,
+          tournament: currentRow.tournament,
+          selection: currentRow.selection,
+          market: currentRow.market,
+
+          stake: newRow.stake,
+          psLimit: newRow.psLimit,
+          ...amounts,
+          totalAmount: newRow.totalAmount 
+            ? Number(newRow.totalAmount.toFixed(2))
+            : 0,
+          odd: newRow.odd,
+          dateFinished: new Date(),
+          profits: newRow.profits 
+            ? newRow.profits
+            : 0,
+          notes: newRow.notes,
+        };
+        setIsLoading(true);
+        newRow = newRowData;
+        if(arePengindBets 
+          && 
+          (
+            !newRowData.liveStatus || !newRowData.counterAgent || !newRowData.sport
+              || !newRowData.tournament || !newRowData.market
+              || !atLeastOneCurrencyIsPopulated && !newRowData.odd
+          ) 
+          && 
           (currentRow.winStatus && currentRow.winStatus.id !== '0')
         ) {
           setIsLoading(false);
 
           toast(
-            `You should populate all required fields if you changed the win status.`,
-            {
-              position: 'top-center',
-            }
+          `You should populate all required fields if you changed the win status.`,
+          {
+            position: 'top-center',
+          }
           );
 
           setRows((previousRowsModel) => {
@@ -737,193 +738,197 @@ function Bets(props: {
           });
 
           return newRowData;
-      } 
+        } 
 
-      const rowData = await upsertBet(newRowData);
-      if (!rowData || !rowData.data) {
-        toast(
-          `Some fields are not populated correctly or they are missing.`,
-          {
-            position: 'top-center',
+        const rowData = await upsertBet(newRowData);
+        if (!rowData || !rowData.data) {
+          setIsLoading(false);
+          toast(`Some fields are not populated correctly or they are missing.`, { position: 'top-center', });
+
+          setRowModesModel({});
+          setTimeout(() => {
+            setRows((previousRowsModel) => {
+              return previousRowsModel.filter((row) => {
+                if(row.id !== newRow!.id) {
+                  return row;
+                }
+              });
+            });
+          }, 500);
+
+          return currentRow;
+        }
+
+        if(currentRow.selection && currentRow.counterAgent) {
+          let possibleSelectionsForCustomer: {
+            id: number;
+            selections: Array<IDropdownValue> | undefined;
+          } | undefined = betsSelections.find((r) => {
+            return r.id === parseInt(currentRow.counterAgent!.id);
+          });
+
+          if(possibleSelectionsForCustomer) {
+            const selection = possibleSelectionsForCustomer.selections?.find((s) => {
+              return s.id === currentRow.selection!.id;
+            });
+
+            if(!selection) {
+              setBetsSelections((p) => {
+                const betSelections = p.find((betSelections) => betSelections.id === parseInt(currentRow.counterAgent!.id));
+                betSelections!.selections!
+                  .push({ id: currentRow.selection!.id, label: currentRow.selection!.label, },);
+
+                return p;
+              });
+            }
+          } else {
+            setBetsSelections((p) => {
+              p.push({
+                id: parseInt(currentRow.counterAgent!.id),
+                selections: [
+                  { id: currentRow.selection!.id, label: currentRow.selection!.label, }
+                ],
+              });
+
+              return p;
+            });
           }
-        );
+        }
+
+
+        setRows((previousRowsModel) => {
+          return previousRowsModel.map((row) => {
+            if (row.id === newRow.id) {
+              return {
+                ...newRowData,
+                id: rowData.data.id,
+                totalAmount: rowData.data.totalAmount,
+                profits: rowData.data.profits,
+
+                actionTypeApplied: undefined,
+                isSavedInDatabase: true,
+              };
+            } else {
+              return row;
+            }
+          });
+        });
 
         setRowModesModel((previousRowModesModel) => {
           return {
             ...previousRowModesModel,
-            [newRowData.id]: { mode: GridRowModes.View },
+            [rowData.data.id]: { mode: GridRowModes.View },
           };
         });
-
-        setRows((previousRowsModel) => {
-          return previousRowsModel.filter((row) => {
-            return row.id !== newRowData.id;
-          });
-        });
-
         setIsLoading(false);
 
-        return newRow;
-      }
-
-      if(currentRow.selection && currentRow.counterAgent) {
-        let possibleSelectionsForCustomer: {
-          id: number;
-          selections: Array<IDropdownValue> | undefined;
-        } | undefined = betsSelections.find((r) => {
-          return r.id === parseInt(currentRow.counterAgent!.id);
-        });
-  
-        if(possibleSelectionsForCustomer) {
-          const selection = possibleSelectionsForCustomer.selections?.find((s) => {
-            return s.id === currentRow.selection!.id;
-          });
-
-          if(!selection) {
-            setBetsSelections((p) => {
-              const betSelections = p.find((betSelections) => betSelections.id === parseInt(currentRow.counterAgent!.id));
-              betSelections!.selections!
-                .push({ id: currentRow.selection!.id, label: currentRow.selection!.label, },);
-  
-              return p;
-            });
-          }
-        } else {
-          setBetsSelections((p) => {
-            p.push({
-              id: parseInt(currentRow.counterAgent!.id),
-              selections: [
-                { id: currentRow.selection!.id, label: currentRow.selection!.label, }
-              ],
-            });
-
-            return p;
-          });
-        }
-      }
-      
-
-      setRows((previousRowsModel) => {
-        return previousRowsModel.map((row) => {
-          if (row.id === newRow.id) {
-            return {
-              ...newRowData,
-              id: rowData.data.id,
-              totalAmount: rowData.data.totalAmount,
-              profits: rowData.data.profits,
-
-              actionTypeApplied: undefined,
-              isSavedInDatabase: true,
-            };
-          } else {
-            return row;
-          }
-        });
-      });
-
-      setRowModesModel((previousRowModesModel) => {
-        return {
-          ...previousRowModesModel,
-          [rowData.data.id]: { mode: GridRowModes.View },
-        };
-      });
-      setIsLoading(false);
-
-      newRow.id = rowData?.data.id;
-      newRow.totalAmount = rowData?.data.totalAmount;
-      newRow.profits = rowData?.data.profits;
-      if(onTotalOfTotalAmountsChanged) {
-        let calculatedTotalOfTotals = rows
-          ? rows.filter((r) => r.id !== newRow.id).reduce((accumulator, currentValue: BetModel) => {
+        newRow.id = rowData?.data.id;
+        newRow.totalAmount = rowData?.data.totalAmount;
+        newRow.profits = rowData?.data.profits;
+        if(onTotalOfTotalAmountsChanged) {
+          let calculatedTotalOfTotals = rows
+            ? rows.filter((r) => r.id !== newRow.id).reduce((accumulator, currentValue: BetModel) => {
               if (currentValue.totalAmount) {
                 return accumulator + currentValue.totalAmount;
               } else {
                 return accumulator;
               }
             }, 0)
-          : 0;
-        calculatedTotalOfTotals += newRow.totalAmount ? newRow.totalAmount : 0;
+            : 0;
+          calculatedTotalOfTotals += newRow.totalAmount ? newRow.totalAmount : 0;
+          onTotalOfTotalAmountsChanged(calculatedTotalOfTotals);
+        }
 
-        onTotalOfTotalAmountsChanged(calculatedTotalOfTotals);
-      }
-
-      if(onTotalProfitsChanged) {
-        let calculatedTotalOfProfits = rows
-          ? rows.filter((r) => r.id !== newRow.id).reduce((accumulator, currentValue: BetModel) => {
+        if(onTotalProfitsChanged) {
+          let calculatedTotalOfProfits = rows
+            ? rows.filter((r) => r.id !== newRow.id).reduce((accumulator, currentValue: BetModel) => {
               if (currentValue.profits) {
                 return accumulator + Number(currentValue.profits);
               } else {
                 return accumulator;
               }
             }, 0)
-          : 0;
-        calculatedTotalOfProfits += newRow.profits ? Number(newRow.profits) : 0;
+            : 0;
+          calculatedTotalOfProfits += newRow.profits ? Number(newRow.profits) : 0;
+          onTotalProfitsChanged(calculatedTotalOfProfits);
+        }
 
-        onTotalProfitsChanged(calculatedTotalOfProfits);
-      }
-
-      if(onWinRateChanged) {
-        const winRate: number =  rows 
-          ? (rows.filter((r) => r.id !== deleteRowId && (
+        if(onWinRateChanged) {
+          const winRate: number =  rows 
+            ? (rows.filter((r) => r.id !== deleteRowId && (
               r.winStatus &&  (r.winStatus.id === '1' || r.winStatus.id === '3')
             )).length/rows.length) * 100
-          : 0;
-        
-        onWinRateChanged(winRate);
-      }
-    } else {
-      
-      setRowModesModel((previousRowModesModel) => {
-        return {
-          ...previousRowModesModel,
-          [newRow.id]: { mode: GridRowModes.View },
-        };
-      });
-    }
+            : 0;
 
-    if(currentRow.actionTypeApplied === ActionType.CANCELED) {
-      toast('Canceled', { position: 'top-center', });
-    } else if(currentRow.actionTypeApplied === ActionType.EDITED 
-        || currentRow.actionTypeApplied === ActionType.SAVED) {
-      if(!toast.isActive(`Bet_Toast`)) {
-        toast(`Saved bet with id ${newRow!.id}`, {
-          toastId: `Bet_Toast`,
-          position: 'top-center', 
+          onWinRateChanged(winRate);
+        }
+      } else {
+        setRowModesModel((previousRowModesModel) => {
+          return {
+            ...previousRowModesModel,
+            [newRow.id]: { mode: GridRowModes.View },
+          };
         });
       }
-    }
-    
 
-    if(!currentRow.actionTypeApplied) {
-      currentRow.actionTypeApplied = newRow.actionTypeApplied;
-      return currentRow;
-    } else{
-      if(arePengindBets && (newRow.liveStatus && newRow.counterAgent && newRow.sport
-            && newRow.tournament && newRow.market 
-            && atLeastOneCurrencyIsPopulated && newRow.odd) && 
-          (newRow.winStatus && newRow.winStatus.id !== '0')) {
-        setTimeout(() => {
-          props.savedBet(rows, newRow);
-          setRows((previousRowsModel) => {
-            return previousRowsModel.filter((row) => {
+      if(currentRow.actionTypeApplied === ActionType.CANCELED) {
+        toast('Canceled', { position: 'top-center', });
+      } else if(currentRow.actionTypeApplied === ActionType.EDITED 
+        || currentRow.actionTypeApplied === ActionType.SAVED) {
+        if(!toast.isActive(`Bet_Toast`)) {
+          toast(`Saved bet with id ${newRow!.id}`, {
+            toastId: `Bet_Toast`,
+            position: 'top-center', 
+          });
+        }
+      }
+
+      if(!currentRow.actionTypeApplied) {
+        currentRow.actionTypeApplied = newRow.actionTypeApplied;
+        return currentRow;
+      } else {
+        if(arePengindBets && (newRow.liveStatus && newRow.counterAgent && newRow.sport
+          && newRow.tournament && newRow.market && atLeastOneCurrencyIsPopulated && newRow.odd) && 
+          (newRow.winStatus && newRow.winStatus.id !== '0')
+        ) {
+          setTimeout(() => {
+            props.savedBet(rows, newRow);
+            setRows((previousRowsModel) => {
+              return previousRowsModel.filter((row) => {
               if(row.id !== newRow!.id) {
                 return row;
               }
+              });
             });
-          });
-        }, 500);
-      }
+          }, 500);
+        }
 
-      checkAndNotifyAboutNewSportTournamentOrMarket({
-        sport: newRow.sport ? newRow.sport.label : undefined,
-        market: newRow.market ? newRow.market.label : undefined,
-        tournament: newRow.tournament ? newRow.tournament.label : undefined,
-      });
-      
-      return { 
-        ...newRow,
-        profits: currentRow.profits,
-      };
+        checkAndNotifyAboutNewSportTournamentOrMarket({
+          sport: newRow.sport ? newRow.sport.label : undefined,
+          market: newRow.market ? newRow.market.label : undefined,
+          tournament: newRow.tournament ? newRow.tournament.label : undefined,
+        });
+
+        return { 
+          ...newRow,
+          profits: currentRow.profits,
+        };
+      }
+    } catch(error) {
+      toast(`You should provide valid parameters.`, { position: 'top-center', });
+
+      setRowModesModel({});
+      setTimeout(() => {
+        setRows((previousRowsModel) => {
+          return previousRowsModel.filter((row) => {
+            if(row.id !== newRow!.id) {
+              return row;
+            }
+          });
+        });
+      }, 500);
+
+      return newRow;
     }
   };
 
