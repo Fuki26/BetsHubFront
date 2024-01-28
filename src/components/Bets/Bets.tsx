@@ -58,7 +58,9 @@ function Bets(props: {
         }
 
         const saveButton = document.querySelectorAll('[aria-label="Save"]')[0];
-        (saveButton as any).click();
+        if(saveButton) {
+          (saveButton as any).click();
+        }
       } else if (event.key === 'Tab' && params.cellMode === 'edit') {
         event.preventDefault(); // Prevent the default Tab behavior
 
@@ -999,6 +1001,7 @@ function Bets(props: {
                     height: 5400,
                     fontSize: 18,
                   }}
+                  columnBuffer={50}
                 />
                 <Dialog
                   open={deleteDialogIsOpened}
