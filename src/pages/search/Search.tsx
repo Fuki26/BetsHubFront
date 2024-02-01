@@ -1802,7 +1802,7 @@ export default function Search() {
                   </Paper> 
                     {
                       totalOfProfitsFlat && !isNaN(totalOfProfitsFlat) && totalOfTotalsFlat && !isNaN(totalOfTotalsFlat)
-                        ? (totalOfProfitsFlat/totalOfTotalsFlat).toLocaleString(undefined, {
+                        ? ((totalOfProfitsFlat/totalOfTotalsFlat) * 100).toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           }) + '%'
