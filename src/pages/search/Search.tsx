@@ -174,10 +174,11 @@ export default function Search() {
 
   const [totalOfTotals, setTotalOfTotals ] = React.useState<number>(0);
   const [totalOfProfits, setTotalProfits ] = React.useState<number>(0);
-  const [winrate, setWinrate ] = React.useState<number>(0);
+  const [winrateReal, setWinrateReal ] = React.useState<number>(0);
 
   const [totalOfTotalsFlat, setTotalOfTotalsFlat ] = React.useState<number>(0);
   const [totalOfProfitsFlat, setTotalOfProfitsFlat ] = React.useState<number>(0);
+  const [winrateFlat, setWinrateFlat ] = React.useState<number>(0);
 
   const [activateFilter, setActivateFilter ] = React.useState<boolean>(false);
 
@@ -293,7 +294,7 @@ export default function Search() {
                   case "1": {
                     // Winner
                     if(currentValue.odd) {
-                      return accumulator + currentValue.odd! + 1;
+                      return accumulator + currentValue.odd! - 1;
                     } else {
                       return accumulator;
                     }
@@ -328,11 +329,17 @@ export default function Search() {
           : 0;
 	      setTotalOfProfitsFlat(calculatedTotalProfitsFlat);
 
-        const winRate = filteredRows
+        const winRateReal = filteredRows
           ? (filteredRows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
               || b.winStatus.id === '3') && b.totalAmount && b.totalAmount > 0).length/filteredRows.length) * 100
           : 0;
-        setWinrate(winRate);
+        setWinrateReal(winRateReal);
+
+        const winRateFlat = filteredRows
+          ? (filteredRows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
+              || b.winStatus.id === '3') && b.totalAmount).length/filteredRows.length) * 100
+          : 0;
+        setWinrateFlat(winRateFlat);
 
         //#endregion Bets
 
@@ -523,7 +530,7 @@ export default function Search() {
                 case "1": {
                   // Winner
                   if(currentValue.odd) {
-                    return accumulator + currentValue.odd! + 1;
+                    return accumulator + currentValue.odd! - 1;
                   } else {
                     return accumulator;
                   }
@@ -558,11 +565,17 @@ export default function Search() {
           : 0;
 	      setTotalOfProfitsFlat(calculatedTotalProfitsFlat);
 
-        const winRate = rows
+        const winRateReal = rows
           ? (rows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
               || b.winStatus.id === '3') && b.totalAmount && b.totalAmount > 0).length/rows.length) * 100
           : 0;
-        setWinrate(winRate);
+        setWinrateReal(winRateReal);
+
+        const winRateFlat = filteredRows
+          ? (filteredRows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
+              || b.winStatus.id === '3') && b.totalAmount).length/filteredRows.length) * 100
+          : 0;
+        setWinrateFlat(winRateFlat);
 
         return rows ? rows : [];
       }
@@ -942,7 +955,7 @@ export default function Search() {
                 case "1": {
                   // Winner
                   if(currentValue.odd) {
-                    return accumulator + currentValue.odd! + 1;
+                    return accumulator + currentValue.odd! - 1;
                   } else {
                     return accumulator;
                   }
@@ -977,17 +990,24 @@ export default function Search() {
           : 0;
 	      setTotalOfProfitsFlat(calculatedTotalProfitsFlat);
 
-        const winRate = bets
+        const winRateReal = bets
             ? (bets.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
                 || b.winStatus.id === '3') && b.totalAmount && b.totalAmount > 0).length/bets.length) * 100
             : 0;
-        setWinrate(winRate);
+        setWinrateReal(winRateReal);
+
+        const winRateFlat = filteredRows
+          ? (filteredRows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
+              || b.winStatus.id === '3') && b.totalAmount).length/filteredRows.length) * 100
+          : 0;
+        setWinrateFlat(winRateFlat);
 
         return bets;
       } else {
         setTotalOfTotals(0);
         setTotalProfits(0);
-        setWinrate(0);
+        setWinrateReal(0);
+        setWinrateFlat(0);
         setTotalOfTotalsFlat(0);
         setTotalOfProfitsFlat(0);
         return [];
@@ -1710,11 +1730,11 @@ export default function Search() {
                   <Paper className='aggregatedLabel' sx={{
                     display: 'inline-block',
                   }}>
-                    WINRATE:
+                    REAL WINRATE:
                   </Paper>
                   {
-                    winrate && !isNaN(winrate)
-                      ? Number(winrate).toLocaleString(undefined, {
+                    winrateReal && !isNaN(winrateReal)
+                      ? Number(winrateReal).toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })
@@ -1728,7 +1748,7 @@ export default function Search() {
                   </Paper> 
                   {
                     totalOfProfits && !isNaN(totalOfProfits) && totalOfTotals && !isNaN(totalOfTotals)
-                      ? (totalOfProfits/totalOfTotals).toLocaleString(undefined, {
+                      ? ((totalOfProfits/totalOfTotals) * 100).toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         }) + '%'
@@ -1765,17 +1785,30 @@ export default function Search() {
                   <Paper className='aggregatedLabel' sx={{
                     display: 'inline-block',
                   }}>
-                    FLAT YIELD:
-                  </Paper> 
+                    FLAT WINRATE:
+                  </Paper>
                   {
-                    totalOfProfitsFlat && !isNaN(totalOfProfitsFlat) && totalOfTotalsFlat && !isNaN(totalOfTotalsFlat)
-                      ? (totalOfProfitsFlat/totalOfTotalsFlat).toLocaleString(undefined, {
+                    winrateFlat && !isNaN(winrateFlat)
+                      ? Number(winrateFlat).toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                        }) + '%'
-                      : "0.00%"
-                  }
-                </Paper>
+                        })
+                      : 0.00
+                  }%
+                  <Paper className='aggregatedLabel' sx={{
+                    display: 'inline-block',
+                  }}>
+                    FLAT YIELD:
+                  </Paper> 
+                    {
+                      totalOfProfitsFlat && !isNaN(totalOfProfitsFlat) && totalOfTotalsFlat && !isNaN(totalOfTotalsFlat)
+                        ? (totalOfProfitsFlat/totalOfTotalsFlat).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }) + '%'
+                        : "0.00%"
+                    }
+                  </Paper>
                 
               )
             : <></>
