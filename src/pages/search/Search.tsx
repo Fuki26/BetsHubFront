@@ -1438,14 +1438,6 @@ export default function Search() {
               sx={{
                 width: '15%',
               }}
-              onChange={(e) => {
-                const betId = parseInt(e.target.value);
-                if (!isNaN(betId)) {
-                  setBetId(betId);
-                } else {
-                  setBetId(undefined);
-                }
-              }}
             />
             <TextField
               id='expenseId'
@@ -1455,14 +1447,6 @@ export default function Search() {
               sx={{
                 marginRight: '1%',
                 width: '15%',
-              }}
-              onChange={(e) => {
-                const expenseId = parseInt(e.target.value);
-                if (!isNaN(expenseId)) {
-                  setExpenseId(expenseId);
-                } else {
-                  setExpenseId(undefined);
-                }
               }}
             />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -1500,14 +1484,6 @@ export default function Search() {
               sx={{
                 width: '15%',
               }}
-              onChange={(e) => {
-                const stakeFrom = parseInt(e.target.value);
-                if (!isNaN(stakeFrom)) {
-                  setStakeFrom(stakeFrom);
-                } else {
-                  setStakeFrom(undefined);
-                }
-              }}
             />
             <TextField
               id='stake-to'
@@ -1516,14 +1492,6 @@ export default function Search() {
               type='number'
               sx={{
                 width: '15%',
-              }}
-              onChange={(e) => {
-                const stakeTo = parseInt(e.target.value);
-                if (!isNaN(stakeTo)) {
-                  setStakeTo(stakeTo);
-                } else {
-                  setStakeTo(undefined);
-                }
               }}
             />
           </Paper>
@@ -1536,14 +1504,6 @@ export default function Search() {
               sx={{
                 width: '15%',
               }}
-              onChange={(e) => {
-                const oddFrom = parseInt(e.target.value);
-                if (!isNaN(oddFrom)) {
-                  setOddFrom(oddFrom);
-                } else {
-                  setOddFrom(undefined);
-                }
-              }}
             />
             <TextField
               id='odd-to'
@@ -1553,14 +1513,6 @@ export default function Search() {
               sx={{
                 marginRight: '1%',
                 width: '15%',
-              }}
-              onChange={(e) => {
-                const oddTo = parseInt(e.target.value);
-                if (!isNaN(oddTo)) {
-                  setOddTo(oddTo);
-                } else {
-                  setOddTo(undefined);
-                }
               }}
             />
 
@@ -1572,14 +1524,6 @@ export default function Search() {
               sx={{
                 width: '15%',
               }}
-              onChange={(e) => {
-                const psLimitFrom = parseInt(e.target.value);
-                if (!isNaN(psLimitFrom)) {
-                  setPsLimitFrom(psLimitFrom);
-                } else {
-                  setPsLimitFrom(undefined);
-                }
-              }}
             />
             <TextField
               id='psLimit-to'
@@ -1589,14 +1533,6 @@ export default function Search() {
               sx={{
                 marginRight: '1%',
                 width: '15%',
-              }}
-              onChange={(e) => {
-                const psLimitTo = parseInt(e.target.value);
-                if (!isNaN(psLimitTo)) {
-                  setPsLimitTo(psLimitTo);
-                } else {
-                  setPsLimitTo(undefined);
-                }
               }}
             />
             <Paper sx={{ display: 'inline-block',}}>
@@ -1677,7 +1613,49 @@ export default function Search() {
           </Paper>
         </Paper>
         <Paper sx={{ width: '100%', marginTop: '1%', marginBottom: '1%'}}>
-          <Button onClick={() => setActivateFilter(!activateFilter)}
+          <Button onClick={() => {
+            let element = document.getElementById('betId');
+            if(element && (element as any).valueAsNumber) {
+              setBetId((element as any).valueAsNumber as number);
+            }
+
+            element = document.getElementById('expenseId');
+            if(element && (element as any).valueAsNumber) {
+              setExpenseId((element as any).valueAsNumber as number);
+            }
+
+            element = document.getElementById('stake-from');
+            if(element && (element as any).valueAsNumber) {
+              setStakeFrom((element as any).valueAsNumber as number);
+            }
+
+            element = document.getElementById('stake-to');
+            if(element && (element as any).valueAsNumber) {
+              setStakeTo((element as any).valueAsNumber as number);
+            }
+
+            element = document.getElementById('odd-from');
+            if(element && (element as any).valueAsNumber) {
+              setOddFrom((element as any).valueAsNumber as number);
+            }
+
+            element = document.getElementById('odd-to');
+            if(element && (element as any).valueAsNumber) {
+              setOddTo((element as any).valueAsNumber as number);
+            }
+
+            element = document.getElementById('psLimit-from');
+            if(element && (element as any).valueAsNumber) {
+              setPsLimitFrom((element as any).valueAsNumber as number);
+            }
+
+            element = document.getElementById('psLimit-to');
+            if(element && (element as any).valueAsNumber) {
+              setPsLimitTo((element as any).valueAsNumber as number);
+            }
+
+            setActivateFilter(!activateFilter);
+          }}
             variant='contained' 
             color='primary'
             sx={{
