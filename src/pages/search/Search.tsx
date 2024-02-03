@@ -571,9 +571,9 @@ export default function Search() {
           : 0;
         setWinrateReal(winRateReal);
 
-        const winRateFlat = filteredRows
-          ? (filteredRows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-              || b.winStatus.id === '3') && b.totalAmount).length/filteredRows.length) * 100
+        const winRateFlat = rows
+          ? (rows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
+              || b.winStatus.id === '3') && b.totalAmount).length/rows.length) * 100
           : 0;
         setWinrateFlat(winRateFlat);
 
@@ -996,9 +996,9 @@ export default function Search() {
             : 0;
         setWinrateReal(winRateReal);
 
-        const winRateFlat = filteredRows
-          ? (filteredRows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-              || b.winStatus.id === '3') && b.totalAmount).length/filteredRows.length) * 100
+        const winRateFlat = bets
+          ? (bets.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
+              || b.winStatus.id === '3') && b.totalAmount).length/bets.length) * 100
           : 0;
         setWinrateFlat(winRateFlat);
 
