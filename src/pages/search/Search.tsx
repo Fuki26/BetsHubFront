@@ -331,13 +331,13 @@ export default function Search() {
 
         const winRateReal = filteredRows
           ? (filteredRows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-              || b.winStatus.id === '3') && b.totalAmount && b.totalAmount > 0).length/filteredRows.length) * 100
+              || b.winStatus.id === '3') && b.totalAmount! > 0).length/filteredRows.length) * 100
           : 0;
         setWinrateReal(winRateReal);
 
         const winRateFlat = filteredRows
           ? (filteredRows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-              || b.winStatus.id === '3') && b.totalAmount).length/filteredRows.length) * 100
+              || b.winStatus.id === '3')).length/filteredRows.length) * 100
           : 0;
         setWinrateFlat(winRateFlat);
 
@@ -567,13 +567,13 @@ export default function Search() {
 
         const winRateReal = rows
           ? (rows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-              || b.winStatus.id === '3') && b.totalAmount && b.totalAmount > 0).length/rows.length) * 100
+              || b.winStatus.id === '3') && b.totalAmount! > 0).length/rows.length) * 100
           : 0;
         setWinrateReal(winRateReal);
 
         const winRateFlat = rows
           ? (rows.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-              || b.winStatus.id === '3') && b.totalAmount).length/rows.length) * 100
+              || b.winStatus.id === '3')).length/rows.length) * 100
           : 0;
         setWinrateFlat(winRateFlat);
 
@@ -992,13 +992,13 @@ export default function Search() {
 
         const winRateReal = bets
             ? (bets.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-                || b.winStatus.id === '3') && b.totalAmount && b.totalAmount > 0).length/bets.length) * 100
+                || b.winStatus.id === '3') && b.totalAmount! > 0).length/bets.length) * 100
             : 0;
         setWinrateReal(winRateReal);
 
         const winRateFlat = bets
           ? (bets.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-              || b.winStatus.id === '3') && b.totalAmount).length/bets.length) * 100
+              || b.winStatus.id === '3')).length/bets.length) * 100
           : 0;
         setWinrateFlat(winRateFlat);
 
