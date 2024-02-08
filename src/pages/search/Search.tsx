@@ -1617,41 +1617,57 @@ export default function Search() {
             let element = document.getElementById('betId');
             if(element && (element as any).valueAsNumber) {
               setBetId((element as any).valueAsNumber as number);
+            } else {
+              setBetId(undefined);
             }
 
             element = document.getElementById('expenseId');
             if(element && (element as any).valueAsNumber) {
               setExpenseId((element as any).valueAsNumber as number);
+            } else {
+              setExpenseId(undefined);
             }
 
             element = document.getElementById('stake-from');
             if(element && (element as any).valueAsNumber) {
               setStakeFrom((element as any).valueAsNumber as number);
+            } else {
+              setStakeFrom(undefined);
             }
 
             element = document.getElementById('stake-to');
             if(element && (element as any).valueAsNumber) {
               setStakeTo((element as any).valueAsNumber as number);
+            } else {
+              setStakeTo(undefined);
             }
 
             element = document.getElementById('odd-from');
             if(element && (element as any).valueAsNumber) {
               setOddFrom((element as any).valueAsNumber as number);
+            } else {
+              setOddFrom(undefined);
             }
 
             element = document.getElementById('odd-to');
             if(element && (element as any).valueAsNumber) {
               setOddTo((element as any).valueAsNumber as number);
+            } else {
+              setOddTo(undefined);
             }
 
             element = document.getElementById('psLimit-from');
             if(element && (element as any).valueAsNumber) {
               setPsLimitFrom((element as any).valueAsNumber as number);
+            } else {
+              setPsLimitFrom(undefined);
             }
 
             element = document.getElementById('psLimit-to');
             if(element && (element as any).valueAsNumber) {
               setPsLimitTo((element as any).valueAsNumber as number);
+            } else {
+              setPsLimitTo(undefined);
             }
 
             setActivateFilter(!activateFilter);
