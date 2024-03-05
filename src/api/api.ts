@@ -427,6 +427,23 @@ const promoteUserToGA = async (userName: string) => {
   }
 };
 
+const demoteUserToRA = async (userName: string) => {
+  try {
+    return await instance.post(
+      `${domain}/Auth/DemoteToRA`,
+      userName,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  } catch (e) {
+    console.log(JSON.stringify(e));
+    throw e;
+  }
+};
+
 const getUserSessions = async (userName: string) => {
   try{
     var sessions =  await instance.get(
@@ -466,6 +483,7 @@ export {
   getTfaSetup,
   registerUser,
   promoteUserToGA,
+  demoteUserToRA,
   resetPassword,
   deleteUser,
   getUserSessions,

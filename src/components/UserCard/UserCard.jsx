@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import SessionTable from "../../components/SessionTable/SessionTable";
 
-const UserCard = ({ user, qrCodeUrl, deleteUser, promoteUser }) => {
+const UserCard = ({ user, qrCodeUrl, deleteUser, promoteUser, demoteUser }) => {
   const [openDeleteUser, setOpenDeleteUser] = useState(false);
 
   const handleOpenDeleteUser = () => {
@@ -28,6 +28,10 @@ const UserCard = ({ user, qrCodeUrl, deleteUser, promoteUser }) => {
 
   const handlePromoteUser = async () =>{
     await promoteUser(user.userName);
+  }
+
+  const handleDemoteUser = async () =>{
+    await demoteUser(user.userName);
   }
 
   const handleDelete = async () => {
@@ -59,6 +63,20 @@ const UserCard = ({ user, qrCodeUrl, deleteUser, promoteUser }) => {
                           </Button>
                         </Grid>
                       )
+                }
+                {
+                  user?.role?.name === "GA" 
+                    && (
+                          <Grid item>
+                            <Button
+                              variant="outlined"
+                              color="primary"
+                              onClick={handleDemoteUser}
+                            >
+                              Demote to RA
+                            </Button>
+                          </Grid>
+                        )
                 }
             </Grid>
             <Typography variant="subtitle1">Email: {user.email}</Typography>

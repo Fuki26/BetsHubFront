@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { UserContext, getUserFromLocalStorate, useAuth } from '../../contexts/AuthContext';
-import { Autocomplete, Button, Checkbox, CircularProgress, FormControl, FormControlLabel, 
+import { Autocomplete, Button, Checkbox, CircularProgress, FormControlLabel, 
   Paper, Radio, RadioGroup, TextField, Typography} from '@mui/material';
   import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -670,7 +670,7 @@ export default function Search() {
 
           //#endregion Tournament filter
 
-          //#region Tournament filter
+          //#region Selections filter
 
           if (selectionIds.length > 0) {
             const matchSelections =
@@ -682,7 +682,7 @@ export default function Search() {
             }
           }
 
-          //#endregion Tournament filter
+          //#endregion Selections filter
 
           //#region Live status filter
 
@@ -1583,14 +1583,14 @@ export default function Search() {
                 setStateFn={setTournamentIds}
               />
             </Paper>
-            <Paper sx={{ display: 'inline-block', marginRight: '2%', marginTop: '1%', }}>
-              <AutocompleteComponent
-                id='selections-autocomplete'
-                label='Selections'
-                options={distinctSelections}
-                selectedOptions={selectionIds}
-                setStateFn={setSelectionIds}
-              />
+            <Paper sx={{ display: 'inline-block', marginRight: '2%', marginTop: '1%' }}>
+              <TextField
+                  autoFocus
+                  id="selections"
+                  label="Selections"
+                  type="text"
+                  fullWidth
+                />
             </Paper>
             <Paper sx={{ display: 'inline-block', marginRight: '2%',  marginTop: '1%',}}>
               <AutocompleteComponent
@@ -1671,6 +1671,22 @@ export default function Search() {
             }
 
             setActivateFilter(!activateFilter);
+
+            element = document.getElementById('selections');
+            const debug = -1;
+            if(element && (element as any).value) {
+              const filteredSelections = distinctSelections.filter((sel) => {
+                const index = sel.label.indexOf((element as any).value);
+                if(index !== -1) {
+                  return true;
+                } else {
+                  return false;
+                }
+              });
+              setSelectionIds(filteredSelections.map((s) => s.id));
+            } else {
+              setSelectionIds([]);
+            }
           }}
             variant='contained' 
             color='primary'
