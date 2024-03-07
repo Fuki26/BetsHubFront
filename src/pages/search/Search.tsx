@@ -168,7 +168,7 @@ export default function Search() {
   const [sportIds, setSportIds] = React.useState<Array<string>>([]);
   const [marketIds, setMarketIds] = React.useState<Array<string>>([]);
   const [tournamentIds, setTournamentIds] = React.useState<Array<string>>([]);
-  const [selectionIds, setSelectionIds] = React.useState<Array<string>>([]);
+  const [selectionIds, setSelectionIds] = React.useState<{ isFilterApplied: boolean; ids: Array<string>}>({ isFilterApplied: false, ids: []});
   const [liveStatusIds, setLiveStatusIds] = React.useState<Array<string>>([]);
   const [currencyIds, setCurrencyIds] = React.useState<Array<string>>([]);
 
@@ -672,14 +672,16 @@ export default function Search() {
 
           //#region Selections filter
 
-          if (selectionIds.length > 0) {
+          if (selectionIds.ids.length > 0) {
             const matchSelections =
               !!currentRow.selection &&
-              selectionIds.indexOf(currentRow.selection.id) !== -1;
+              selectionIds.ids.indexOf(currentRow.selection.id) !== -1;
 
             if (!matchSelections) {
               continue;
             }
+          } else if (selectionIds.isFilterApplied) {
+            continue;
           }
 
           //#endregion Selections filter
@@ -1585,7 +1587,6 @@ export default function Search() {
             </Paper>
             <Paper sx={{ display: 'inline-block', marginRight: '2%', marginTop: '1%' }}>
               <TextField
-                  autoFocus
                   id="selections"
                   label="Selections"
                   type="text"
@@ -1673,19 +1674,18 @@ export default function Search() {
             setActivateFilter(!activateFilter);
 
             element = document.getElementById('selections');
-            const debug = -1;
             if(element && (element as any).value) {
               const filteredSelections = distinctSelections.filter((sel) => {
-                const index = sel.label.indexOf((element as any).value);
+                const index = sel.label.toLocaleLowerCase().indexOf((element as any).value.toLocaleLowerCase());
                 if(index !== -1) {
                   return true;
                 } else {
                   return false;
                 }
               });
-              setSelectionIds(filteredSelections.map((s) => s.id));
+              setSelectionIds({ isFilterApplied: true, ids: filteredSelections.map((s) => s.id)});
             } else {
-              setSelectionIds([]);
+              setSelectionIds({ isFilterApplied: false, ids: [] });
             }
           }}
             variant='contained' 
