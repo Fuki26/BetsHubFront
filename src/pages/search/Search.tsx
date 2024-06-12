@@ -1824,25 +1824,25 @@ export default function Search() {
             : <></>
         }
         {
-          filteredRows && (filterType === FilterType.Bets || filterType === FilterType.Both)
-            ? (
-                <Bets
-                  id='search'
-                  arePengindBets={false}
-                  savedBet={(bets: Array<BetModel>, bet: BetModel) => {}}
-                  onTotalOfTotalAmountsChanged={onTotalOfTotalAmountsChangedHandler}
-                  selectBetIdFn={selectBetId}
-                  setIsLoading={setIsLoading}
-                  defaultRows={filteredRows}
-                  possibleCounteragents={allCounterAgents}
-                  possibleSports={allSports}
-                  possibleTournaments={allTournaments}
-                  possibleSelections={[]}
-                  possibleMarkets={allMarkets}
-                  currencies={allCurrencies}
-                />
-              ) 
-            : null
+          // filteredRows && (filterType === FilterType.Bets || filterType === FilterType.Both)
+          //   ? (
+          //       <Bets
+          //         id='search'
+          //         arePengindBets={false}
+          //         savedBet={(bets: Array<BetModel>, bet: BetModel) => {}}
+          //         onTotalOfTotalAmountsChanged={onTotalOfTotalAmountsChangedHandler}
+          //         selectBetIdFn={selectBetId}
+          //         setIsLoading={setIsLoading}
+          //         defaultRows={filteredRows}
+          //         possibleCounteragents={allCounterAgents}
+          //         possibleSports={allSports}
+          //         possibleTournaments={allTournaments}
+          //         possibleSelections={[]}
+          //         possibleMarkets={allMarkets}
+          //         currencies={allCurrencies}
+          //       />
+          //     ) 
+          //   : null
         }
         {
           Number(auth.user?.role) === 1 && (filterType === FilterType.Expenses || filterType === FilterType.Both) && (
@@ -1859,7 +1859,7 @@ export default function Search() {
               isRead={false}
               setIsLoading={setIsLoading}
               defaultRows={filteredExpenseRowsRows}
-              possibleCounterAgents={allCounterAgents}
+              possibleCounterаgents={allCounterAgents}
             />
           ) : null
         }

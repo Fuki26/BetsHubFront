@@ -19,7 +19,7 @@ export const getBetsColumns = (props: {
     rows: Array<BetModel>, 
     setRows: React.Dispatch<React.SetStateAction<Array<BetModel>>>,
     apiRef: React.MutableRefObject<GridApiCommunity>,
-    possibleCounteragents: Array<IDropdownValue> | undefined,
+    possibleCounterаgents: Array<IDropdownValue> | undefined,
     possibleSports: Array<IDropdownValue> | undefined,
     possibleTournaments: Array<IDropdownValue> | undefined,
     possibleSelections: Array<{ id: number; selections: Array<IDropdownValue> | undefined, }>,
@@ -36,7 +36,7 @@ export const getBetsColumns = (props: {
     handleClickOpenOnDeleteDialog: (id: GridRowId) => () => void,
     handleClickOpenOnColorDialog: (id: GridRowId) => () => void;
   }): Array<GridColDef>  => {
-    const { rows, setRows, apiRef, possibleCounteragents, possibleSports, 
+    const { rows, setRows, apiRef, possibleCounterаgents, possibleSports, 
       possibleTournaments, possibleSelections, possibleMarkets, 
       currencies, rowModesModel,  id, isMobile, 
       handleSaveClick, handleCancelClick, handleEditClick, handleHistoryClick, 
@@ -226,7 +226,7 @@ export const getBetsColumns = (props: {
     
             return (
               <Autocomplete
-                options={possibleCounteragents ? possibleCounteragents : []}
+                options={possibleCounterаgents ? possibleCounterаgents : []}
                 renderOption={(props, option) => {
                   return (
                     <span {...props} style={{ backgroundColor: 'white' }}>
