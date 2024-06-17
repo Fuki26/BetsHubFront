@@ -12,14 +12,13 @@ import dayjs from 'dayjs';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import { useLocation } from "react-router-dom";
 import Bets from '../../components/Bets/Bets';
-import { BetModel, ExpenseModel, IDropdownValue, StatisticItemModel, } from '../../models';
-import { getBetStatistics, getCompletedBets, getCounterAgents, getCurrencies, 
-  getExpenses, getMarkets, getPendingBets, getSelections, getSports, getTournaments,
+import { ExpenseModel, IDropdownValue, ISelectionsResult, StatisticItemModel, } from '../../models';
+import { getBetStatistics, getCounterAgents, getCurrencies, 
+  getExpenses, getMarkets, getSelections, getSports, getTournaments,
 } from '../../api';
-import { Currency, Expense, Statistics } from '../../database-models';
+import { Counteragent, Currency, Expense, Statistics } from '../../database-models';
 import { StatisticType } from '../../models/enums';
 import Expenses from '../../components/Expenses/Expenses';
-import { betToBetModelMapper } from '../../utils';
 
 
 dayjs.extend(updateLocale);
@@ -46,10 +45,8 @@ export default function Hub(props: {
   const [date, setDate] = React.useState<Date | undefined>(undefined);
 
   const [currencies, setCurrencies] = React.useState<Array<Currency> | undefined>(undefined);
-  const [pendingRows, setPendingRows] = React.useState<Array<BetModel> | undefined>(undefined);
-  const [completedRows, setCompletedRows] = React.useState<Array<BetModel> | undefined>(undefined);
-  const [filteredCompletedRows, setFilteredCompletedRows] = React.useState<Array<BetModel> | undefined>(undefined);
-  const [possibleCounterAgents, setCounterAgents] = React.useState<Array<IDropdownValue> | undefined>(undefined);
+
+  const [possibleCounterаgents, setCounterаgents] = React.useState<Array<IDropdownValue> | undefined>(undefined);
   const [possibleSports, setSports] = React.useState<Array<IDropdownValue> | undefined>(undefined);
   const [possibleTournaments, setTournaments] = React.useState<Array<IDropdownValue> | undefined>(undefined);
   const [possibleMarkets, setMarkets] = React.useState<Array<IDropdownValue> | undefined>(undefined);
@@ -57,25 +54,14 @@ export default function Hub(props: {
   const [expensesRows, setExpensesRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
   const [filteredExpensesRows, setFilteredExpensesRows] = React.useState<Array<ExpenseModel> | undefined>(undefined);
 
-  const [totalOfTotalsPending, setTotalOfTotalsPending ] = React.useState<number>(0);
-  const [totalOfTotalsCompleted, setTotalOfTotalsCompleted ] = React.useState<number>(0);
-  const [totalOfProfitsCompleted, setTotalOfProfitsCompleted ] = React.useState<number>(0);
-  const [winrate, setWinrate ] = React.useState<number>(0);
-
   useEffect(() => {
     (async () => {
       try {
         setIsLoading(true);
+        
         let currencies: Array<Currency> | undefined = await getCurrencies();
-        let pendingBets: Array<BetModel> = (await getPendingBets())!.map(
-          betToBetModelMapper
-        );
-        let completedBets: Array<BetModel> = (await getCompletedBets())!.map(
-          betToBetModelMapper
-        );
-        const getCounteragentsResult = await getCounterAgents();
-        const getSelectionsResult = await getSelections();
-
+        const getCounteragentsResult: Array<Counteragent> | undefined = await getCounterAgents();
+        const getSelectionsResult: ISelectionsResult | undefined = await getSelections();
         const mappedSelections: Array<{ id: number; selections: Array<IDropdownValue> | undefined, }> = [];
         for (let key in getSelectionsResult) {
           if (getSelectionsResult.hasOwnProperty(key)) {
@@ -92,67 +78,14 @@ export default function Hub(props: {
         }
 
         setSelections(mappedSelections);
-        const getSportsResult = await getSports();
-        const getTournamentsResult = await getTournaments();
-        const getMarketsResult = await getMarkets();
-
+        const getSportsResult: Array<string> | undefined = await getSports();
+        const getTournamentsResult: Array<string> | undefined = await getTournaments();
+        const getMarketsResult: Array<string> | undefined = await getMarkets();
         const getAllExpenses: Array<Expense> | undefined = await getExpenses();
+
         setIsLoading(false);
 
-        setPendingRows(pendingBets);
-        setCompletedRows(completedBets);
-
-        let calculatedTotalOfTotalsPending = pendingBets
-          ? pendingBets.reduce((accumulator, currentValue: BetModel) => {
-              if (currentValue.totalAmount) {
-                return accumulator + currentValue.totalAmount;
-              } else {
-                return accumulator;
-              }
-            }, 0)
-          : 0;
-        setTotalOfTotalsPending(calculatedTotalOfTotalsPending);
-
         setCurrencies(currencies);
-        const completedBetsFilteredByDate = completedBets.filter((b) => {
-          const now = new Date();
-          return (
-            b.dateFinished &&
-            b.dateFinished.getFullYear() === now.getFullYear() &&
-            b.dateFinished.getMonth() === now.getMonth() &&
-            b.dateFinished.getDate() === now.getDate()
-          );
-        });
-        setFilteredCompletedRows(completedBetsFilteredByDate);
-        
-        let calculatedTotalOfTotalsCompleted = completedBetsFilteredByDate
-          ? completedBetsFilteredByDate.reduce((accumulator, currentValue: BetModel) => {
-              if (currentValue.totalAmount) {
-                return accumulator + currentValue.totalAmount;
-              } else {
-                return accumulator;
-              }
-            }, 0)
-          : 0;
-        setTotalOfTotalsCompleted(calculatedTotalOfTotalsCompleted);
-
-        let calculatedTotalOfProfitsCompleted = completedBetsFilteredByDate
-          ? completedBetsFilteredByDate.reduce((accumulator, currentValue: BetModel) => {
-              if (currentValue.profits) {
-                return accumulator + Number(currentValue.profits);
-              } else {
-                return accumulator;
-              }
-            }, 0)
-          : 0;
-        setTotalOfProfitsCompleted(calculatedTotalOfProfitsCompleted);
-
-        const winRate = completedBetsFilteredByDate
-          ? (completedBetsFilteredByDate.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-              || b.winStatus.id === '3')).length/completedBetsFilteredByDate.length) * 100
-          : 0;
-        setWinrate(winRate);
-
         const counterAgents: Array<IDropdownValue> | undefined =
           getCounteragentsResult
             ? getCounteragentsResult.map((counterAgent: any) => {
@@ -163,7 +96,7 @@ export default function Hub(props: {
               })
             : [];
 
-        setCounterAgents(counterAgents);
+        setCounterаgents(counterAgents);
 
         const sports: Array<IDropdownValue> | undefined = getSportsResult
           ? getSportsResult.map((sport) => {
@@ -246,50 +179,6 @@ export default function Hub(props: {
   }, [location]);
 
   useEffect(() => {
-    const filteredCompletedBetsByDate: Array<BetModel> = [];
-    if (completedRows && date) {
-      for (var i = 0; i <= completedRows?.length - 1; i++) {
-        const currentRow = completedRows[i];
-        if (
-          currentRow.dateFinished &&
-          currentRow.dateFinished.getFullYear() === date.getFullYear() &&
-          currentRow.dateFinished.getMonth() === date.getMonth() &&
-          currentRow.dateFinished.getDate() === date.getDate()
-        ) {
-          filteredCompletedBetsByDate.push(currentRow);
-        }
-      }
-    }
-
-    setFilteredCompletedRows(filteredCompletedBetsByDate);
-
-    let calculatedTotalOfTotalsCompleted = filteredCompletedBetsByDate
-          ? filteredCompletedBetsByDate.reduce((accumulator, currentValue: BetModel) => {
-              if (currentValue.totalAmount) {
-                return accumulator + currentValue.totalAmount;
-              } else {
-                return accumulator;
-              }
-            }, 0)
-          : 0;
-    setTotalOfTotalsCompleted(calculatedTotalOfTotalsCompleted);
-
-    let calculatedTotalOfProfitsCompleted = filteredCompletedBetsByDate
-          ? filteredCompletedBetsByDate.reduce((accumulator, currentValue: BetModel) => {
-              if (currentValue.profits) {
-                return accumulator + Number(currentValue.profits);
-              } else {
-                return accumulator;
-              }
-            }, 0)
-          : 0;
-    setTotalOfProfitsCompleted(calculatedTotalOfProfitsCompleted);
-
-    const winRate = filteredCompletedBetsByDate
-          ? (filteredCompletedBetsByDate.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-              || b.winStatus.id === '3')).length/filteredCompletedBetsByDate.length) * 100
-          : 0;
-    setWinrate(winRate);
 
     setFilteredExpensesRows((previousRowsModel: Array<ExpenseModel> | undefined) => {
       let filteredExpenses: Array<ExpenseModel> = [];
@@ -378,76 +267,6 @@ export default function Hub(props: {
     return id;
   };
 
-  const savedPendingBet = async (bets: Array<BetModel>, bet: BetModel) => {
-    setCompletedRows((previousRowsModel) => {
-      if(!previousRowsModel) {
-        return [
-          bet,
-        ];
-      }
-
-      const existingBet = previousRowsModel.find((b) => b.id === bet.id);
-      if(!existingBet) {
-        previousRowsModel.push({
-          ...bet, 
-          actionTypeApplied: undefined,
-          isSavedInDatabase: true,
-        });
-      }
-      
-      return previousRowsModel;
-    });
-
-    if(completedRows) {
-      const filteredCompletedRowsByDate = completedRows.filter((b) => {
-        const now = new Date();
-        return (
-          b.dateFinished &&
-          b.dateFinished.getFullYear() === now.getFullYear() &&
-          b.dateFinished.getMonth() === now.getMonth() &&
-          b.dateFinished.getDate() === now.getDate()
-        );
-      });
-
-      setFilteredCompletedRows(filteredCompletedRowsByDate);
-
-      let calculatedTotalOfTotalsCompleted = filteredCompletedRowsByDate
-          ? filteredCompletedRowsByDate.reduce((accumulator, currentValue: BetModel) => {
-              if (currentValue.totalAmount) {
-                return accumulator + currentValue.totalAmount;
-              } else {
-                return accumulator;
-              }
-            }, 0)
-          : 0;
-      setTotalOfTotalsCompleted(calculatedTotalOfTotalsCompleted);
-
-      let calculatedTotalProfisCompleted = filteredCompletedRowsByDate
-          ? filteredCompletedRowsByDate.reduce((accumulator, currentValue: BetModel) => {
-              if (currentValue.profits) {
-                return accumulator + Number(currentValue.profits);
-              } else {
-                return accumulator;
-              }
-            }, 0)
-          : 0;
-      setTotalOfProfitsCompleted(calculatedTotalProfisCompleted);
-
-      const winRate = filteredCompletedRowsByDate
-          ? (filteredCompletedRowsByDate.filter((b) => b.winStatus &&  (b.winStatus.id === '1' 
-              || b.winStatus.id === '3')).length/filteredCompletedRowsByDate.length) * 100
-          : 0;
-      setWinrate(winRate);
-    } else {
-      setFilteredCompletedRows([]);
-      setTotalOfTotalsCompleted(0);
-      setTotalOfProfitsCompleted(0);
-      setWinrate(0);
-    }
-    
-    return;
-  }
-
   const statisticsColumns: Array<GridColDef<any>> = [
     {
       field: 'id',
@@ -496,22 +315,6 @@ export default function Hub(props: {
   const handleExpandClickExpenses = () => {
     setExpensesTableExpanded(!isExpensesTableExpanded);
   };
-
-  const onTotalOfTotalAmountsForPendingChangedHandler = (totalOfTotals: number) => {
-    setTotalOfTotalsPending(totalOfTotals);
-  }
-
-  const onTotalOfTotalAmountsForCompletedChangedHandler = (totalOfTotals: number) => {
-    setTotalOfTotalsCompleted(totalOfTotals);
-  }
-
-  const onTotalOfProfitsForCompletedChangedHandler = (totalOfProfits: number) => {
-    setTotalOfProfitsCompleted(totalOfProfits);
-  }
-
-  const onWinRateChanged = (winRate: number) => {
-    setWinrate(winRate);
-  }
 
   const onNewSportAddedHandler = (sport: string) => {
     var sports = possibleSports;
@@ -685,7 +488,7 @@ export default function Hub(props: {
         </Paper>
         <Paper  style={{ display: 'flex', flexWrap: 'nowrap', width: '100%', marginTop: '2%',}}>
           {
-            (pendingRows && id === 'pending_bets') || (filteredCompletedRows && id === 'completed_bets')
+            id === 'pending_bets' || id === 'completed_bets'
               ? (
                   <Grid item xs={12} sx={{ width: '100%', }}>
                     <Typography variant='h4'>
@@ -712,85 +515,7 @@ export default function Hub(props: {
                         <ExpandMoreIcon />
                       </IconButton>
                     </Typography>
-                    <Paper style={{
-                        marginLeft: '60%',
-                      }}>
-                        {
-                          id === 'pending_bets'
-                            ? (
-                                <Paper>
-                                  <Paper className='aggregatedLabel' sx={{
-                                    display: 'inline-block',
-                                  }}>
-                                    TURNOVER:
-                                  </Paper>
-                                  {
-                                    Number(totalOfTotalsPending).toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                    })
-                                  }
-                                </Paper>
-                              )
-                            : (
-                                <Paper>
-                                  <Paper className='aggregatedLabel' sx={{
-                                    display: 'inline-block',
-                                  }}>
-                                    TURNOVER:
-                                  </Paper>
-                                  {
-                                    totalOfTotalsCompleted && !isNaN(totalOfTotalsCompleted)
-                                      ? Number(totalOfTotalsCompleted).toLocaleString(undefined, {
-                                          minimumFractionDigits: 2,
-                                          maximumFractionDigits: 2,
-                                        })
-                                      : 0.00
-                                  }
-                                  <Paper className='aggregatedLabel' sx={{
-                                    display: 'inline-block',
-                                  }}>
-                                    PROFIT:
-                                  </Paper> 
-                                  {
-                                      totalOfProfitsCompleted && !isNaN(totalOfProfitsCompleted)
-                                        ? Number(totalOfProfitsCompleted).toLocaleString(undefined, {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2,
-                                          })
-                                        : 0.00
-                                  }
-                                  <Paper className='aggregatedLabel' sx={{
-                                    display: 'inline-block',
-                                  }}>
-                                    WINRATE:
-                                  </Paper> 
-                                  {
-                                    winrate && !isNaN(winrate)
-                                      ? Number(winrate).toLocaleString(undefined, {
-                                          minimumFractionDigits: 2,
-                                          maximumFractionDigits: 2,
-                                        })
-                                      : 0.00
-                                  }%
-                                  <Paper className='aggregatedLabel' sx={{
-                                    display: 'inline-block',
-                                  }}>
-                                    YIELD:
-                                  </Paper> 
-                                  {
-                                    totalOfProfitsCompleted && !isNaN(totalOfProfitsCompleted) && 
-                                      totalOfTotalsCompleted && !isNaN(totalOfTotalsCompleted)
-                                      ? ((totalOfProfitsCompleted/totalOfTotalsCompleted) * 100).toLocaleString(undefined, {
-                                          minimumFractionDigits: 2,
-                                          maximumFractionDigits: 2,
-                                        }) + '%'
-                                      : "0.00%"
-                                  }
-                                  </Paper>
-                              )
-                        }
-                    </Paper>
+
                     <Collapse in={id === 'pending_bets' ? isPendingTableExpanded: isCompletedTableExpanded} 
                       timeout='auto' unmountOnExit>
                         {
@@ -799,16 +524,13 @@ export default function Hub(props: {
                                 <Bets
                                   id='pending'
                                   arePengindBets={true}
-                                  savedBet={savedPendingBet}
                                   selectBetIdFn={selectBetId}
                                   setIsLoading={setIsLoading}
-                                  onTotalOfTotalAmountsChanged={onTotalOfTotalAmountsForPendingChangedHandler}
                                   onNewSportAdded={onNewSportAddedHandler}
                                   onNewMarketAdded={onNewMarketAddedHandler}
                                   onNewTournamentAdded={onNewTournamentAddedHandler}
-                                  defaultRows={pendingRows}
                                   currencies={currencies}
-                                  possibleCounteragents={possibleCounterAgents}
+                                  possibleCounterаgents={possibleCounterаgents}
                                   possibleSports={possibleSports}
                                   possibleTournaments={possibleTournaments}
                                   possibleSelections={possibleSelections}
@@ -819,18 +541,13 @@ export default function Hub(props: {
                                 <Bets
                                   id='completed'
                                   arePengindBets={false}
-                                  savedBet={savedPendingBet}
-                                  onTotalOfTotalAmountsChanged={onTotalOfTotalAmountsForCompletedChangedHandler}
-                                  onTotalProfitsChanged={onTotalOfProfitsForCompletedChangedHandler}
-                                  onWinRateChanged={onWinRateChanged}
+                                  selectBetIdFn={selectBetId}
+                                  setIsLoading={setIsLoading}
                                   onNewSportAdded={onNewSportAddedHandler}
                                   onNewMarketAdded={onNewMarketAddedHandler}
                                   onNewTournamentAdded={onNewTournamentAddedHandler}
-                                  selectBetIdFn={selectBetId}
-                                  setIsLoading={setIsLoading}
-                                  defaultRows={filteredCompletedRows}
                                   currencies={currencies}
-                                  possibleCounteragents={possibleCounterAgents}
+                                  possibleCounterаgents={possibleCounterаgents}
                                   possibleSports={possibleSports}
                                   possibleTournaments={possibleTournaments}
                                   possibleSelections={possibleSelections}
@@ -872,7 +589,7 @@ export default function Hub(props: {
                         isRead={false}
                         setIsLoading={setIsLoading}
                         defaultRows={filteredExpensesRows}
-                        possibleCounterAgents={possibleCounterAgents}
+                        possibleCounterаgents={possibleCounterаgents}
                       />
                       </Collapse>
                   </Grid>

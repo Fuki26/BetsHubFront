@@ -22,10 +22,10 @@ export default function Expenses(props: {
   isRead: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   defaultRows: Array<ExpenseModel> | null;
-  possibleCounterAgents: Array<IDropdownValue> | undefined;
+  possibleCounterаgents: Array<IDropdownValue> | undefined;
   displayExportToolbar: boolean | null;
 }) {
-  const { isRead, setIsLoading, defaultRows, possibleCounterAgents, } = props;
+  const { isRead, setIsLoading, defaultRows, possibleCounterаgents, } = props;
 
   const [ rows, setRows, ] = React.useState<Array<ExpenseModel> | null>(defaultRows);
   const [ rowModesModel, setRowModesModel, ] = React.useState<GridRowModesModel>({});
@@ -61,12 +61,12 @@ export default function Expenses(props: {
   const editToolbar = (props: EditToolbarProps) => {
     const { setRows, setRowModesModel } = props;
   
-    if(!possibleCounterAgents || possibleCounterAgents.length === 0) {
+    if(!possibleCounterаgents || possibleCounterаgents.length === 0) {
       // alert('There are not any possible contraagents in the system. You cannot create an expense.');
       return null;
     }
 
-    const counterAgent = possibleCounterAgents[0];
+    const counterAgent = possibleCounterаgents[0];
     const handleAddNewClick = () => {
       const id = Math.round(Math.random() * 1000000);
       const newExpense = {
@@ -474,8 +474,8 @@ export default function Expenses(props: {
           <Autocomplete
             // freeSolo
             options={
-              possibleCounterAgents
-                ? possibleCounterAgents
+              possibleCounterаgents
+                ? possibleCounterаgents
                 : []
             }
             renderInput={(params) => 

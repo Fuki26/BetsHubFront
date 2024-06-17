@@ -33,42 +33,6 @@ export const insertCurrenciesIntoColumns = (columns: Array<GridColDef>,
             align:'left',
             sortable: true,
             sortingOrder: [ 'asc', 'desc', ],
-            sortComparator: (
-                value1: string, 
-                value2: string, 
-                cellParam1: GridSortCellParams,
-                cellParam2: GridSortCellParams, 
-            ) => {
-                const sortingModel: GridSortModel = apiRef.current.getSortModel();
-                const columnSortingModel = sortingModel.find((model) => {
-                    return model.field === field;
-                });
-    
-                if(parseInt(cellParam1.id.toString()) > 10000 
-                    || parseInt(cellParam2.id.toString()) > 10000) {
-                    if(columnSortingModel!.sort === 'asc') {
-                        return 1;
-                    } else {
-                        return -1;
-                    }
-                }
-    
-                if(value1 && !value2) {
-                    return 1;
-                } else if(!value1 && value2) {
-                    return -1;
-                } else if(!value1 && !value2) {
-                    return 0;
-                }
-    
-                if (parseInt(value1) < parseInt(value2)) {
-                    return -1;
-                } else if (parseInt(value1) > parseInt(value2)) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            },
         })
     });
     columns.splice(idx + 1, 0, ...currencyColumns);

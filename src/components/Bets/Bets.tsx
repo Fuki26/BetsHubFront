@@ -2,52 +2,76 @@ import React, { useEffect, useState, useCallback, } from 'react';
 import { toast, } from 'react-toastify';
 import { isMobile, } from 'react-device-detect';
 import { DataGrid, GridColDef, GridRowId, GridRowModel, GridRowModes,
-  GridRowModesModel, GridRowParams, GridCellParams, GridToolbarContainer, 
-  GridEventListener,useGridApiRef, } from '@mui/x-data-grid';
+  GridRowModesModel, GridRowParams, GridToolbarContainer, 
+  GridEventListener,useGridApiRef,
+  GridSortModel, } from '@mui/x-data-grid';
 import { Button, Dialog, DialogActions, DialogTitle, Paper, 
   } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { BetModel, EditToolbarProps, BetStatus, 
   WinStatus, IDropdownValue, ActionType, BetsHistoryItemModel,} from '../../models';
-import { deleteBet, upsertBet, getBetHistory, } from '../../api';
+import { deleteBet, upsertBet, getBetHistory, getAllBets, BetsResult, } from '../../api';
 import { Currency, } from '../../database-models';
 import Modal from '../UI/Modal';
 import { getBetsColumns, } from './BetsColumns';
 import CustomToolbar from '../CustomToolbar/CustomToolbar';
 import './Bets.css';
-import { insertCurrenciesIntoColumns, sortBets, } from '.';
+import { insertCurrenciesIntoColumns, } from '.';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
+import Pagination from 'rc-pagination';
+import "rc-pagination/assets/index.css";
+import { betToBetModelMapper } from '../../utils';
 const { evaluate } = require('mathjs');
+
+enum SortType {
+  ASC = 'asc',
+  DESC = 'desc'
+}
 
 function Bets(props: {
   id: 'pending' | 'completed' | 'search';
   arePengindBets: boolean;
-  onTotalOfTotalAmountsChanged?: (totalOfTotals: number) => void;
-  onTotalProfitsChanged?: (totalOfProfits: number) => void;
-  onWinRateChanged?: (winRate: number) => void;
+  selectBetIdFn: (id: number) => void;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  
   onNewSportAdded?: (sport: string) => void;
   onNewMarketAdded?: (market: string) => void;
   onNewTournamentAdded?: (tournament: string) => void;
-  savedBet: (bets: Array<BetModel>, bet: BetModel) => void;
-  selectBetIdFn: (id: number) => void;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-
-  defaultRows: Array<BetModel> | undefined;
   currencies: Array<Currency> | undefined;
-
-  possibleCounteragents: Array<IDropdownValue> | undefined;
+  possibleCounterаgents: Array<IDropdownValue> | undefined;
   possibleSports: Array<IDropdownValue> | undefined;
   possibleTournaments: Array<IDropdownValue> | undefined;
   possibleSelections: Array<{ id: number; selections: Array<IDropdownValue> | undefined, }>;
   possibleMarkets: Array<IDropdownValue> | undefined;
+
+  filterBetStatus?: number;
+  filterId?: number;
+  filterDateCreatedFrom?: Date;
+  filterDateCreatedTo?: Date;
+  filterStakeFrom?: number;
+  filterStakeTo?: number;
+  oddFrom?: number;
+  oddTo?: number | undefined;
+  psLimitFrom?: number | undefined;
+  psLimitTo?: number | undefined;
+  counterAgentCategory?: Array<string> | undefined;
+  counterAgent?: Array<string> | undefined;
+  sport?: Array<string> | undefined;
+  market?: Array<string> | undefined;
+  tournament?: Array<string> | undefined;
+  selection?: Array<string> | undefined;
+  liveStatus?: Array<string> | undefined;
+  currency?: Array<string> | undefined;
 }) {
   const {
-    arePengindBets, onTotalOfTotalAmountsChanged, onTotalProfitsChanged, onWinRateChanged,
-    onNewSportAdded, onNewMarketAdded, onNewTournamentAdded, selectBetIdFn, setIsLoading,
-    defaultRows, currencies, possibleCounteragents, possibleSports,
-    possibleTournaments, possibleSelections, possibleMarkets, } = props;
+    arePengindBets, selectBetIdFn, setIsLoading, onNewSportAdded, onNewMarketAdded, onNewTournamentAdded,
+    currencies, possibleCounterаgents, possibleSports, possibleTournaments, possibleSelections, 
+    possibleMarkets, } = props;
 
   const apiRef: React.MutableRefObject<GridApiCommunity> = useGridApiRef();
+
+
+  //#region Tab key handler
 
   const tabKeyHandler: GridEventListener<'cellKeyDown'> 
     = (params, event) => {
@@ -124,6 +148,10 @@ function Bets(props: {
       }
   };
 
+  //#endregion
+
+  // #region Update table size according to zoom
+
   const detectZoom = () => {
     var ratio = 0;
 
@@ -150,9 +178,25 @@ function Bets(props: {
 
   window.addEventListener('resize', updateElementSize);
 
-  const [rows, setRows] = useState<Array<BetModel>>(
-    defaultRows ? sortBets(defaultRows) : []
-  );
+  //#endregion
+
+  const [rows, setRows] = useState<Array<BetModel>>([]);
+  const [currentStatistics, setCurrentCurrentStatistics] = useState<{
+    overallStatisticsFlat: { 
+      betsCount: number;
+      profit: number;
+      turnOver: number;
+      winRate: number;
+      yield: number;
+    };
+    overallStatisticsReal: { 
+      betsCount: number;
+      profit: number;
+      turnOver: number;
+      winRate: number;
+      yield: number;
+    };
+  } | undefined>(undefined);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
   const [deleteRowId, setDeleteRowId] = useState<number | undefined>(undefined);
@@ -174,19 +218,16 @@ function Bets(props: {
   const [betsSelections, setBetsSelections] = 
     useState<Array<{ id: number; selections: Array<IDropdownValue> | undefined, }>>(possibleSelections);
 
+  const [currentSort, setCurrentSort] = useState<{ field: string; sort: SortType; }>({
+    field: 'id',
+    sort: SortType.ASC
+  });
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
   const abbreviations = currencies
     ? currencies.map((cur) => cur.abbreviation)
     : [];
-
-  useEffect(() => {	
-    setRows((oldRows) => {	
-      return defaultRows ? sortBets(defaultRows) : [];	
-    });	
-
-    setRowModesModel(() => {	
-      return {};	
-    });	
-  }, [defaultRows]);
 
   useEffect(() => {
     const savedColumnVisibilityModel = 
@@ -196,11 +237,49 @@ function Bets(props: {
     }
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        let pendingBets: BetsResult | undefined = await getAllBets(
+          0,
+          10,
+          { 
+            sortField: 'id',
+            sortType: SortType.ASC 
+          }
+        );
+
+        if(!pendingBets) {
+          return;
+        } 
+
+        const betModels: Array<BetModel> = pendingBets.bets.map(
+          betToBetModelMapper
+        );
+
+        setRows(betModels);
+        setCurrentCurrentStatistics({
+          overallStatisticsFlat: pendingBets.overallStatisticsFlat,
+          overallStatisticsReal: pendingBets.overallStatisticsReal,
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  }, []);
+
+
+  //#region handling column visibility change handler
+
   const handleColumnVisibilityChange = useCallback((params: any) => {
     const newVisibilityModel = {...columnVisibilityModel, ...params};
     localStorage.setItem(`${props.id}ColumnVisibilityModel`, JSON.stringify(newVisibilityModel));
     setColumnVisibilityModel(newVisibilityModel);
   }, []);
+
+  //#endregion
+
+  //#region Edit toolbar handler
 
   const editToolbarHandler = (props: EditToolbarProps) => {
     const { setRows, setRowModesModel } = props;
@@ -268,6 +347,8 @@ function Bets(props: {
     );
   }
 
+  //#endregion
+
   //#region Delete dialog
 
   const handleClickOpenOnDeleteDialog = (id: GridRowId) => () => {
@@ -318,6 +399,8 @@ function Bets(props: {
     setRowModesModel((previousRowModesModel) => {
       return { ...previousRowModesModel, [id]: { mode: GridRowModes.View } };
     });
+
+    // TODO: get bets
   };
 
   const getRowClassName = (params : any) => {
@@ -450,43 +533,6 @@ function Bets(props: {
     setIsLoading(true);
 
     await deleteBet({ id: deleteRowId });
-    if(onTotalOfTotalAmountsChanged) {
-      let calculatedTotalOfTotals = rows
-        ? rows.filter((r) => r.id !== deleteRowId).reduce((accumulator, currentValue: BetModel) => {
-            if (currentValue.totalAmount) {
-              return accumulator + currentValue.totalAmount;
-            } else {
-              return accumulator;
-            }
-          }, 0)
-        : 0;
-
-      onTotalOfTotalAmountsChanged(calculatedTotalOfTotals);
-    }
-
-    if(onTotalProfitsChanged) {
-      let calculatedTotalOfProfits = rows
-        ? rows.filter((r) => r.id !== deleteRowId).reduce((accumulator, currentValue: BetModel) => {
-            if (currentValue.profits) {
-              return accumulator + Number(currentValue.profits);
-            } else {
-              return accumulator;
-            }
-          }, 0)
-        : 0;
-
-      onTotalProfitsChanged(calculatedTotalOfProfits);
-    }
-
-    if(onWinRateChanged) {
-      const winRate: number =  rows 
-        ? (rows.filter((r) => r.id !== deleteRowId && (
-            r.winStatus &&  (r.winStatus.id === '1' || r.winStatus.id === '3')
-          )).length/rows.length) * 100
-        : 0;
-      
-      onWinRateChanged(winRate);
-    }
     
     setDeleteRowId(undefined);
     setOpenDeleteDialog(false);
@@ -500,6 +546,8 @@ function Bets(props: {
     });
 
     setIsLoading(false);
+
+    // TODO: get bets
   };
 
   const handleChangeColorClick = async () => {
@@ -591,13 +639,6 @@ function Bets(props: {
         [row.id]: { mode: GridRowModes.Edit },
       }));
     }
-  };
-
-  const onCellEditStop = (params: GridCellParams) => {
-    // const row = rows.find((row) => row.id === params.id);
-    // if (row) {
-    //   handleEditClick(row.id)();
-    // }
   };
 
   const checkAndNotifyAboutNewSportTournamentOrMarket = (props: { sport?: string;
@@ -827,43 +868,6 @@ function Bets(props: {
         newRow.id = rowData?.data.id;
         newRow.totalAmount = rowData?.data.totalAmount;
         newRow.profits = rowData?.data.profits;
-        if(onTotalOfTotalAmountsChanged) {
-          let calculatedTotalOfTotals = rows
-            ? rows.filter((r) => r.id !== newRow.id).reduce((accumulator, currentValue: BetModel) => {
-              if (currentValue.totalAmount) {
-                return accumulator + currentValue.totalAmount;
-              } else {
-                return accumulator;
-              }
-            }, 0)
-            : 0;
-          calculatedTotalOfTotals += newRow.totalAmount ? newRow.totalAmount : 0;
-          onTotalOfTotalAmountsChanged(calculatedTotalOfTotals);
-        }
-
-        if(onTotalProfitsChanged) {
-          let calculatedTotalOfProfits = rows
-            ? rows.filter((r) => r.id !== newRow.id).reduce((accumulator, currentValue: BetModel) => {
-              if (currentValue.profits) {
-                return accumulator + Number(currentValue.profits);
-              } else {
-                return accumulator;
-              }
-            }, 0)
-            : 0;
-          calculatedTotalOfProfits += newRow.profits ? Number(newRow.profits) : 0;
-          onTotalProfitsChanged(calculatedTotalOfProfits);
-        }
-
-        if(onWinRateChanged) {
-          const winRate: number =  rows 
-            ? (rows.filter((r) => r.id !== deleteRowId && (
-              r.winStatus &&  (r.winStatus.id === '1' || r.winStatus.id === '3')
-            )).length/rows.length) * 100
-            : 0;
-
-          onWinRateChanged(winRate);
-        }
       } else {
         setRowModesModel((previousRowModesModel) => {
           return {
@@ -894,7 +898,7 @@ function Bets(props: {
           (newRow.winStatus && newRow.winStatus.id !== '0')
         ) {
           setTimeout(() => {
-            props.savedBet(rows, newRow);
+            // props.savedBet(rows, newRow);
             setRows((previousRowsModel) => {
               return previousRowsModel.filter((row) => {
               if(row.id !== newRow!.id) {
@@ -936,7 +940,7 @@ function Bets(props: {
 
   let columns: Array<GridColDef> = getBetsColumns({ 
     rows, setRows, apiRef,
-    possibleCounteragents, possibleSports, possibleTournaments,
+    possibleCounterаgents, possibleSports, possibleTournaments,
     possibleSelections: betsSelections, possibleMarkets,
     currencies, rowModesModel, id: props.id,
     isMobile, handleSaveClick, handleCancelClick, handleEditClick,
@@ -969,9 +973,188 @@ function Bets(props: {
           ? 
             (
               <>
+                <Paper style={{
+                    marginLeft: '60%',
+                  }}> 
+                    <Paper>
+                      <Paper className='aggregatedLabel' sx={{
+                        display: 'inline-block',
+                      }}>
+                        FLAT TURNOVER:
+                      </Paper>
+                      {
+                        currentStatistics && currentStatistics.overallStatisticsFlat 
+                          && !isNaN(currentStatistics.overallStatisticsFlat.turnOver)
+                          ? Number(currentStatistics.overallStatisticsFlat.turnOver)
+                          : 0.00
+                      }
+
+                      <Paper className='aggregatedLabel' sx={{
+                        display: 'inline-block',
+                      }}>
+                        FLAT PROFIT:
+                      </Paper> 
+                      {
+                        currentStatistics &&currentStatistics.overallStatisticsFlat 
+                          && !isNaN(currentStatistics.overallStatisticsFlat.profit)
+                            ? Number(currentStatistics.overallStatisticsFlat.profit)
+                            : 0.00
+                      }
+
+
+                      <Paper className='aggregatedLabel' sx={{
+                        display: 'inline-block',
+                      }}>
+                        FLAT WINRATE:
+                      </Paper> 
+                      {
+                        currentStatistics &&currentStatistics.overallStatisticsFlat 
+                          && !isNaN(currentStatistics.overallStatisticsFlat.winRate)
+                            ? Number(currentStatistics.overallStatisticsFlat.winRate)
+                            : 0.00
+                      }%
+
+                      <Paper className='aggregatedLabel' sx={{
+                        display: 'inline-block',
+                      }}>
+                        FLAT YIELD:
+                      </Paper> 
+                      {
+                        currentStatistics &&currentStatistics.overallStatisticsFlat 
+                          && !isNaN(currentStatistics.overallStatisticsFlat.yield)
+                            ? Number(currentStatistics.overallStatisticsFlat.yield)
+                            : 0.00
+                      }%
+                    </Paper>
+                </Paper>
+
+                <Paper style={{
+                    marginLeft: '60%',
+                  }}> 
+                    <Paper>
+                      <Paper className='aggregatedLabel' sx={{
+                        display: 'inline-block',
+                      }}>
+                        REAL TURNOVER:
+                      </Paper>
+                      {
+                        currentStatistics && currentStatistics.overallStatisticsReal 
+                          && !isNaN(currentStatistics.overallStatisticsReal.turnOver)
+                          ? Number(currentStatistics.overallStatisticsReal.turnOver)
+                          : 0.00
+                      }
+
+                      <Paper className='aggregatedLabel' sx={{
+                        display: 'inline-block',
+                      }}>
+                        REAL PROFIT:
+                      </Paper> 
+                      {
+                        currentStatistics &&currentStatistics.overallStatisticsReal 
+                          && !isNaN(currentStatistics.overallStatisticsReal.profit)
+                            ? Number(currentStatistics.overallStatisticsReal.profit)
+                            : 0.00
+                      }
+
+
+                      <Paper className='aggregatedLabel' sx={{
+                        display: 'inline-block',
+                      }}>
+                        REAL WINRATE:
+                      </Paper> 
+                      {
+                        currentStatistics &&currentStatistics.overallStatisticsReal 
+                          && !isNaN(currentStatistics.overallStatisticsReal.winRate)
+                            ? Number(currentStatistics.overallStatisticsReal.winRate)
+                            : 0.00
+                      }%
+
+                      <Paper className='aggregatedLabel' sx={{
+                        display: 'inline-block',
+                      }}>
+                        REAL YIELD:
+                      </Paper> 
+                      {
+                        currentStatistics &&currentStatistics.overallStatisticsReal 
+                          && !isNaN(currentStatistics.overallStatisticsReal.yield)
+                            ? Number(currentStatistics.overallStatisticsReal.yield)
+                            : 0.00
+                      }%
+                    </Paper>
+                </Paper>
+
+                <Pagination 
+                  align={'center'}
+                  defaultCurrent={1}
+                  total={100}
+                  defaultPageSize={10}
+                  pageSize={10}
+                  onChange={async (current) => {
+                    setCurrentPage(current);
+
+                    let pendingBets: BetsResult | undefined = await getAllBets(
+                      (current - 1) * 10,
+                      10,
+                      { 
+                        sortField: currentSort.field,
+                        sortType: currentSort.sort
+                      }
+                    );
+            
+                    if(!pendingBets) {
+                      return;
+                    } 
+            
+                    const betModels: Array<BetModel> = pendingBets.bets.map(
+                      betToBetModelMapper
+                    );
+            
+                    setRows(betModels);
+                    setCurrentCurrentStatistics({
+                      overallStatisticsFlat: pendingBets.overallStatisticsFlat,
+                      overallStatisticsReal: pendingBets.overallStatisticsReal,
+                    });
+                  }}
+                />
                 <DataGrid
+                  pageSizeOptions={[]}
                   apiRef={apiRef}
                   onCellKeyDown={tabKeyHandler}
+                  onColumnHeaderClick={async (params, event, details) => {
+                    const sortingModel: GridSortModel = apiRef.current.getSortModel();
+                    
+                    const currentSort = { field: params.field,  sort: SortType.ASC, };
+
+                    if(sortingModel[0] && params.field === sortingModel[0].field 
+                      && sortingModel[0].sort === SortType.ASC) {
+                        currentSort.sort = SortType.DESC;
+                    }
+
+                    setCurrentSort(currentSort);
+
+                    let pendingBets: BetsResult | undefined = await getAllBets(
+                      (currentPage - 1) * 10,
+                      10,
+                      { 
+                        sortField: currentSort.field,
+                        sortType: currentSort.sort
+                      }
+                    );
+            
+                    if(!pendingBets) {
+                      return;
+                    } 
+            
+                    const betModels: Array<BetModel> = pendingBets.bets.map(
+                      betToBetModelMapper
+                    );
+            
+                    setRows(betModels);
+                    setCurrentCurrentStatistics({
+                      overallStatisticsFlat: pendingBets.overallStatisticsFlat,
+                      overallStatisticsReal: pendingBets.overallStatisticsReal,
+                    });
+                  }}
                   columns={columns}
                   initialState={{
                     columns: {
@@ -995,10 +1178,8 @@ function Bets(props: {
                   }}
                   onRowClick={onRowClick}
                   onRowDoubleClick={props.id === 'pending' ? onRowDoubleClick : undefined}
-                  // onCellEditStop={onCellEditStop}
                   editMode='row'
                   sx={{
-                    height: 5400,
                     fontSize: 18,
                   }}
                   columnBuffer={50}
