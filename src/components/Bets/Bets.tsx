@@ -10,15 +10,16 @@ import { Button, Dialog, DialogActions, DialogTitle, Paper,
 import AddIcon from '@mui/icons-material/Add';
 import { BetModel, EditToolbarProps, BetStatus, 
   WinStatus, IDropdownValue, ActionType, BetsHistoryItemModel,} from '../../models';
-import { deleteBet, upsertBet, getBetHistory, getPendingBets, } from '../../api';
+import { deleteBet, upsertBet, getBetHistory, getAllBets, BetsResult, } from '../../api';
 import { Currency, } from '../../database-models';
 import Modal from '../UI/Modal';
 import { getBetsColumns, } from './BetsColumns';
 import CustomToolbar from '../CustomToolbar/CustomToolbar';
 import './Bets.css';
-import { insertCurrenciesIntoColumns, sortBets, } from '.';
+import { insertCurrenciesIntoColumns, } from '.';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import Pagination from 'rc-pagination';
+import "rc-pagination/assets/index.css";
 import { betToBetModelMapper } from '../../utils';
 const { evaluate } = require('mathjs');
 
@@ -180,6 +181,22 @@ function Bets(props: {
   //#endregion
 
   const [rows, setRows] = useState<Array<BetModel>>([]);
+  const [currentStatistics, setCurrentCurrentStatistics] = useState<{
+    overallStatisticsFlat: { 
+      betsCount: number;
+      profit: number;
+      turnOver: number;
+      winRate: number;
+      yield: number;
+    };
+    overallStatisticsReal: { 
+      betsCount: number;
+      profit: number;
+      turnOver: number;
+      winRate: number;
+      yield: number;
+    };
+  } | undefined>(undefined);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
   const [deleteRowId, setDeleteRowId] = useState<number | undefined>(undefined);
@@ -223,11 +240,28 @@ function Bets(props: {
   useEffect(() => {
     (async () => {
       try {
-        let pendingBets: Array<BetModel> = (await getPendingBets())!.map(
+        let pendingBets: BetsResult | undefined = await getAllBets(
+          0,
+          10,
+          { 
+            sortField: 'id',
+            sortType: SortType.ASC 
+          }
+        );
+
+        if(!pendingBets) {
+          return;
+        } 
+
+        const betModels: Array<BetModel> = pendingBets.bets.map(
           betToBetModelMapper
         );
-    
-        setRows(pendingBets);
+
+        setRows(betModels);
+        setCurrentCurrentStatistics({
+          overallStatisticsFlat: pendingBets.overallStatisticsFlat,
+          overallStatisticsReal: pendingBets.overallStatisticsReal,
+        });
       } catch (e) {
         console.error(e);
       }
@@ -939,21 +973,154 @@ function Bets(props: {
           ? 
             (
               <>
+                <Paper style={{
+                    marginLeft: '60%',
+                  }}> 
+                    <Paper>
+                      <Paper className='aggregatedLabel' sx={{
+                        display: 'inline-block',
+                      }}>
+                        FLAT TURNOVER:
+                      </Paper>
+                      {
+                        currentStatistics && currentStatistics.overallStatisticsFlat 
+                          && !isNaN(currentStatistics.overallStatisticsFlat.turnOver)
+                          ? Number(currentStatistics.overallStatisticsFlat.turnOver)
+                          : 0.00
+                      }
+
+                      <Paper className='aggregatedLabel' sx={{
+                        display: 'inline-block',
+                      }}>
+                        FLAT PROFIT:
+                      </Paper> 
+                      {
+                        currentStatistics &&currentStatistics.overallStatisticsFlat 
+                          && !isNaN(currentStatistics.overallStatisticsFlat.profit)
+                            ? Number(currentStatistics.overallStatisticsFlat.profit)
+                            : 0.00
+                      }
+
+
+                      <Paper className='aggregatedLabel' sx={{
+                        display: 'inline-block',
+                      }}>
+                        FLAT WINRATE:
+                      </Paper> 
+                      {
+                        currentStatistics &&currentStatistics.overallStatisticsFlat 
+                          && !isNaN(currentStatistics.overallStatisticsFlat.winRate)
+                            ? Number(currentStatistics.overallStatisticsFlat.winRate)
+                            : 0.00
+                      }%
+
+                      <Paper className='aggregatedLabel' sx={{
+                        display: 'inline-block',
+                      }}>
+                        FLAT YIELD:
+                      </Paper> 
+                      {
+                        currentStatistics &&currentStatistics.overallStatisticsFlat 
+                          && !isNaN(currentStatistics.overallStatisticsFlat.yield)
+                            ? Number(currentStatistics.overallStatisticsFlat.yield)
+                            : 0.00
+                      }%
+                    </Paper>
+                </Paper>
+
+                <Paper style={{
+                    marginLeft: '60%',
+                  }}> 
+                    <Paper>
+                      <Paper className='aggregatedLabel' sx={{
+                        display: 'inline-block',
+                      }}>
+                        REAL TURNOVER:
+                      </Paper>
+                      {
+                        currentStatistics && currentStatistics.overallStatisticsReal 
+                          && !isNaN(currentStatistics.overallStatisticsReal.turnOver)
+                          ? Number(currentStatistics.overallStatisticsReal.turnOver)
+                          : 0.00
+                      }
+
+                      <Paper className='aggregatedLabel' sx={{
+                        display: 'inline-block',
+                      }}>
+                        REAL PROFIT:
+                      </Paper> 
+                      {
+                        currentStatistics &&currentStatistics.overallStatisticsReal 
+                          && !isNaN(currentStatistics.overallStatisticsReal.profit)
+                            ? Number(currentStatistics.overallStatisticsReal.profit)
+                            : 0.00
+                      }
+
+
+                      <Paper className='aggregatedLabel' sx={{
+                        display: 'inline-block',
+                      }}>
+                        REAL WINRATE:
+                      </Paper> 
+                      {
+                        currentStatistics &&currentStatistics.overallStatisticsReal 
+                          && !isNaN(currentStatistics.overallStatisticsReal.winRate)
+                            ? Number(currentStatistics.overallStatisticsReal.winRate)
+                            : 0.00
+                      }%
+
+                      <Paper className='aggregatedLabel' sx={{
+                        display: 'inline-block',
+                      }}>
+                        REAL YIELD:
+                      </Paper> 
+                      {
+                        currentStatistics &&currentStatistics.overallStatisticsReal 
+                          && !isNaN(currentStatistics.overallStatisticsReal.yield)
+                            ? Number(currentStatistics.overallStatisticsReal.yield)
+                            : 0.00
+                      }%
+                    </Paper>
+                </Paper>
+
                 <Pagination 
                   align={'center'}
                   defaultCurrent={1}
                   total={100}
                   defaultPageSize={10}
                   pageSize={10}
-                  onChange={(current) => {
+                  onChange={async (current) => {
                     setCurrentPage(current);
-                    alert(`Sort: ${JSON.stringify(currentSort)}, Page: ${current}`)
+
+                    let pendingBets: BetsResult | undefined = await getAllBets(
+                      (current - 1) * 10,
+                      10,
+                      { 
+                        sortField: currentSort.field,
+                        sortType: currentSort.sort
+                      }
+                    );
+            
+                    if(!pendingBets) {
+                      return;
+                    } 
+            
+                    const betModels: Array<BetModel> = pendingBets.bets.map(
+                      betToBetModelMapper
+                    );
+            
+                    setRows(betModels);
+                    setCurrentCurrentStatistics({
+                      overallStatisticsFlat: pendingBets.overallStatisticsFlat,
+                      overallStatisticsReal: pendingBets.overallStatisticsReal,
+                    });
                   }}
                 />
                 <DataGrid
+                  pageSizeOptions={[]}
                   apiRef={apiRef}
                   onCellKeyDown={tabKeyHandler}
-                  onColumnHeaderClick={(params, event, details) => {
+                  onColumnHeaderClick={async (params, event, details) => {
                     const sortingModel: GridSortModel = apiRef.current.getSortModel();
                     
                     const currentSort = { field: params.field,  sort: SortType.ASC, };
@@ -964,7 +1131,29 @@ function Bets(props: {
                     }
 
                     setCurrentSort(currentSort);
-                    alert(`Sort: ${JSON.stringify(currentSort)}, Page: ${currentPage}`)
+
+                    let pendingBets: BetsResult | undefined = await getAllBets(
+                      (currentPage - 1) * 10,
+                      10,
+                      { 
+                        sortField: currentSort.field,
+                        sortType: currentSort.sort
+                      }
+                    );
+            
+                    if(!pendingBets) {
+                      return;
+                    } 
+            
+                    const betModels: Array<BetModel> = pendingBets.bets.map(
+                      betToBetModelMapper
+                    );
+            
+                    setRows(betModels);
+                    setCurrentCurrentStatistics({
+                      overallStatisticsFlat: pendingBets.overallStatisticsFlat,
+                      overallStatisticsReal: pendingBets.overallStatisticsReal,
+                    });
                   }}
                   columns={columns}
                   initialState={{
@@ -991,7 +1180,6 @@ function Bets(props: {
                   onRowDoubleClick={props.id === 'pending' ? onRowDoubleClick : undefined}
                   editMode='row'
                   sx={{
-                    height: 5400,
                     fontSize: 18,
                   }}
                   columnBuffer={50}

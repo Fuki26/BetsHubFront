@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Bet, Counteragent, CounterAgentCategory, Currency, Expense, Statistics, User, } from '../database-models';
+import { Bet, Counteragent, Currency, Expense, Statistics, User, } from '../database-models';
 import { BetModel, CounteragentModel, CurrencyModel, ExpenseModel, ISelectionsResult, } from '../models';
 import { StatisticType } from '../models';
 import { notifyError } from '../services';
@@ -7,6 +7,25 @@ const { evaluate } = require('mathjs')
 
 const domain = 'http://213.91.236.205:5000';
 //const domain = 'http://localhost:5001'
+
+export type BetsResult = {
+  bets: Array<Bet>;
+  overallStatisticsFlat: { 
+    betsCount: number;
+    profit: number;
+    turnOver: number;
+    winRate: number;
+    yield: number;
+  };
+  overallStatisticsReal: { 
+    betsCount: number;
+    profit: number;
+    turnOver: number;
+    winRate: number;
+    yield: number;
+  };
+  pageSize: number;
+};
 
 const instance = axios.create({
   // withCredentials: true,
@@ -45,25 +64,173 @@ instance.interceptors.response.use(
   }
 );
 
-const getPendingBets = async (): Promise<Array<Bet> | undefined> => {
-
+const getAllBets = async (
+  skipRows: number,
+  pageSize: number,
+  sort: { 
+    sortField: string; 
+    sortType: 'asc' | 'desc' 
+  }, 
+  filter?: {
+    betStatus?: 0 | 1,
+    betFinished?: Date,
+    dateCreatedFrom?: Date,
+    dateCreatedTo?: Date,
+    stakeFrom?: number,
+    stakeTo?: number,
+    oddFrom?: number,
+    oddTo?: number,
+    psLimitFrom?: number,
+    psLimitTo?: number,
+    counterAgentIDs?: Array<number>,
+    sports?: Array<string>,
+    markets?: Array<string>,
+    tournaments?: Array<string>,
+    selections?: Array<string>,
+    liveStatuses?: Array<number>,
+    currencyIds?: Array<number>,
+  }
+): Promise<BetsResult | undefined> => {
   try {
-        const getBetsResult = 
-            await instance.get(`${domain}/GetAllBets?StartIndex=0&BetStatus=0`);
-        return getBetsResult.data
+    if(sort.sortField === 'id ') {
+      sort.sortField = 'Id';
+    } else if(sort.sortField === 'winStatus') {
+      
+    } else if(sort.sortField === 'counterAgent') {
 
-    } catch(e) {
-        //alert(JSON.stringify(e));
-    }
-}
+    } else if(sort.sortField === 'sport') {
 
-const getCompletedBets = async (): Promise<Array<Bet> | undefined> => {
-    try {
-        const getBetsResult = await instance.get(`${domain}/GetAllBets?StartIndex=0&BetStatus=1`);
-        return getBetsResult.data;
-    } catch(e) {
-        //alert(JSON.stringify(e));
+    } else if(sort.sortField === 'liveStatus') {
+      
+    } else if(sort.sortField === 'psLimit') {
+
+    } else if(sort.sortField === 'amountBGN') {
+
+    } else if(sort.sortField === 'amountPS USD') {
+
+    } else if(sort.sortField === 'amountEUR') {
+
+    } else if(sort.sortField === 'amountVGP') {
+
+    } else if(sort.sortField === 'market') {
+
+    } else if(sort.sortField === 'selection') {
+
+    } else if(sort.sortField === 'odd') {
+
+    } else if(sort.sortField === 'notes') {
+      
+    } else if(sort.sortField === 'tournament') {
+      
+    } else if(sort.sortField === 'stake') {
+      
+    } else if(sort.sortField === 'dateCreated') {
+      
+    } else if(sort.sortField === 'dateFinished') {
+      
+    } else if(sort.sortField === 'totalAmount') {
+      
+    } else if(sort.sortField === 'profits') {
+      
     }
+
+    let url = `${domain}/GetAllBets?SkipRows=${skipRows}&PageSize=${pageSize}&SortField=${sort.sortField}&SortType=${sort.sortType}`;
+    if(filter) {
+      url = filter.betStatus
+        ? url.concat(`&BetStatus=${filter.betStatus}`)
+        : url;
+
+      url = filter.betFinished
+        ? url.concat(`&BetFinished=${filter.betFinished}`)
+        : url;
+
+      url = filter.dateCreatedFrom
+        ? url.concat(`&DateCreatedFrom=${filter.dateCreatedFrom}`)
+        : url;
+
+      url = filter.dateCreatedTo
+        ? url.concat(`&DateCreatedTo=${filter.dateCreatedTo}`)
+        : url;
+
+      url = filter.stakeFrom
+        ? url.concat(`&StakeFrom=${filter.stakeFrom}`)
+        : url;
+
+      url = filter.stakeTo
+        ? url.concat(`&StakeTo=${filter.stakeTo}`)
+        : url;
+
+      url = filter.oddFrom
+        ? url.concat(`&OddFrom=${filter.oddFrom}`)
+        : url;
+
+      url = filter.oddTo
+        ? url.concat(`&OddTo=${filter.oddTo}`)
+        : url;
+
+      url = filter.psLimitFrom
+        ? url.concat(`&PsLimitFrom=${filter.psLimitFrom}`)
+        : url;
+
+      url = filter.psLimitTo
+        ? url.concat(`&PsLimitTo=${filter.psLimitTo}`)
+        : url;
+
+      if(filter.counterAgentIDs && filter.counterAgentIDs.length > 0) {
+        for(var i = 0; i <= filter.counterAgentIDs.length - 1; i++) {
+          const currentCounterAgentId = filter.counterAgentIDs[i];
+          url.concat(`&CounterAgentIDs=${currentCounterAgentId}`);
+        }
+      }
+
+      if(filter.sports && filter.sports.length > 0) {
+        for(var i = 0; i <= filter.sports.length - 1; i++) {
+          const currentSport = filter.sports[i];
+          url.concat(`&Sport=${currentSport}`);
+        }
+      }
+
+      if(filter.markets && filter.markets.length > 0) {
+        for(var i = 0; i <= filter.markets.length - 1; i++) {
+          const currentMarket = filter.markets[i];
+          url.concat(`&Market=${currentMarket}`);
+        }
+      }
+
+      if(filter.tournaments && filter.tournaments.length > 0) {
+        for(var i = 0; i <= filter.tournaments.length - 1; i++) {
+          const currentTournament = filter.tournaments[i];
+          url.concat(`&Tournament=${currentTournament}`);
+        }
+      }
+
+      if(filter.selections && filter.selections.length > 0) {
+        for(var i = 0; i <= filter.selections.length - 1; i++) {
+          const currentSelection = filter.selections[i];
+          url.concat(`&Selection=${currentSelection}`);
+        }
+      }
+
+      if(filter.liveStatuses && filter.liveStatuses.length > 0) {
+        for(var i = 0; i <= filter.liveStatuses.length - 1; i++) {
+          const currentLiveStatus = filter.liveStatuses[i];
+          url.concat(`&LiveStatus=${currentLiveStatus}`);
+        }
+      }
+
+      if(filter.currencyIds && filter.currencyIds.length > 0) {
+        for(var i = 0; i <= filter.currencyIds.length - 1; i++) {
+          const currentCurrencyId = filter.currencyIds[i];
+          url.concat(`&CurrencyIDs=${currentCurrencyId}`);
+        }
+      }
+    }
+
+    const getBetsResult = await instance.get(url);
+    return getBetsResult.data;
+  } catch(e) {
+    //alert(JSON.stringify(e));
+  }
 }
 
 const getBetStatistics = async (props: { 
@@ -456,8 +623,7 @@ const getUserSessions = async (userName: string) => {
 }
 
 export {
-  getPendingBets,
-  getCompletedBets,
+  getAllBets,
   getBetStatistics,
   getBetHistory,
   getExpenseHistory,
